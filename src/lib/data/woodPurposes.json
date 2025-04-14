@@ -1,0 +1,23 @@
+{
+    "Constructions": {
+      "types": ["Archeology", "Buildings", "Shipwrecks"],
+      "subTypes": {
+        "Archeology": ["Dekbalk", "Korbeel", "Spantbeen"],
+        "Buildings": ["Church", "Farmhouse"],
+        "Shipwrecks": []
+      }
+    },
+    "Artworks": {
+      "types": ["Panel paintings", "Sculptures", "Half Models"],
+      "subTypes": {
+        "Panel paintings": ["1 panel", "2 panels", "3 panels", "4+ panels"],
+        "Sculptures": []
+      }
+    },
+    "Furniture": {
+      "types": [""],
+      "subTypes": {
+        "": []
+      }
+    }
+  }  
