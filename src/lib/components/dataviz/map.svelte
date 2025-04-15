@@ -1,6 +1,11 @@
 <script>
     import { onMount, onDestroy } from 'svelte';
     import { browser } from '$app/environment';
+
+    // Imported variables
+    export let activeDataSets;
+
+    console.log("active in map", activeDataSets);
     
     let mapContainer;
     let map;
@@ -36,40 +41,104 @@
 
             // Calculate offset of path
             const offsetPath = (path, latOffset = 0, lngOffset = 0) => {
-                return path.map(([lat, lng]) => [lat + latOffset, lng + lngOffset]);
+                return path.map((point, i) => {
+                    // Keep first and last point the same as the "lead"
+                    if (i === 0 || i === path.length - 1) return point;
+
+                    const [lat, lng] = point;
+                    return [lat + latOffset, lng + lngOffset];
+                });
+            };
+
+
+            const animatePath = (coords, options = {}, interval = 200) => {
+                let index = 1;
+                const path = L.polyline([coords[0]], options).addTo(map);
+
+                const drawNextPoint = () => {
+                    if (index < coords.length) {
+                        path.addLatLng(coords[index]);
+                        index++;
+                        setTimeout(drawNextPoint, interval);
+                    }
+                };
+
+                drawNextPoint();
             }
 
             let easternGermanyPathCoords = [
-                [52.182016, 4.526367],
-                [54.689074, 4.921875],
-                [56.013123, 6.635742],
-                [57.245771, 7.77832],
-                [57.788575, 9.404297],
-                [57.671261, 10.986328],
-                [56.379852, 11.821289],
-                [55.675106, 10.755615],
-                [55.04565, 11.11267],
-                [54.647141, 10.706177],
-                [54.174011, 11.359863],
                 [53.868077, 10.700684],
+                [54.174011, 11.359863],
+                [54.647141, 10.706177],
+                [55.04565, 11.11267],
+                [55.675106, 10.755615],
+                [56.379852, 11.821289],
+                [57.671261, 10.986328],
+                [57.788575, 9.404297],
+                [57.245771, 7.77832],
+                [56.013123, 6.635742],
+                [54.689074, 4.921875],
+                [52.182016, 4.526367],   
             ];
 
-            let easternGermanyPath = L.polyline(easternGermanyPathCoords, {
+            animatePath(easternGermanyPathCoords, {
                 color: 'purple',
-                weight: 3,
+                weight: 2,
                 opacity: 0.7,
-                smoothFactor: 1
-            }).addTo(map);
+            }, 300);
 
             // Offset path
             let secondPath = L.polyline(offsetPath(easternGermanyPathCoords, 0.05, 0.05), {
                 color: 'green',
-                weight: 3,
+                weight: 2,
                 opacity: 0.7,
             }).addTo(map);
 
+            let thirdPath = L.polyline(offsetPath(easternGermanyPathCoords, 0.1, 0.1), {
+                color: 'green',
+                weight: 2,
+                opacity: 0.7,
+            }).addTo(map);
+
+            const drawPathOnMap = (provenance, n = 0) => {
+                const offsetStep = 0.01;
+                console.log("DRAW LINE", provenance);
+                L.polyline(
+                        offsetPath(easternGermanyPathCoords, offsetStep * n, offsetStep * n),
+                        {
+                            color: 'green',
+                            weight: .5,
+                            opacity: 0.7,
+                        }
+                    ).addTo(map);
+
+                if (provenance === "South Germany") {
+                
+                }
+                return
+            };
+            // draw function
+            const getProvenance = (dataSets) => {
+                let index = 0;
+
+                dataSets.forEach(dataSet => {
+                    dataSet.forEach(item => {
+                        item.forEach(i => {
+                            index++;
+                            console.log("provenance", i.provenance, index);
+                            drawPathOnMap(item.provenance, index);
+                        })
+                    })
+                });
+            };
+
+            let halfModelsEasternGermany = getProvenance(activeDataSets);
+            
+
+            // add markers and polygons
             marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
             polygon.bindPopup("I am a polygon.");
+
 
             const onMapClick = (event) => {
                 alert("You clicked the map at " + event.latlng);
