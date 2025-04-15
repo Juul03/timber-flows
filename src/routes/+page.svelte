@@ -24,7 +24,7 @@
 
     // Components
     import Filters from '$lib/components/filters.svelte';
-    import DatavizTest from '$lib/components/dataviz/test.svelte';
+    import DatavizTest from '$lib/components/dataviz/map.svelte';
 
     // Variables
     // Dynamic var retrieved from filters
