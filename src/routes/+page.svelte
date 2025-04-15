@@ -1,9 +1,4 @@
-<h1 class="text-primary">Timber Flows</h1>
-
-<div>
-    <h2>Eerste Model:</h2>
-    <p><strong>Provenance:</strong> {firstModel.provenance}</p>
-</div>
+<h1 class="text-primary d-none">Timber Flows</h1>
 
 <Filters 
     {dataWoodPurposes} 
@@ -11,7 +6,7 @@
     bind:selectedType 
     bind:selectedSubType 
 />
-<p>Selected purpose: {selectedWoodPurpose}{selectedType}{selectedSubType}</p>
+<p>Selected purpose: {selectedWoodPurpose} {selectedType} {selectedSubType}</p>
 
 <script>
     import 'bootstrap/dist/css/bootstrap.min.css';
