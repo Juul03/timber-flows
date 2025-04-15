@@ -15,6 +15,7 @@
     // Data files
     import dataWoodPurposes from '$lib/data/woodPurposes.json';
     import dataHalfModels from '$lib/data/artworks/half-models.json';
+    import dataConstructions from '$lib/data/constructions/constructions.json';
 
     // Scripts
     import { formatData, getUniqueValues, getFellingDates } from '$lib/scripts/formatData.js';
@@ -30,10 +31,22 @@
 
     // Format data files
     let formattedDataHalfModels = formatData(dataHalfModels);
-    let halfModels = formattedDataHalfModels;
+    let formattedDataConstructions = formatData(dataConstructions)
 
-    // Get all provenances
-    let uniqueProvenances = getUniqueValues(halfModels, 'provenance');
+    // Data variables
+    let halfModels = formattedDataHalfModels;
+    let constructions = formattedDataConstructions;
+
+    // Get all unique provenances
+    let uniqueProvenancesHalfModels = getUniqueValues(halfModels, 'provenance');
+    let uniqueProvenancesConstructions = getUniqueValues(constructions, 'provenance');
+
+    let allUniqueProvenances = [...new Set([
+        ...uniqueProvenancesHalfModels,
+        ...uniqueProvenancesConstructions
+    ])].sort();
+
+    console.log("unique provenances", allUniqueProvenances);
 
     // Get all felling dates
     let fellingDatesHalfModels = getFellingDates(halfModels);
