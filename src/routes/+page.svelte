@@ -17,7 +17,7 @@
     import dataHalfModels from '$lib/data/artworks/half-models.json';
 
     // Scripts
-    import { formatData, getUniqueValues } from '$lib/scripts/formatData.js';
+    import { formatData, getUniqueValues, getFellingDates } from '$lib/scripts/formatData.js';
 
     // Components
     import Filters from '$lib/components/filters.svelte';
@@ -34,6 +34,10 @@
 
     // Get all provenances
     let uniqueProvenances = getUniqueValues(halfModels, 'provenance');
+
+    // Get all felling dates
+    let fellingDatesHalfModels = getFellingDates(halfModels);
+    console.log(fellingDatesHalfModels);
   
     let firstModel = halfModels[0];
 

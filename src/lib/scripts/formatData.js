@@ -27,9 +27,23 @@ export const getUniqueValues = (data, key) => {
     const values = data
         .map(item => item[key])
         .filter(value => value !== "");
-        
+
     const uniqueSet = new Set(values);
     const uniqueArray = Array.from(uniqueSet);
     const sortedArray = uniqueArray.sort();
     return sortedArray ;
 }
+
+// get FellingDates
+export const getFellingDates = (dataSet) => {
+    const rawFellingDates = dataSet.map(item => item.fellingDate).filter(Boolean);
+
+    const earliestYears = rawFellingDates.map(data => {
+        if (typeof data === "string") {
+            return parseInt(data.substring(0, 4));
+        }
+        return data;
+    }).filter(Boolean); // Remove nulls
+
+    return earliestYears.sort();
+};
