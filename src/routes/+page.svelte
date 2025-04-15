@@ -8,6 +8,8 @@
 />
 <p>Selected purpose: {selectedWoodPurpose} {selectedType} {selectedSubType}</p>
 
+<DatavizTest {activeDataSets}/>
+
 <script>
     import 'bootstrap/dist/css/bootstrap.min.css';
     import '../assets/styles/app.scss';
@@ -22,6 +24,7 @@
 
     // Components
     import Filters from '$lib/components/filters.svelte';
+    import DatavizTest from '$lib/components/dataviz/test.svelte';
 
     // Variables
     // Dynamic var retrieved from filters
