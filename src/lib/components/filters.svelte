@@ -12,7 +12,7 @@
 
         <div class="col-3">
             <select class="form-select" on:change={handleTypeChange} bind:value={selectedType}>
-                {#if getSubTypes(selectedWoodPurpose).length === 0}
+                {#if getTypes(selectedWoodPurpose).length === 0}
                     <option value="all" selected disabled>No objecttypes available</option>
                 {:else}
                 <option value="all" selected>Select objecttype</option>

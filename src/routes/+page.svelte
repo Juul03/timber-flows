@@ -37,6 +37,13 @@
     let halfModels = formattedDataHalfModels;
     let constructions = formattedDataConstructions;
 
+    let dataSetsArtworks = [halfModels];
+    let dataSetsConstructions = [constructions];
+    let dataSetsAll = [dataSetsArtworks, dataSetsConstructions];
+
+    // Active data based on selected filters
+    let activeDataSets = [];
+
     // Get all unique provenances
     let uniqueProvenancesHalfModels = getUniqueValues(halfModels, 'provenance');
     let uniqueProvenancesConstructions = getUniqueValues(constructions, 'provenance');
@@ -46,14 +53,48 @@
         ...uniqueProvenancesConstructions
     ])].sort();
 
-    console.log("unique provenances", allUniqueProvenances);
-
     // Get all felling dates
     let fellingDatesHalfModels = getFellingDates(halfModels);
-    console.log(fellingDatesHalfModels);
-  
-    let firstModel = halfModels[0];
 
-    // Log the selected value
-    console.log("Selected Wood Purpose: ", selectedWoodPurpose, selectedType, selectedSubType);
+    // on change, find right dataset
+    $: if(selectedWoodPurpose || selectedType || selectedSubType) {
+        activeDataSets = filterDataOnSelection();
+        console.log(activeDataSets);
+    }
+
+    const filterDataOnSelection = () => {
+        console.log("Selected:", selectedWoodPurpose, selectedType, selectedSubType);
+
+        if (selectedSubType !== "all") {
+            console.log("Filtering by SubType:", selectedSubType);
+        }
+
+        if (selectedType !== "all") {
+            console.log("Filtering by Type:", selectedType);
+            if (selectedType === "Half models") {
+                // return dataSetsArtworks
+                return halfModels;
+            }
+        }
+
+        if (selectedWoodPurpose !== "all") {
+            console.log("Filtering by Purpose:", selectedWoodPurpose);
+            if (selectedWoodPurpose === "Artworks") {
+                // return dataSetsArtworks
+                return dataSetsArtworks;
+            }
+            if (selectedWoodPurpose === "Constructions") {
+                return dataSetsConstructions;
+            }
+            if (selectedWoodPurpose === "Furniture") {
+                // no data yet
+                return;
+            }
+        }
+
+        console.log("Returning all data");
+        return dataSetsAll;
+    };
+
+
 </script>
