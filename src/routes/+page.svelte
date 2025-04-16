@@ -125,6 +125,4 @@
         console.log("Returning all data");
         return dataSetsAll;
     };
-
-
 </script>
