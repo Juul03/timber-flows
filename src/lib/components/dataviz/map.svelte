@@ -34,15 +34,14 @@
     }
 
     // Calculate offset of path
-    const offsetPath = (path, latOffset = 0, lngOffset = 0) => {
+    const offsetPath = (path, [latOffset = 0, lngOffset = 0]) => {
         return path.map((point, i) => {
-            // Keep first and last point the same as the "lead"
             if (i === 0 || i === path.length - 1) return point;
-
             const [lat, lng] = point;
             return [lat + latOffset, lng + lngOffset];
         });
     };
+
     
     const animatePath = (coords, options = {}, interval = 200) => {
         let index = 1;
@@ -59,6 +58,7 @@
         drawNextPoint();
     }
 
+    // add all trade routes
     const addTradeRoutesToMap = (leaflet, routes, map) => {
         routes.forEach(route => {
             animatePath(route.coordinates, {
@@ -68,6 +68,19 @@
             }, 300);
         })
     }
+
+    // add trade route based on data
+    const addTradeRouteToMap = (leaflet, route, offset, map) => {
+        // Apply offset (e.g., to avoid overlapping paths)
+        const offsetCoordinates = offsetPath(route.coordinates, offset); // tweak values as needed
+
+        animatePath(offsetCoordinates, {
+            color: 'purple',
+            weight: 2,
+            opacity: 0.7,
+        }, 300);
+    };
+
     
     onMount(async () => {
         if(browser) {
@@ -83,8 +96,52 @@
             // Add provenances to the map
             addProvenancesToMap(leaflet, provenancesCoords, map);
 
-            // Add trade routes to the map
-            addTradeRoutesToMap(leaflet, tradeRoutesCoords, map);
+            // Add all trade routes to the map
+            // addTradeRoutesToMap(leaflet, tradeRoutesCoords, map);
+            const routeDrawCounts = {};
+
+            const drawTradeRoute = (data) => {
+                const provenance = data.provenance;
+                const matchedRoute = tradeRoutesCoords.find(route => route.name === provenance);
+
+                if (matchedRoute) {
+                    // Get current draw count, default to 0
+                    const count = routeDrawCounts[provenance] || 0;
+
+                    // Calculate offset based on how many times it's been drawn
+                    const latOffset = 0.01 * count;
+                    const lngOffset = 0.01 * count;
+
+                    // Update the draw count
+                    routeDrawCounts[provenance] = count + 1;
+
+                    // Draw with calculated offset
+                    addTradeRouteToMap(leaflet, matchedRoute, [latOffset, lngOffset], map);
+                } else {
+                    console.warn("No matching route for provenance:", provenance);
+                }
+            };
+
+
+            console.log("activeData", activeDataSets);
+            activeDataSets.forEach(dataSetsType => {
+                // artworks, constructions, furniture
+                console.log("datasettype", dataSetsType.name); 
+
+                dataSetsType.data.forEach(dataObject => {
+                    // halfmodels, sculptures, shipwrecks, etc.
+                    console.log("dataset specifiek", dataObject.name);
+
+                    dataObject.data.forEach(item => {
+                        // the actual item
+                        // console.log("Actual item", item);
+
+                        drawTradeRoute(item);
+                    });
+                });
+            });
+
+
     
 
             // const drawPathOnMap = (provenance, n = 0) => {

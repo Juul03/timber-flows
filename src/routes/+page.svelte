@@ -49,9 +49,27 @@
     let halfModels = formattedDataHalfModels;
     let constructions = formattedDataConstructions;
 
-    let dataSetsArtworks = [halfModels];
-    let dataSetsConstructions = [constructions];
-    let dataSetsAll = [dataSetsArtworks, dataSetsConstructions];
+    let dataSetsArtworks = [
+        {
+            name: "halfModels",
+            data: halfModels,
+        }];
+    let dataSetsConstructions = [
+        {
+            name: "constructions",
+            data: constructions,
+        }];
+
+    let dataSetsAll = [
+        {
+            name: "artworks",
+            data: dataSetsArtworks,
+        },
+        {
+            name: "constructions",
+            data: dataSetsConstructions,
+        }
+    ];
 
     // Active data based on selected filters
     let activeDataSets = [];
