@@ -6,7 +6,16 @@
     bind:selectedType 
     bind:selectedSubType 
 />
-<p>Selected purpose: {selectedWoodPurpose} {selectedType} {selectedSubType}</p>
+<!-- <p>Selected purpose: {selectedWoodPurpose} {selectedType} {selectedSubType}</p> -->
+
+<div class="container pb-3">
+    <div class="row">
+        <div class="col">
+            <img class="w-100" src="src/assets/img/timeline.png" alt="timeline">
+        </div>
+    </div>
+</div>
+
 
 <DatavizTest {activeDataSets}/>
 

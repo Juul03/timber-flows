@@ -1,6 +1,7 @@
 <script>
     import { onMount, onDestroy } from 'svelte';
     import { browser } from '$app/environment';
+    import tradeCitiesCoords from '$lib/data/tradeCities';
 
     // Imported variables
     export let activeDataSets;
@@ -9,17 +10,25 @@
     
     let mapContainer;
     let map;
+
+    // Map functions
+    const addMarkersToMap = (leaflet, tradeCities, map) => {
+        tradeCities.forEach(city => {
+            let marker = leaflet.marker(city.coordinates).addTo(map);
+            marker.bindPopup(city.name).openPopup();
+        })
+    }
     
     onMount(async () => {
-       if(browser) {
-          const leaflet = await import('leaflet');
-          map = leaflet.map(mapContainer).setView([54.6128, 12.216797], 5);
+        if(browser) {
+            const leaflet = await import('leaflet');
+            map = leaflet.map(mapContainer).setView([54.6128, 12.216797], 5);
     
             // Add the tile layer
             leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
             
-            // Add a marker to the map
-            let marker = leaflet.marker([54.6128, 12.216797]).addTo(map)
+            // Add markers of tradecities to the map
+            addMarkersToMap(leaflet, tradeCitiesCoords, map);
             
             // Define the polygon with coordinates
             let easternGermanyPolygon = [
@@ -34,7 +43,8 @@
 
             // Add polygon to the map
             let polygon = L.polygon(easternGermanyPolygon, {
-                color: 'blue', // Polygon color
+                color: 'black', // Polygon color
+                weight: 1,
                 fillColor: 'blue', // Fill color
                 fillOpacity: 0.2 // Fill opacity
             }).addTo(map);
@@ -101,7 +111,7 @@
             }).addTo(map);
 
             const drawPathOnMap = (provenance, n = 0) => {
-                const offsetStep = 0.01;
+                const offsetStep = 0.0;
                 console.log("DRAW LINE", provenance);
                 L.polyline(
                         offsetPath(easternGermanyPathCoords, offsetStep * n, offsetStep * n),
@@ -134,11 +144,8 @@
 
             let halfModelsEasternGermany = getProvenance(activeDataSets);
             
-
-            // add markers and polygons
-            marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
-            polygon.bindPopup("I am a polygon.");
-
+            // add popup to polygon
+            polygon.bindPopup("Northeastern Germany");
 
             const onMapClick = (event) => {
                 alert("You clicked the map at " + event.latlng);
