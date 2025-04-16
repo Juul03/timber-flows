@@ -1,12 +1,20 @@
 <script>
     import { onMount, onDestroy } from 'svelte';
     import { browser } from '$app/environment';
+    import { scaleOrdinal } from 'd3-scale';
+    import { schemeCategory10 } from 'd3-scale-chromatic';
+
     import tradeCitiesCoords from '$lib/data/tradeCities';
     import provenancesCoords from '$lib/data/provenances';
     import tradeRoutesCoords from '$lib/data/tradeRoutes';
 
     // Imported variables
     export let activeDataSets;
+    const objectTypes = ["constructions", "artworks", "furniture"];
+
+    const colorScale = scaleOrdinal()
+        .domain(objectTypes)
+        .range(schemeCategory10);
 
     // Compontent variables
     let drawnTradeRoutes = [];
@@ -82,12 +90,12 @@
     }
 
     // add trade route based on data
-    const addTradeRouteToMap = (route, offset) => {
+    const addTradeRouteToMap = (route, offset, color) => {
         console.log("offset", offset);
         console.log("route.coordinates", route.coordinates);
         const offsetCoordinates = offsetPath(route.coordinates, offset);
         const animatedLayer = animatePath(offsetCoordinates, {
-            color: 'purple',
+            color: color,
             weight: 2,
             opacity: 0.7,
         }, 300);
@@ -97,7 +105,7 @@
     };
 
     // Draw route on map
-    const drawTradeRoute = (data) => {
+    const drawTradeRoute = (data, objectType) => {
         const provenance = data.provenance;
         const matchedRoute = tradeRoutesCoords.find(route => route.name === provenance);
 
@@ -105,8 +113,10 @@
             const count = routeDrawCounts[provenance] || 0;
             const offset = [0.01 * count, 0.01 * count];
             routeDrawCounts[provenance] = count + 1;
-            console.log("draw route matchedRoute", matchedRoute);
-            addTradeRouteToMap(matchedRoute, offset);
+            
+            const color = colorScale(objectType);
+
+            addTradeRouteToMap(matchedRoute, offset, color);
         } else {
             console.warn("No matching route for provenance:", provenance);
         }
@@ -121,14 +131,17 @@
         // Handles both grouped and flat formats
         activeDataSets.forEach(firstLevel => {
             if ('data' in firstLevel && Array.isArray(firstLevel.data)) {
-                // Either objecttype or subtype
+                const objectType = firstLevel.name; // ← grab it here
+
                 firstLevel.data.forEach(secondLevel => {
                     if ('data' in secondLevel && Array.isArray(secondLevel.data)) {
-                        // When activedatasets is all
-                        secondLevel.data.forEach(drawTradeRoute);
+                        // activedatasets = all
+                        secondLevel.data.forEach(item => {
+                            drawTradeRoute(item, objectType);
+                        });
                     } else {
-                        // When activedatasets is not all
-                        drawTradeRoute(secondLevel);
+                        // activedatasets = just one objecttype
+                        drawTradeRoute(secondLevel, objectType);
                     }
                 });
             } else {
