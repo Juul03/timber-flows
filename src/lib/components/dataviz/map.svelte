@@ -3,6 +3,7 @@
     import { browser } from '$app/environment';
     import tradeCitiesCoords from '$lib/data/tradeCities';
     import provenancesCoords from '$lib/data/provenances';
+    import tradeRoutesCoords from '$lib/data/tradeRoutes';
 
     // Imported variables
     export let activeDataSets;
@@ -31,6 +32,42 @@
             polygon.bindPopup(provenance.name);
         })
     }
+
+    // Calculate offset of path
+    const offsetPath = (path, latOffset = 0, lngOffset = 0) => {
+        return path.map((point, i) => {
+            // Keep first and last point the same as the "lead"
+            if (i === 0 || i === path.length - 1) return point;
+
+            const [lat, lng] = point;
+            return [lat + latOffset, lng + lngOffset];
+        });
+    };
+    
+    const animatePath = (coords, options = {}, interval = 200) => {
+        let index = 1;
+        const path = L.polyline([coords[0]], options).addTo(map);
+
+        const drawNextPoint = () => {
+            if (index < coords.length) {
+                path.addLatLng(coords[index]);
+                index++;
+                setTimeout(drawNextPoint, interval);
+            }
+        };
+
+        drawNextPoint();
+    }
+
+    const addTradeRoutesToMap = (leaflet, routes, map) => {
+        routes.forEach(route => {
+            animatePath(route.coordinates, {
+                color: 'purple',
+                weight: 2,
+                opacity: 0.7,
+            }, 300);
+        })
+    }
     
     onMount(async () => {
         if(browser) {
@@ -45,102 +82,44 @@
 
             // Add provenances to the map
             addProvenancesToMap(leaflet, provenancesCoords, map);
-            
 
-            // Calculate offset of path
-            const offsetPath = (path, latOffset = 0, lngOffset = 0) => {
-                return path.map((point, i) => {
-                    // Keep first and last point the same as the "lead"
-                    if (i === 0 || i === path.length - 1) return point;
+            // Add trade routes to the map
+            addTradeRoutesToMap(leaflet, tradeRoutesCoords, map);
+    
 
-                    const [lat, lng] = point;
-                    return [lat + latOffset, lng + lngOffset];
-                });
-            };
+            // const drawPathOnMap = (provenance, n = 0) => {
+            //     const offsetStep = 0.0;
+            //     console.log("DRAW LINE", provenance);
+            //     L.polyline(
+            //             offsetPath(easternGermanyPathCoords, offsetStep * n, offsetStep * n),
+            //             {
+            //                 color: 'green',
+            //                 weight: .5,
+            //                 opacity: 0.7,
+            //             }
+            //         ).addTo(map);
 
-
-            const animatePath = (coords, options = {}, interval = 200) => {
-                let index = 1;
-                const path = L.polyline([coords[0]], options).addTo(map);
-
-                const drawNextPoint = () => {
-                    if (index < coords.length) {
-                        path.addLatLng(coords[index]);
-                        index++;
-                        setTimeout(drawNextPoint, interval);
-                    }
-                };
-
-                drawNextPoint();
-            }
-
-            let easternGermanyPathCoords = [
-                [53.868077, 10.700684],
-                [54.174011, 11.359863],
-                [54.647141, 10.706177],
-                [55.04565, 11.11267],
-                [55.675106, 10.755615],
-                [56.379852, 11.821289],
-                [57.671261, 10.986328],
-                [57.788575, 9.404297],
-                [57.245771, 7.77832],
-                [56.013123, 6.635742],
-                [54.689074, 4.921875],
-                [52.182016, 4.526367],   
-            ];
-
-            animatePath(easternGermanyPathCoords, {
-                color: 'purple',
-                weight: 2,
-                opacity: 0.7,
-            }, 300);
-
-            // Offset path
-            let secondPath = L.polyline(offsetPath(easternGermanyPathCoords, 0.05, 0.05), {
-                color: 'green',
-                weight: 2,
-                opacity: 0.7,
-            }).addTo(map);
-
-            let thirdPath = L.polyline(offsetPath(easternGermanyPathCoords, 0.1, 0.1), {
-                color: 'green',
-                weight: 2,
-                opacity: 0.7,
-            }).addTo(map);
-
-            const drawPathOnMap = (provenance, n = 0) => {
-                const offsetStep = 0.0;
-                console.log("DRAW LINE", provenance);
-                L.polyline(
-                        offsetPath(easternGermanyPathCoords, offsetStep * n, offsetStep * n),
-                        {
-                            color: 'green',
-                            weight: .5,
-                            opacity: 0.7,
-                        }
-                    ).addTo(map);
-
-                if (provenance === "South Germany") {
+            //     if (provenance === "South Germany") {
                 
-                }
-                return
-            };
-            // draw function
-            const getProvenance = (dataSets) => {
-                let index = 0;
+            //     }
+            //     return
+            // };
+            // // draw function
+            // const getProvenance = (dataSets) => {
+            //     let index = 0;
 
-                dataSets.forEach(dataSet => {
-                    dataSet.forEach(item => {
-                        item.forEach(i => {
-                            index++;
-                            console.log("provenance", i.provenance, index);
-                            drawPathOnMap(item.provenance, index);
-                        })
-                    })
-                });
-            };
+            //     dataSets.forEach(dataSet => {
+            //         dataSet.forEach(item => {
+            //             item.forEach(i => {
+            //                 index++;
+            //                 console.log("provenance", i.provenance, index);
+            //                 drawPathOnMap(item.provenance, index);
+            //             })
+            //         })
+            //     });
+            // };
 
-            let halfModelsEasternGermany = getProvenance(activeDataSets);
+            // let halfModelsEasternGermany = getProvenance(activeDataSets);
             
 
             const onMapClick = (event) => {
