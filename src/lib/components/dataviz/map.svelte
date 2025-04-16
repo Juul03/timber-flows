@@ -2,6 +2,7 @@
     import { onMount, onDestroy } from 'svelte';
     import { browser } from '$app/environment';
     import tradeCitiesCoords from '$lib/data/tradeCities';
+    import provenancesCoords from '$lib/data/provenances';
 
     // Imported variables
     export let activeDataSets;
@@ -18,6 +19,18 @@
             marker.bindPopup(city.name).openPopup();
         })
     }
+
+    const addProvenancesToMap = (leaflet, provenances, map) => {
+        provenances.forEach(provenance => {
+            let polygon = L.polygon(provenance.coordinates, {
+                color: 'black',
+                weight: 1,
+                fillColor: 'blue',
+                fillOpacity: 0.2
+            }).addTo(map);
+            polygon.bindPopup(provenance.name);
+        })
+    }
     
     onMount(async () => {
         if(browser) {
@@ -29,25 +42,10 @@
             
             // Add markers of tradecities to the map
             addMarkersToMap(leaflet, tradeCitiesCoords, map);
-            
-            // Define the polygon with coordinates
-            let easternGermanyPolygon = [
-                [54.357517, 11.381836],
-                [53.083467, 11.513672],
-                [53.267841, 12.216797],
-                [53.109855, 13.095703],
-                [53.7643, 14.326172],
-                [54.739845, 13.447266],
-                [54.357517, 11.381836]
-            ];
 
-            // Add polygon to the map
-            let polygon = L.polygon(easternGermanyPolygon, {
-                color: 'black', // Polygon color
-                weight: 1,
-                fillColor: 'blue', // Fill color
-                fillOpacity: 0.2 // Fill opacity
-            }).addTo(map);
+            // Add provenances to the map
+            addProvenancesToMap(leaflet, provenancesCoords, map);
+            
 
             // Calculate offset of path
             const offsetPath = (path, latOffset = 0, lngOffset = 0) => {
@@ -144,8 +142,6 @@
 
             let halfModelsEasternGermany = getProvenance(activeDataSets);
             
-            // add popup to polygon
-            polygon.bindPopup("Northeastern Germany");
 
             const onMapClick = (event) => {
                 alert("You clicked the map at " + event.latlng);
