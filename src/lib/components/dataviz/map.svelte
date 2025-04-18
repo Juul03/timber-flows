@@ -12,6 +12,10 @@
     export let activeDataSets;
     export let timelineDataSelection;
     const objectTypes = ["constructions", "artworks", "furniture"];
+    const subtypeMap = {
+        halfModels: "artworks",
+        constructions: "constructions",
+    };
 
     const colorScale = scaleOrdinal()
         .domain(objectTypes)
@@ -121,7 +125,8 @@
             const offset = [0.01 * count, 0.01 * count];
             routeDrawCounts[provenance] = count + 1;
             
-            const color = colorScale(objectType);
+            const parentType = subtypeMap[objectType] || objectType;
+            const color = colorScale(parentType);
 
             addTradeRouteToMap(matchedRoute, offset, color);
         } else {

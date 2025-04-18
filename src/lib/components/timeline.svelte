@@ -82,7 +82,6 @@
     };
 
     const fillMissingYears = (data, startYear, endYear) => {
-        // Convert fellingDate to Number to ensure consistency
         const yearMap = new Map(data.map(d => [Number(d.fellingDate), d.frequency]));
         const filled = [];
 
@@ -117,7 +116,7 @@
 
         if (timelineIndex >= filledData.length) {
             timelineRunning = false;
-            timelineIndex = filledData.length; // stay at end
+            timelineIndex = filledData.length;
             return;
         }
 
