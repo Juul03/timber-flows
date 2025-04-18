@@ -14,7 +14,10 @@
 
     export let activeDataSets = [];
 
+    // chart variables
     let chartContainer;
+    let minYear;
+    let maxYear;
 
     // Function to calculate the fellingDates frequencies
     const getFellingDateFrequency = (dataSets) => {
@@ -109,17 +112,16 @@
         const minYearAtLeast = 1400;
         const maxYearAtLeast = 1800;
 
-        let minYear;
-        let maxYear;
-
         const allFrequencies = data.map(d => d.frequency);
         let maxFrequency = d3.max(allFrequencies);
 
-        const allYears = data.map(d => d.fellingDate);
-        const minAllYears = d3.min(allYears);
-        const maxAllYears = d3.max(allYears);
-        minYear = getMinYear(minYearAtLeast, minAllYears);
-        maxYear = getMaxYear(maxYearAtLeast, maxAllYears);
+        if(minYear === undefined || maxYear === undefined) {
+            const allYears = data.map(d => d.fellingDate);
+            const minAllYears = d3.min(allYears);
+            const maxAllYears = d3.max(allYears);
+            minYear = getMinYear(minYearAtLeast, minAllYears);
+            maxYear = getMaxYear(maxYearAtLeast, maxAllYears);
+        }
 
         // Fill in missing years
         const filledData = fillMissingYears(data, minYear, maxYear);
@@ -129,7 +131,7 @@
         const x = d3.scaleBand()
             .domain(filledData.map(d => d.fellingDate))
             .range([marginLeft, containerWidth - marginRight])
-            .padding(0.1);
+            .padding(0);
 
 
         // Y scale: Frequency values (based on the count)
@@ -146,7 +148,7 @@
 
         // Add bars for each fellingDate
         svg.append("g")
-            .attr("fill", "steelblue")
+            .attr("fill", "#D3D3D3")
             .selectAll(".bar")
             .data(filledData)
             .join("rect")
@@ -168,12 +170,12 @@
             .attr("transform", `translate(${marginLeft},0)`)
             .call(d3.axisLeft(y).ticks(maxFrequency).tickFormat(d3.format("~s"))) 
             .call(g => g.select(".domain").remove())  // Remove the axis line
-            .call(g => g.append("text")  // Add a label to the y-axis
+            .call(g => g.append("text")
                 .attr("x", -marginLeft)
                 .attr("y", 10)
                 .attr("fill", "currentColor")
                 .attr("text-anchor", "start")
-                .text("↑ Frequency"));
+                .text("Frequency"));
 
         // Append the SVG to the DOM (to the element with id 'chart-container')
         chartContainer.appendChild(svg.node());
