@@ -116,14 +116,8 @@
         if (!timelineRunning) return;
 
         if (timelineIndex >= filledData.length) {
-            const lastYear = filledData[filledData.length - 1].fellingDate;
-            console.log("LAST YEAR IS HERE", lastYear);
-
-            // STOP ANIMATION CODE HERE
-            // timelineIndex = lastYear;
-            // timelineRunning = false;
-
-            currentYearTimeline = lastYear;
+            timelineRunning = false;
+            timelineIndex = filledData.length; // stay at end
             return;
         }
 
@@ -153,14 +147,20 @@
         const totalSteps = filledData.length;
         stepDuration = duration / totalSteps;
 
-        if(timelineRunning) {
-            timelineRunning = false;
-        } else if (!timelineRunning) {
-            timelineRunning = true;
+        // If it's already at the end, reset to the beginning
+        if (timelineIndex >= filledData.length) {
+            timelineIndex = 0;
         }
-        // timelineIndex = 0;
-        animateTimeline();
+
+        if (!timelineRunning) {
+            timelineRunning = true;
+            animateTimeline();
+        } else {
+            // If it's running, stop it
+            timelineRunning = false;
+        }
     };
+
 
     // onMount
     onMount(() => {
