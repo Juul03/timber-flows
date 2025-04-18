@@ -8,22 +8,23 @@
 />
 <!-- <p>Selected purpose: {selectedWoodPurpose} {selectedType} {selectedSubType}</p> -->
 
-<div class="container pb-3">
+<!-- <div class="container pb-3">
     <div class="row">
         <div class="col">
             <img class="w-100" src="src/assets/img/timeline.png" alt="timeline">
         </div>
     </div>
-</div>
+</div> -->
 
+<Timeline {activeDataSets}/>
 
-<DatavizTest {activeDataSets}/>
+<Map {activeDataSets}/>
 
 <script>
     import 'bootstrap/dist/css/bootstrap.min.css';
     import '../assets/styles/app.scss';
 
-    // Data files
+    // Data files (need to be an async function later)
     import dataWoodPurposes from '$lib/data/woodPurposes.json';
     import dataHalfModels from '$lib/data/artworks/half-models.json';
     import dataConstructions from '$lib/data/constructions/constructions.json';
@@ -33,7 +34,8 @@
 
     // Components
     import Filters from '$lib/components/filters.svelte';
-    import DatavizTest from '$lib/components/dataviz/map.svelte';
+    import Map from '$lib/components/dataviz/map.svelte';
+    import Timeline from '$lib/components/timeline.svelte';
 
     // Variables
     // Dynamic var retrieved from filters
