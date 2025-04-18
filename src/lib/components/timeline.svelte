@@ -18,6 +18,7 @@
     let chartContainer;
     let minYear;
     let maxYear;
+    let svg;
 
     // Function to calculate the fellingDates frequencies
     const getFellingDateFrequency = (dataSets) => {
@@ -95,7 +96,6 @@
     const drawBarchart = (data) => {
 
         chartContainer = document.getElementById("chart-container");
-        chartContainer.innerHTML = "";
 
         // Chart dimensions and margins
         const width = 1000;
@@ -115,6 +115,8 @@
         const allFrequencies = data.map(d => d.frequency);
         let maxFrequency = d3.max(allFrequencies);
 
+        console.log("max frequency", maxFrequency)
+
         if(minYear === undefined || maxYear === undefined) {
             const allYears = data.map(d => d.fellingDate);
             const minAllYears = d3.min(allYears);
@@ -125,7 +127,6 @@
 
         // Fill in missing years
         const filledData = fillMissingYears(data, minYear, maxYear);
-        console.log("filledData", filledData);
 
         // X scale: Position of the bars (based on fellingDate)
         const x = d3.scaleBand()
@@ -139,44 +140,72 @@
             .domain([0, d3.max(filledData, (d) => d.frequency)])
             .range([height - marginBottom, marginTop]);
 
-        // Create SVG container
-        const svg = d3.create("svg")
-            .attr("width", "100%")
-            .attr("height", height)
-            .attr("viewBox", [0, 0, containerWidth, height])
-            .attr("style", "max-width: 100%; height: auto;");
+        if (!svg) {
+            svg = d3.select(chartContainer)
+                .append("svg")
+                .attr("width", "100%")
+                .attr("height", height)
+                .attr("viewBox", [0, 0, containerWidth, height])
+                .attr("style", "max-width: 100%; height: auto;");
 
-        // Add bars for each fellingDate
-        svg.append("g")
-            .attr("fill", "#D3D3D3")
-            .selectAll(".bar")
-            .data(filledData)
-            .join("rect")
-            .attr("class", "bar")
-            .attr("x", (d) => x(d.fellingDate))
-            .attr("y", (d) => y(d.frequency))
-            .attr("height", (d) => y(0) - y(d.frequency))
+            // Add x-axis group
+            svg.append("g")
+                .attr("transform", `translate(0,${height - marginBottom})`)
+                .call(d3.axisBottom(x)
+                    .tickValues(x.domain().filter((d, i) => d % fellingDateTicks === 0))
+                    .tickSizeOuter(0));
+
+            // Add y-axis group
+            svg.append("g")
+                .attr("class", "y-axis")
+                .attr("transform", `translate(${marginLeft},0)`)
+                .call(d3.axisLeft(y).ticks(maxFrequency).tickFormat(d3.format("~s"))) 
+                .call(g => g.select(".domain").remove())  // Remove the axis line
+                .call(g => g.append("text")
+                    .attr("x", -marginLeft)
+                    .attr("y", 10)
+                    .attr("fill", "currentColor")
+                    .attr("text-anchor", "start")
+                    .text("Frequency"));
+        }
+
+        // update y-axis
+        const yAxis = svg.select(".y-axis")
+            .transition()
+            .call(d3.axisLeft(y).ticks(maxFrequency).tickFormat(d3.format("~s"))) 
+
+
+        // Update bars
+        const bars = svg.selectAll(".bar")
+            .data(filledData, d => d.fellingDate); 
+
+        // Exit
+        bars.exit()
+            .transition().duration(500)
+            .attr("y", y(0))
+            .attr("height", 0)
+            .remove();
+
+        // Update
+        bars.transition().duration(500)
+            .attr("x", d => x(d.fellingDate))
+            .attr("y", d => y(d.frequency))
+            .attr("height", d => y(0) - y(d.frequency))
             .attr("width", x.bandwidth());
 
-        // Add x-axis
-        svg.append("g")
-            .attr("transform", `translate(0,${height - marginBottom})`)
-            .call(d3.axisBottom(x)
-                .tickValues(x.domain().filter((d, i) => d % fellingDateTicks === 0))
-                .tickSizeOuter(0));
-
-        // Add y-axis
-        svg.append("g")
-            .attr("transform", `translate(${marginLeft},0)`)
-            .call(d3.axisLeft(y).ticks(maxFrequency).tickFormat(d3.format("~s"))) 
-            .call(g => g.select(".domain").remove())  // Remove the axis line
-            .call(g => g.append("text")
-                .attr("x", -marginLeft)
-                .attr("y", 10)
-                .attr("fill", "currentColor")
-                .attr("text-anchor", "start")
-                .text("Frequency"));
-
+        // Enter - Add bars for each fellingDate (if not there already)
+        bars.enter()
+            .append("rect")
+            .attr("class", "bar")
+            .attr("fill", "#D3D3D3")
+            .attr("x", d => x(d.fellingDate))
+            .attr("y", y(0))
+            .attr("width", x.bandwidth())
+            .attr("height", 0)
+            .transition().duration(500)
+            .attr("y", d => y(d.frequency))
+            .attr("height", d => y(0) - y(d.frequency));
+            
         // Append the SVG to the DOM (to the element with id 'chart-container')
         chartContainer.appendChild(svg.node());
     };
