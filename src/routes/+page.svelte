@@ -19,7 +19,7 @@
 <Timeline {activeDataSets} bind:currentYearTimeline />
 
 
-<Map {activeDataSets}/>
+<Map {activeDataSets}{timelineDataSelection}/>
 
 <script>
     import 'bootstrap/dist/css/bootstrap.min.css';
@@ -46,6 +46,9 @@
 
     // Dynamic retrieved from timeline
     let currentYearTimeline;
+
+    // Var to store data based on timeline selection
+    export let timelineDataSelection;
 
     // Format data files
     let formattedDataHalfModels = formatData(dataHalfModels);
@@ -99,7 +102,7 @@
     }
 
     $: if(currentYearTimeline) {
-        console.log("current", currentYearTimeline);
+        filterDataOnTimeline();
     }
 
     const filterDataOnSelection = () => {
@@ -135,4 +138,22 @@
         console.log("Returning all data");
         return dataSetsAll;
     };
+
+    const filterDataOnTimeline = () => {
+        console.log("Filtering on year:", currentYearTimeline);
+
+        if (selectedWoodPurpose !== "all") {
+            activeDataSets.forEach(dataSet => {
+                const matchingItems = dataSet.data.filter(item => item.fellingDate === currentYearTimeline);
+                timelineDataSelection = matchingItems;
+
+                if (matchingItems.length > 0) {
+                    console.log(`Matches from dataset "${dataSet.name}" for year ${currentYearTimeline}:`, matchingItems);
+                }
+            });
+
+            console.log("Currently active datasets:", activeDataSets);
+        }
+    };
+
 </script>

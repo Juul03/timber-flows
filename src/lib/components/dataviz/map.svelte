@@ -10,6 +10,7 @@
 
     // Imported variables
     export let activeDataSets;
+    export let timelineDataSelection;
     const objectTypes = ["constructions", "artworks", "furniture"];
 
     const colorScale = scaleOrdinal()
@@ -49,7 +50,7 @@
     const clearTradeRoutesFromMap = () => {
         drawnTradeRoutes.forEach(layer => map.removeLayer(layer));
         drawnTradeRoutes = [];
-        routeDrawCounts = {};
+        // routeDrawCounts = {};
     };
 
     // Calculate offset of path
@@ -62,7 +63,7 @@
     };
 
     
-    const animatePath = (coords, options = {}, interval = 200) => {
+    const animatePath = (coords, options = {}, interval = 200, onComplete = () => {}) => {
         let index = 1;
         const path = L.polyline([coords[0]], options).addTo(map);
 
@@ -71,6 +72,8 @@
                 path.addLatLng(coords[index]);
                 index++;
                 setTimeout(drawNextPoint, interval);
+            } else {
+                onComplete(path);
             }
         };
 
@@ -91,17 +94,15 @@
 
     // add trade route based on data
     const addTradeRouteToMap = (route, offset, color) => {
-        console.log("offset", offset);
-        console.log("route.coordinates", route.coordinates);
         const offsetCoordinates = offsetPath(route.coordinates, offset);
-        const animatedLayer = animatePath(offsetCoordinates, {
+
+        animatePath(offsetCoordinates, {
             color: color,
             weight: 2,
             opacity: 0.7,
-        }, 300);
-
-        // Store it for later removal
-        drawnTradeRoutes.push(animatedLayer);
+        }, 300, (completedPath) => {
+            drawnTradeRoutes.push(completedPath);
+        });
     };
 
     // Draw route on map
@@ -127,6 +128,7 @@
         if (!map || !leafletReady || !activeDataSets) return;
 
         clearTradeRoutesFromMap();
+        routeDrawCounts = {};
 
         // Handles both grouped and flat formats
         activeDataSets.forEach(firstLevel => {
@@ -168,6 +170,19 @@
         }
     });
 
+    const drawTimelineYearData = () => {
+        clearTradeRoutesFromMap();
+
+        if (Array.isArray(timelineDataSelection)) {
+            timelineDataSelection.forEach(data => {
+                const objectType = data.objectType || "unknown";
+                drawTradeRoute(data, objectType);
+            });
+        } else {
+            console.warn("timelineDataSelection is not an array", timelineDataSelection);
+        }
+    };
+
     onDestroy(async () => {
        if(map) {
           map.remove();
@@ -177,6 +192,12 @@
     $: if (leafletReady && map && activeDataSets) {
         drawMapData();
     }
+
+    $: if (timelineDataSelection && leafletReady && map) {
+        console.log("Timeline selection changed:", timelineDataSelection);
+        drawTimelineYearData();
+    }
+
 
 </script>
     
