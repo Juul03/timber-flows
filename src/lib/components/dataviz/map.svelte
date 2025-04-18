@@ -133,7 +133,7 @@
         // Handles both grouped and flat formats
         activeDataSets.forEach(firstLevel => {
             if ('data' in firstLevel && Array.isArray(firstLevel.data)) {
-                const objectType = firstLevel.name; // ← grab it here
+                const objectType = firstLevel.name;
 
                 firstLevel.data.forEach(secondLevel => {
                     if ('data' in secondLevel && Array.isArray(secondLevel.data)) {
@@ -194,11 +194,8 @@
     }
 
     $: if (timelineDataSelection && leafletReady && map) {
-        console.log("Timeline selection changed:", timelineDataSelection);
         drawTimelineYearData();
     }
-
-
 </script>
     
     

@@ -15,11 +15,14 @@
         </div>
     </div>
 </div> -->
-<p>currentyear: {currentYearTimeline}</p>
-<Timeline {activeDataSets} bind:currentYearTimeline />
 
+<Timeline {activeDataSets} 
+    bind:currentYearTimeline
+/>
 
-<Map {activeDataSets}{timelineDataSelection}/>
+<Map {activeDataSets}
+    {timelineDataSelection}
+/>
 
 <script>
     import 'bootstrap/dist/css/bootstrap.min.css';
@@ -140,8 +143,6 @@
     };
 
     const filterDataOnTimeline = () => {
-        console.log("Filtering on year:", currentYearTimeline);
-
         if (selectedWoodPurpose !== "all") {
             activeDataSets.forEach(dataSet => {
                 const matchingItems = dataSet.data.filter(item => item.fellingDate === currentYearTimeline);
@@ -151,8 +152,6 @@
                     console.log(`Matches from dataset "${dataSet.name}" for year ${currentYearTimeline}:`, matchingItems);
                 }
             });
-
-            console.log("Currently active datasets:", activeDataSets);
         }
     };
 

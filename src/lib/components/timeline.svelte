@@ -1,9 +1,23 @@
 <div class="container">
-    <div class="row">
-        <div class="col">
-            <h2>Timeline</h2>
+    <div class="row align-items-center">
+        <div class="col-11">
             <div id="chart-container"></div>
-            <button on:click={startTimelineAnimation}>▶ Start Timeline</button>
+        </div>
+        <div class="col-1 d-flex justify-content-end">
+            <button class="btn btn-secondary d-flex align-items-center justify-content-center" on:click={startTimelineAnimation}>
+                {#if timelineRunning}
+                    <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                        <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                        <path d="M0 128C0 92.7 28.7 64 64 64H320c35.3 0 64 28.7 64 64V384c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128z"/>
+                    </svg>
+                {:else}
+                    <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                        <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                        <path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80L0 432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/>
+                    </svg>
+                {/if}
+               
+            </button>
         </div>
     </div>
 </div>
@@ -25,6 +39,15 @@
     let svg;
     let filledData;
 
+    // timeline variables
+    let stepDuration;
+    let timelineLine;
+    let xScaleTimeline;
+    let timelineIndex = 0;
+    let timelineRunning = false;
+
+    // variables
+    let fellingDateFrequency
 
     // Function to calculate the fellingDates frequencies
     const getFellingDateFrequency = (dataSets) => {
@@ -36,7 +59,7 @@
                     if ('data' in secondLevel && Array.isArray(secondLevel.data)) {
                         secondLevel.data.forEach(item => {
                             const fellingYears = getFellingDates([item]);
-                            const year = fellingYears[0]; // get first/earliest
+                            const year = fellingYears[0];
                             if (year) {
                                 counts[year] = (counts[year] || 0) + 1;
                             }
@@ -89,48 +112,59 @@
         }
     }
 
-    // Get fellingdDates frequency
-    let fellingDateFrequency = getFellingDateFrequency(activeDataSets);
+    const animateTimeline = () => {
+        if (!timelineRunning) return;
+
+        if (timelineIndex >= filledData.length) {
+            const lastYear = filledData[filledData.length - 1].fellingDate;
+            console.log("LAST YEAR IS HERE", lastYear);
+
+            // STOP ANIMATION CODE HERE
+            timelineIndex = 0;
+            timelineRunning = false;
+
+            currentYearTimeline = lastYear;
+            return;
+        }
+
+        const year = filledData[timelineIndex].fellingDate;
+        const x = xScaleTimeline(year) + xScaleTimeline.bandwidth() / 2;
+
+        svg.select(".timeline-line")
+            .attr("x1", x)
+            .attr("x2", x);
+
+        currentYearTimeline = year;
+        timelineIndex++;
+
+        setTimeout(animateTimeline, stepDuration);
+    };
 
     // Animate timeline
     const startTimelineAnimation = () => {
         if (!svg || filledData.length === 0) return;
 
-        const xScale = d3.scaleBand()
+        xScaleTimeline = d3.scaleBand()
             .domain(filledData.map(d => d.fellingDate))
-            .range([40, chartContainer.clientWidth]) // match your marginLeft
+            .range([40, chartContainer.clientWidth])
             .padding(0);
 
-        const years = filledData.map(d => d.fellingDate);
         const duration = 5000;
-        const totalSteps = years.length;
-        const stepDuration = duration / totalSteps;
+        const totalSteps = filledData.length;
+        stepDuration = duration / totalSteps;
 
-        const timelineLine = svg.select(".timeline-line");
-        if (timelineLine.empty()) {
-            svg.append("line")
-                .attr("class", "timeline-line")
-                .attr("y1", 30)
-                .attr("y2", 100 - 30)
-                .attr("stroke", "red")
-                .attr("stroke-width", 2)
-                .attr("x1", 40)
-                .attr("x2", 40);
-            }
-
-        years.forEach((year, i) => {
-            setTimeout(() => {
-                const x = xScale(year) + xScale.bandwidth() / 2;
-                svg.select(".timeline-line")
-                .attr("x1", x)
-                .attr("x2", x);
-                currentYearTimeline = year;
-            }, i * stepDuration);
-        });
-    }
+        if(timelineRunning) {
+            timelineRunning = false;
+        } else if (!timelineRunning) {
+            timelineRunning = true;
+        }
+        // timelineIndex = 0;
+        animateTimeline();
+    };
 
     // onMount
     onMount(() => {
+        fellingDateFrequency = getFellingDateFrequency(activeDataSets);
         drawBarchart(fellingDateFrequency);
     });
 
@@ -156,8 +190,6 @@
 
         const allFrequencies = data.map(d => d.frequency);
         let maxFrequency = d3.max(allFrequencies);
-
-        console.log("max frequency", maxFrequency)
 
         if(minYear === undefined || maxYear === undefined) {
             const allYears = data.map(d => d.fellingDate);
@@ -208,7 +240,20 @@
                     .attr("y", 10)
                     .attr("fill", "currentColor")
                     .attr("text-anchor", "start")
-                    .text("Frequency"));
+                    .text("Frequency"))
+        }
+
+        // append timeline selector 
+        timelineLine = svg.select(".timeline-line");
+        if (timelineLine.empty()) {
+            svg.append("line")
+                .attr("class", "timeline-line")
+                .attr("y1", 30)
+                .attr("y2", 100 - 30)
+                .attr("stroke", "red")
+                .attr("stroke-width", 2)
+                .attr("x1", 40)
+                .attr("x2", 40);
         }
 
         // update y-axis
@@ -247,7 +292,37 @@
             .transition().duration(500)
             .attr("y", d => y(d.frequency))
             .attr("height", d => y(0) - y(d.frequency));
-            
+
+        // Add overlay for click detection
+        svg.append("rect")
+            .attr("class", "click-overlay")
+            .attr("x", marginLeft)
+            .attr("y", 0)
+            .attr("width", chartContainer.clientWidth - marginLeft)
+            .attr("height", height)
+            .style("fill", "transparent")
+            .style("cursor", "pointer")
+            .on("click", (event) => {
+                timelineRunning = false;
+                const [mouseX] = d3.pointer(event);
+                const years = x.domain();
+                const closest = years.reduce((a, b) => {
+                    const aDist = Math.abs(x(a) + x.bandwidth()/2 - mouseX);
+                    const bDist = Math.abs(x(b) + x.bandwidth()/2 - mouseX);
+                    return aDist < bDist ? a : b;
+                });
+
+                const xPos = x(closest) + x.bandwidth() / 2;
+                svg.select(".timeline-line")
+                    .transition()
+                    .duration(300)
+                    .attr("x1", xPos)
+                    .attr("x2", xPos);
+
+                currentYearTimeline = closest;
+                timelineIndex = filledData.findIndex(d => d.fellingDate == closest);
+            });
+
         // Append the SVG to the DOM (to the element with id 'chart-container')
         chartContainer.appendChild(svg.node());
     };
