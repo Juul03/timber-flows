@@ -120,8 +120,8 @@
             console.log("LAST YEAR IS HERE", lastYear);
 
             // STOP ANIMATION CODE HERE
-            timelineIndex = 0;
-            timelineRunning = false;
+            // timelineIndex = lastYear;
+            // timelineRunning = false;
 
             currentYearTimeline = lastYear;
             return;

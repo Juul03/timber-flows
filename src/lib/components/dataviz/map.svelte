@@ -19,6 +19,7 @@
 
     // Compontent variables
     let drawnTradeRoutes = [];
+    let animatingTradeRoutes = [];
     let routeDrawCounts = {};
     let leafletReady = false;
     let leaflet;
@@ -53,6 +54,7 @@
         // routeDrawCounts = {};
     };
 
+
     // Calculate offset of path
     const offsetPath = (path, [latOffset = 0, lngOffset = 0]) => {
         return path.map((point, i) => {
@@ -67,12 +69,16 @@
         let index = 1;
         const path = L.polyline([coords[0]], options).addTo(map);
 
+        animatingTradeRoutes.push(path);
+
         const drawNextPoint = () => {
             if (index < coords.length) {
                 path.addLatLng(coords[index]);
                 index++;
                 setTimeout(drawNextPoint, interval);
             } else {
+                animatingTradeRoutes = animatingTradeRoutes.filter(p => p !== path);
+                drawnTradeRoutes.push(path);
                 onComplete(path);
             }
         };
@@ -193,7 +199,7 @@
         drawMapData();
     }
 
-    $: if (timelineDataSelection && leafletReady && map) {
+    $: if (timelineDataSelection != undefined && leafletReady && map) {
         drawTimelineYearData();
     }
 </script>
