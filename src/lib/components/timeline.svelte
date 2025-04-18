@@ -3,6 +3,7 @@
         <div class="col">
             <h2>Timeline</h2>
             <div id="chart-container"></div>
+            <button on:click={startTimelineAnimation}>▶ Start Timeline</button>
         </div>
     </div>
 </div>
@@ -14,11 +15,16 @@
 
     export let activeDataSets = [];
 
+    // exported variables from this component
+    export let currentYearTimeline;
+
     // chart variables
     let chartContainer;
     let minYear;
     let maxYear;
     let svg;
+    let filledData;
+
 
     // Function to calculate the fellingDates frequencies
     const getFellingDateFrequency = (dataSets) => {
@@ -85,9 +91,45 @@
 
     // Get fellingdDates frequency
     let fellingDateFrequency = getFellingDateFrequency(activeDataSets);
-    console.log("Items per year:", fellingDateFrequency);
 
+    // Animate timeline
+    const startTimelineAnimation = () => {
+        if (!svg || filledData.length === 0) return;
 
+        const xScale = d3.scaleBand()
+            .domain(filledData.map(d => d.fellingDate))
+            .range([40, chartContainer.clientWidth]) // match your marginLeft
+            .padding(0);
+
+        const years = filledData.map(d => d.fellingDate);
+        const duration = 5000;
+        const totalSteps = years.length;
+        const stepDuration = duration / totalSteps;
+
+        const timelineLine = svg.select(".timeline-line");
+        if (timelineLine.empty()) {
+            svg.append("line")
+                .attr("class", "timeline-line")
+                .attr("y1", 30)
+                .attr("y2", 100 - 30)
+                .attr("stroke", "red")
+                .attr("stroke-width", 2)
+                .attr("x1", 40)
+                .attr("x2", 40);
+            }
+
+        years.forEach((year, i) => {
+            setTimeout(() => {
+                const x = xScale(year) + xScale.bandwidth() / 2;
+                svg.select(".timeline-line")
+                .attr("x1", x)
+                .attr("x2", x);
+                currentYearTimeline = year;
+            }, i * stepDuration);
+        });
+    }
+
+    // onMount
     onMount(() => {
         drawBarchart(fellingDateFrequency);
     });
@@ -126,7 +168,7 @@
         }
 
         // Fill in missing years
-        const filledData = fillMissingYears(data, minYear, maxYear);
+        filledData = fillMissingYears(data, minYear, maxYear);
 
         // X scale: Position of the bars (based on fellingDate)
         const x = d3.scaleBand()

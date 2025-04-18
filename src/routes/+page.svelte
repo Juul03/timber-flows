@@ -15,8 +15,9 @@
         </div>
     </div>
 </div> -->
+<p>currentyear: {currentYearTimeline}</p>
+<Timeline {activeDataSets} bind:currentYearTimeline />
 
-<Timeline {activeDataSets}/>
 
 <Map {activeDataSets}/>
 
@@ -42,6 +43,9 @@
     let selectedWoodPurpose = "all";
     let selectedType = "all";
     let selectedSubType = "all";
+
+    // Dynamic retrieved from timeline
+    let currentYearTimeline;
 
     // Format data files
     let formattedDataHalfModels = formatData(dataHalfModels);
@@ -92,6 +96,10 @@
     $: if(selectedWoodPurpose || selectedType || selectedSubType) {
         activeDataSets = filterDataOnSelection();
         console.log(activeDataSets);
+    }
+
+    $: if(currentYearTimeline) {
+        console.log("current", currentYearTimeline);
     }
 
     const filterDataOnSelection = () => {
