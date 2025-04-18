@@ -178,7 +178,7 @@
 
     const drawTimelineYearData = () => {
         clearTradeRoutesFromMap();
-
+        console.log("timelineDataSelection", timelineDataSelection);
         if (Array.isArray(timelineDataSelection)) {
             timelineDataSelection.forEach(data => {
                 const objectType = data.objectType || "unknown";

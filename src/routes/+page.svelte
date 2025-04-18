@@ -142,17 +142,53 @@
         return dataSetsAll;
     };
 
+    const getYear = (fellingDate) => {
+        if (!fellingDate) return null;
+
+        if (typeof fellingDate === "string") {
+            const match = fellingDate.match(/\d{4}/);
+            console.log("match", match[0]);
+            return match ? parseInt(match[0]) : null;
+        }
+
+        if (typeof fellingDate === "number") {
+            return fellingDate;
+        }
+
+        return null;
+    };
+
     const filterDataOnTimeline = () => {
+        timelineDataSelection = [];
+
         if (selectedWoodPurpose !== "all") {
+            // Not "all", filter directly
             activeDataSets.forEach(dataSet => {
-                const matchingItems = dataSet.data.filter(item => item.fellingDate === currentYearTimeline);
-                timelineDataSelection = matchingItems;
+                const matchingItems = dataSet.data.filter(item => getYear(item.fellingDate) === currentYearTimeline);
+                timelineDataSelection.push(...matchingItems);
 
                 if (matchingItems.length > 0) {
-                    console.log(`Matches from dataset "${dataSet.name}" for year ${currentYearTimeline}:`, matchingItems);
+                    console.log(`✅ Matches from "${dataSet.name}" in year ${currentYearTimeline}:`, matchingItems);
                 }
             });
         }
-    };
 
+        if (selectedWoodPurpose === "all") {
+            // 'All', nested structure, filter with extra nesting
+            activeDataSets.forEach(purposes => {
+                purposes.data.forEach(group => {
+                    if (Array.isArray(group.data)) {
+                        const matchingItems = group.data.filter(item => getYear(item.fellingDate) === currentYearTimeline);
+                        timelineDataSelection.push(...matchingItems);
+
+                        if (matchingItems.length > 0) {
+                            console.log(`✅ Matches in group "${group.name}" of "${purposes.name}" for year ${currentYearTimeline}:`, matchingItems);
+                        }
+                    }
+                });
+            });
+        }
+
+        console.log("📊 timelineDataSelection final:", timelineDataSelection);
+    };
 </script>
