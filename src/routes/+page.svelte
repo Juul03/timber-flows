@@ -147,7 +147,6 @@
 
         if (typeof fellingDate === "string") {
             const match = fellingDate.match(/\d{4}/);
-            console.log("match", match[0]);
             return match ? parseInt(match[0]) : null;
         }
 

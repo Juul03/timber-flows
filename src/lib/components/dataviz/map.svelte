@@ -170,10 +170,14 @@
 
             map = leaflet.map(mapContainer).setView([54.6128, 12.216797], 5);
 
-            leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
+            // leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            // }).addTo(map);
 
+            leaflet.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            }).addTo(map);
+            
             addMarkersToMap(leaflet, tradeCitiesCoords, map);
             addProvenancesToMap(leaflet, provenancesCoords, map);
 
@@ -183,7 +187,7 @@
 
     const drawTimelineYearData = () => {
         clearTradeRoutesFromMap();
-        console.log("timelineDataSelection", timelineDataSelection);
+
         if (Array.isArray(timelineDataSelection)) {
             timelineDataSelection.forEach(data => {
                 const objectType = data.objectType || "unknown";
@@ -199,6 +203,14 @@
           map.remove();
        }
     });
+
+    const cancelAnimatingTradeRoutes = () => {
+        animatingTradeRoutes.forEach(path => {
+            map.removeLayer(path);
+        });
+        animatingTradeRoutes = [];
+    };
+
 
     $: if (leafletReady && map && activeDataSets) {
         drawMapData();
