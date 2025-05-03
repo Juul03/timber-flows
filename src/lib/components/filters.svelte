@@ -1,9 +1,9 @@
 <div class="row gap-2">
     <div class="col-12 d-flex justify-content-between align-items-center">
-        <p class="m-0">Find or select timber purpose</p>
+        <p class="fs-5 m-0">Find or select timber purpose</p>
         <button class="btn border-0 bg-transparent d-flex flex-row flex-wrap align-items-center justify-content-center gap-1">
-            <span class="small">Clear filters</span>
-            <svg class="svg-icon fs-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+            <span class="small m-0">Clear filters</span>
+            <svg class="svg-icon-small fs-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
                 <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
                 <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
             </svg>
@@ -22,13 +22,13 @@
         </form>
     </div>
     <div class="col-12">
-        <span class="badge rounded-pill text-dark bg-white">All</span>
+        <span class="badge rounded-pill text-dark bg-primary">All</span>
     </div>
     <div class="col-12">
         <p class="m-0 text-end small">
             157 results
         </p>
-        <div class="bg-white rounded p-3">
+        <div class="bg-blur rounded p-3">
             <div class="form-check">
                 <input class="form-check-input" type="radio" name="radioDefault" id="radioDefault1" checked>
                 <label class="form-check-label" for="radioDefault1">
