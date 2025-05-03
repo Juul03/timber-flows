@@ -47,3 +47,38 @@ export const getFellingDates = (dataSet) => {
 
     return earliestYears.sort();
 };
+
+// get unique locations, when they are the first word of the location key
+export const getUniqueLocations = (data) => {
+    const values = data
+        .map(item => item['location'])
+        .filter(value => value !== "")
+        .map(value => {
+            // Remove commas, convert to lowercase, and take the first word
+            let part = value
+                .replace(/,/g, '') 
+                .toLowerCase()
+                .split(" ")[0];
+
+            // If the first word is "den", include the next word
+            if (part === 'den') {
+                let nextWord = value.split(' ')[1];
+                part = part + ' ' + nextWord.toLowerCase();
+            }
+
+            return part;
+        });
+
+    // Get unique values
+    const uniqueSet = new Set(values);
+    const uniqueArray = Array.from(uniqueSet);
+
+    // Capitalize first letter of each unique location
+    const normalizedArray = uniqueArray.map(word => word.charAt(0).toUpperCase() + word.slice(1));
+
+    // Sort the array alphabetically
+    const sortedArray = normalizedArray.sort();
+
+    console.log("locations", sortedArray);
+    return sortedArray;
+};

@@ -6,7 +6,8 @@
 <div class="container position-relative z-3">
     <div class="position-absolute w-100 top-0">
         <Filters 
-            {dataWoodPurposes} 
+            {dataWoodPurposes}
+            {uniqueLocations}
             bind:selectedWoodPurpose 
             bind:selectedType 
             bind:selectedSubType 
@@ -35,7 +36,7 @@
     import dataConstructions from '$lib/data/constructions/constructions.json';
 
     // Scripts
-    import { formatData, getUniqueValues, getFellingDates } from '$lib/scripts/formatData.js';
+    import { formatData, getUniqueValues, getFellingDates, getUniqueLocations } from '$lib/scripts/formatData.js';
 
     // Components
     import Filters from '$lib/components/filters.svelte';
@@ -54,6 +55,9 @@
     // Var to store data based on timeline selection
     export let timelineDataSelection;
 
+    // exported var 
+    export let uniqueLocations;
+
     // Format data files
     let formattedDataHalfModels = formatData(dataHalfModels);
     let formattedDataConstructions = formatData(dataConstructions)
@@ -67,6 +71,7 @@
             name: "halfModels",
             data: halfModels,
         }];
+
     let dataSetsConstructions = [
         {
             name: "constructions",
@@ -96,8 +101,11 @@
         ...uniqueProvenancesConstructions
     ])].sort();
 
-    // Get all felling dates
+    // Get all felling dates 
     let fellingDatesHalfModels = getFellingDates(halfModels);
+    
+    // Get all unique locations (for constructions)
+    uniqueLocations = getUniqueLocations(constructions);
 
     // on change, find right dataset
     $: if(selectedWoodPurpose || selectedType || selectedSubType) {

@@ -1,7 +1,7 @@
 <div id="layers" class="row">
     <div class="col-12">
         <button 
-            class="border-0 bg-blur d-flex align-items-center justify-content-start gap-2 {dropdownOpen ? 'rounded-bottom w-100 p-3' : 'rounded-pill p-2'}" 
+            class="border-0 bg-blur d-flex align-items-center justify-content-start gap-2 p-2 {dropdownOpen ? 'rounded-bottom w-100' : 'rounded-pill'}" 
             aria-label="Open map layer selection"
             type="button" 
             data-bs-toggle="dropdown"
@@ -18,34 +18,91 @@
             {/if}
         </button>
         <div class="dropdown">
-            <ul id="mapLayers" class="dropdown-menu checkbox-list bg-blur border-0 w-100 p-3">
-                <li>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="Aethionemoideae" id="aethionemoideae">
-                        <label class="form-check-label" for="aethionemoideae">Aethionemoideae</label>
-                    </div>
-                </li>
-                <li>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="Brassicoideae" id="brassicoideae">
-                        <label class="form-check-label" for="brassicoideae">Brassicoideae</label>
-                    </div>
-                </li>
-                <li>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="Brassicoideae" id="brassicoideae">
-                        <label class="form-check-label" for="brassicoideae">Brassicoideae</label>
-                    </div>
-                </li>
-            </ul>
+            <!-- ul with map layers above this -->
+            <div
+                id="mapLayers"
+                class="dropdown-menu checkbox-list bg-blur border-0 w-100 p-3"
+            >
+                <div class="mb-2">
+                    <h3 class="fs-6">Map types</h3>
+                    {#each mapTypes as type}
+                        <div class="form-check">
+                            <input
+                                class="form-check-input"
+                                type="radio"
+                                name="maptypes"
+                                id={type.name}
+                                value={type.value}
+                            />
+                            <label class="form-check-label w-100" for={type.name}>
+                                {type.name}
+                            </label>
+                        </div>
+                    {/each}
+                </div>
+                <div>
+                    <ul class="dropdown-menu checkbox-list bg-blur rounded-bottom border-0 w-100 p-3">
+                        {#each mapLayers as layer}
+                            <li>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="{layer.value}" id="{layer.value}">
+                                    <label class="w-100 form-check-label" for="{layer.value}">{layer.value}</label>
+                                </div>
+                            </li>
+                        {/each}
+                    </ul>
+                    <!-- <h3 class="fs-6">Layers</h3>
+                    {#each mapLayers as layer}
+                        <div class="form-check">
+                            <input
+                                class="form-check-input"
+                                type="radio"
+                                name="maplayers"
+                                id={layer.name}
+                                value={layer.value}
+                            />
+                            <label class="form-check-label w-100" for={layer.name}>
+                                {layer.name}
+                            </label>
+                        </div>
+                    {/each} -->
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
+    // Exported var
+    export let selectedMapType;
+
 	let dropdownOpen = false;
 
-	let toggleDropdown = () => {
+    selectedMapType = 'area';
+
+    let mapTypes = [
+        {
+            name:'Area map',
+            value: 'area'
+        },
+        {
+            name: 'Basemap (dark)',
+            value: 'dark'
+        }
+    ];
+
+    let mapLayers = [
+        {
+            name:'Rivers',
+            value: 'rivers'
+        },
+        {
+            name: 'Trade cities',
+            value: 'cities'
+        }
+    ];
+
+    let toggleDropdown = () => {
 		dropdownOpen = !dropdownOpen;
 	}
 </script>

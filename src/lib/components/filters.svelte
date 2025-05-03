@@ -11,19 +11,17 @@
             </button>
         </div>
         <div class="col-12">
-            <form class="" action="">
-                <div class="form-group position-relative">
-                    <input type="text" class="form-control bg-blur border-0 rounded-pill pe-5 ps-3 text-truncate" placeholder="Search">
-                    <button type="submit" class="btn position-absolute top-50 end-0 translate-middle-y border-0 bg-transparent">
-                        <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                            <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/>
-                        </svg>
-                    </button>
-                </div>            
-            </form>
+            <Searchbar/>
         </div>
         <div class="col-12">
-            <span class="badge rounded-pill text-dark bg-primary">All</span>
+            <span class="badge rounded-pill text-dark bg-blur { selectedWoodPurpose == 'all' ? 'fw-bold' : 'fw-normal' }">All</span>
+            {#if selectedWoodPurpose && selectedWoodPurpose !== 'all'}
+            <svg class="svg-icon-mini" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
+            </svg>
+                <span class="badge rounded-pill text-dark bg-blur fw-bold">{selectedWoodPurpose}</span>
+            {/if}
         </div>
         <div class="col-12">
             <p class="m-0 text-end small">
@@ -31,17 +29,29 @@
             </p>
             <div class="bg-blur rounded p-3">
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="radioDefault" id="radioDefault1" checked>
-                    <label class="form-check-label" for="radioDefault1">
-                        Default radio
-                    </label>
+                    <input
+                        class="form-check-input"
+                        type="radio"
+                        name="woodPurpose"
+                        id="all"
+                        value="all"
+                        bind:group={selectedWoodPurpose}
+                    />
+                    <label class="form-check-label w-100" for="all">All</label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="radioDefault" id="radioDefault2">
-                    <label class="form-check-label" for="radioDefault2">
-                        Default checked radio
-                    </label>
-                </div>
+                {#each woodPurposes as purpose}
+                    <div class="form-check">
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="woodPurpose"
+                            id={purpose}
+                            value={purpose}
+                            bind:group={selectedWoodPurpose}
+                        />
+                        <label class="form-check-label w-100" for={purpose}>{purpose}</label>
+                    </div>
+                {/each}
             </div>
         </div>
         <div id="selectLocation" class="col-12">
@@ -54,27 +64,20 @@
                     aria-expanded="false"
                     on:click={toggleDropdown}
                 >
-                  Select location
+                  Select locations
                 </button>
                 <ul class="dropdown-menu checkbox-list bg-blur rounded-bottom border-0 w-100 p-3">
-                    <li>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="Aethionemoideae" id="aethionemoideae">
-                            <label class="form-check-label" for="aethionemoideae">Aethionemoideae</label>
-                        </div>
+                    <li class="mb-2 sticky-top z-1">
+                        <Searchbar/>
                     </li>
-                    <li>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="Brassicoideae" id="brassicoideae">
-                            <label class="form-check-label" for="brassicoideae">Brassicoideae</label>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="Brassicoideae" id="brassicoideae">
-                            <label class="form-check-label" for="brassicoideae">Brassicoideae</label>
-                        </div>
-                    </li>
+                    {#each uniqueLocations as location}
+                        <li>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="{location}" id="{location}">
+                                <label class="w-100 form-check-label" for="{location}">{location}</label>
+                            </div>
+                        </li>
+                    {/each}
                 </ul>
             </div>          
         </div>      
@@ -120,12 +123,14 @@
 </div>
 
 <script>
+    import Searchbar from '$lib/components/inputs/searchbar.svelte';
     import MapLayers from '$lib/components/mapLayers.svelte';
 
     export let dataWoodPurposes = [];
     export let selectedWoodPurpose = "all";
     export let selectedType = "all";
     export let selectedSubType = "all";
+    export let uniqueLocations;
     let dropdownOpen = false;
 
     let toggleDropdown = () => {
