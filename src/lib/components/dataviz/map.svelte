@@ -1,11 +1,3 @@
-<!-- <div class="container">
-    <div class="row">
-        <div class="col">
-            <div id="map-container" bind:this={mapContainer}></div>
-        </div>
-    </div>
-</div> -->
-
 <div 
     id="map-container" 
     class="position-absolute top-0 start-0 w-100 h-100 z-0" 
@@ -177,6 +169,14 @@
             }
         });
     };
+
+    let addZoomControl = (leaflet, map) => {
+        map.removeControl(map.zoomControl);
+
+        leaflet.control.zoom({
+            position: 'bottomright'
+        }).addTo(map);
+    }
     
     onMount(async () => {
         if (browser) {
@@ -194,8 +194,10 @@
             // }).addTo(map);
 
             leaflet.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             }).addTo(map);
+
+            addZoomControl(leaflet, map);
 
             addMarkersToMap(leaflet, tradeCitiesCoords, map);
             addProvenancesToMap(leaflet, provenancesCoords, map);

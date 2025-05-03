@@ -3,7 +3,7 @@
         <div id="chart-container"></div>
     </div>
     <div class="col-1 d-flex justify-content-end">
-        <button class="btn btn-secondary d-flex align-items-center justify-content-center" on:click={startTimelineAnimation}>
+        <button class="btn btn-secondary bg-blur d-flex align-items-center justify-content-center" on:click={startTimelineAnimation}>
             {#if timelineRunning}
                 <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
                     <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
@@ -281,7 +281,8 @@
         bars.enter()
             .append("rect")
             .attr("class", "bar")
-            .attr("fill", "#D3D3D3")
+            .attr("fill", "rgba(0, 0, 0, 0.65)")
+            .attr("filter", "url(#glassmorphism)")
             .attr("x", d => x(d.fellingDate))
             .attr("y", y(0))
             .attr("width", x.bandwidth())
@@ -289,6 +290,19 @@
             .transition().duration(500)
             .attr("y", d => y(d.frequency))
             .attr("height", d => y(0) - y(d.frequency));
+
+        svg.append("defs")
+        .append("filter")
+        .attr("id", "glassmorphism")
+        .html(`
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+            <feColorMatrix in="blur" type="matrix"
+                values="1 0 0 0 0
+                        0 1 0 0 0
+                        0 0 1 0 0
+                        0 0 0 0.3 0" result="blurry"/>
+            <feBlend in="SourceGraphic" in2="blurry" mode="normal"/>
+        `);    
 
         // Add overlay for click detection
         svg.append("rect")

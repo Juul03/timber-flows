@@ -4,28 +4,20 @@
     {timelineDataSelection}
 />
 <div class="container position-relative z-3">
-    <div class="position-absolute w-100">
-        <div class="row">
-            <div class="col-3">
-                <Test/>
-            </div>
-           
-
-            <!-- <div id="filters-container" class="col-3 py-3 d-flex flex-column justify-content-between">
-                <Filters 
-                    {dataWoodPurposes} 
-                    bind:selectedWoodPurpose 
-                    bind:selectedType 
-                    bind:selectedSubType 
-                />
-                <MapLayers/>
-            </div>
+    <div class="position-absolute w-100 top-0">
+        <Filters 
+            {dataWoodPurposes} 
+            bind:selectedWoodPurpose 
+            bind:selectedType 
+            bind:selectedSubType 
+        />
+        <div class="row justify-content-end">
             <div class="col-9 py-3">
                 <Timeline 
                     {activeDataSets}
                     bind:currentYearTimeline
                 />
-            </div> -->
+            </div>
         </div>
     </div>
 </div>
@@ -49,8 +41,6 @@
     import Filters from '$lib/components/filters.svelte';
     import Map from '$lib/components/dataviz/map.svelte';
     import Timeline from '$lib/components/timeline.svelte';
-    import MapLayers from '$lib/components/mapLayers.svelte';
-    import Test from '$lib/components/test.svelte';
 
     // Variables
     // Dynamic var retrieved from filters

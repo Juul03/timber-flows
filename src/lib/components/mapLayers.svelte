@@ -1,7 +1,7 @@
-<div class="row">
-    <div class="col">
+<div id="layers" class="row">
+    <div class="col-12">
         <button 
-            class="border-0 bg-white d-flex align-items-center justify-content-start gap-2 {dropdownOpen ? 'rounded-bottom w-100 p-3' : 'rounded-pill p-2'}" 
+            class="border-0 bg-blur d-flex align-items-center justify-content-start gap-2 {dropdownOpen ? 'rounded-bottom w-100 p-3' : 'rounded-pill p-2'}" 
             aria-label="Open map layer selection"
             type="button" 
             data-bs-toggle="dropdown"
@@ -17,35 +17,35 @@
                 <span>Map Layers</span>
             {/if}
         </button>
-            <div class="dropdown">
-                <ul id="mapLayers" class="dropdown-menu checkbox-list w-100 p-3">
-                    <li>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="Aethionemoideae" id="aethionemoideae">
-                            <label class="form-check-label" for="aethionemoideae">Aethionemoideae</label>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="Brassicoideae" id="brassicoideae">
-                            <label class="form-check-label" for="brassicoideae">Brassicoideae</label>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="Brassicoideae" id="brassicoideae">
-                            <label class="form-check-label" for="brassicoideae">Brassicoideae</label>
-                        </div>
-                    </li>
-                </ul>
-            </div>
+        <div class="dropdown">
+            <ul id="mapLayers" class="dropdown-menu checkbox-list bg-blur border-0 w-100 p-3">
+                <li>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="Aethionemoideae" id="aethionemoideae">
+                        <label class="form-check-label" for="aethionemoideae">Aethionemoideae</label>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="Brassicoideae" id="brassicoideae">
+                        <label class="form-check-label" for="brassicoideae">Brassicoideae</label>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="Brassicoideae" id="brassicoideae">
+                        <label class="form-check-label" for="brassicoideae">Brassicoideae</label>
+                    </div>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
 
 <script>
 	let dropdownOpen = false;
 
-	function toggleDropdown() {
+	let toggleDropdown = () => {
 		dropdownOpen = !dropdownOpen;
 	}
 </script>
