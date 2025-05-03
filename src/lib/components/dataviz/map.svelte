@@ -1,3 +1,18 @@
+<!-- <div class="container">
+    <div class="row">
+        <div class="col">
+            <div id="map-container" bind:this={mapContainer}></div>
+        </div>
+    </div>
+</div> -->
+
+<div 
+    id="map-container" 
+    class="position-absolute top-0 start-0 w-100 h-100 z-0" 
+    bind:this={mapContainer}
+    >
+</div>
+
 <script>
     import { onMount, onDestroy } from 'svelte';
     import { browser } from '$app/environment';
@@ -174,11 +189,14 @@
             //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             // }).addTo(map);
 
-            leaflet.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            // leaflet.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+            //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            // }).addTo(map);
+
+            leaflet.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
 
-            
             addMarkersToMap(leaflet, tradeCitiesCoords, map);
             addProvenancesToMap(leaflet, provenancesCoords, map);
 
@@ -220,16 +238,7 @@
     $: if (timelineDataSelection != undefined && leafletReady && map) {
         drawTimelineYearData();
     }
-</script>
-    
-    
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <div id="map-container" bind:this={mapContainer}></div>
-        </div>
-    </div>
-</div>  
+</script>  
     
 <style>
     @import 'leaflet/dist/leaflet.css';

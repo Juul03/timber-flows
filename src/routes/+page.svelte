@@ -1,32 +1,37 @@
 <h1 class="text-primary d-none">Timber Flows</h1>
 
-<Filters 
-    {dataWoodPurposes} 
-    bind:selectedWoodPurpose 
-    bind:selectedType 
-    bind:selectedSubType 
-/>
-<!-- <p>Selected purpose: {selectedWoodPurpose} {selectedType} {selectedSubType}</p> -->
-
-<!-- <div class="container pb-3">
-    <div class="row">
-        <div class="col">
-            <img class="w-100" src="src/assets/img/timeline.png" alt="timeline">
-        </div>
-    </div>
-</div> -->
-
-<Timeline {activeDataSets} 
-    bind:currentYearTimeline
-/>
-
 <Map {activeDataSets}
     {timelineDataSelection}
 />
+<div class="container position-relative z-3">
+    <div class="position-absolute w-100">
+        <div class="row">
+            <div id="filters-container" class="col-3 py-3 d-flex flex-column justify-content-between">
+                <Filters 
+                    {dataWoodPurposes} 
+                    bind:selectedWoodPurpose 
+                    bind:selectedType 
+                    bind:selectedSubType 
+                />
+                <MapLayers/>
+            </div>
+            <div class="col-9 py-3">
+                <Timeline 
+                    {activeDataSets}
+                    bind:currentYearTimeline
+                />
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <p>Selected purpose: {selectedWoodPurpose} {selectedType} {selectedSubType}</p> -->
 
 <script>
     import 'bootstrap/dist/css/bootstrap.min.css';
     import '../assets/styles/app.scss';
+
+    import { onMount } from 'svelte';
 
     // Data files (need to be an async function later)
     import dataWoodPurposes from '$lib/data/woodPurposes.json';
@@ -40,6 +45,7 @@
     import Filters from '$lib/components/filters.svelte';
     import Map from '$lib/components/dataviz/map.svelte';
     import Timeline from '$lib/components/timeline.svelte';
+    import MapLayers from '$lib/components/mapLayers.svelte';
 
     // Variables
     // Dynamic var retrieved from filters
@@ -190,4 +196,8 @@
 
         console.log("📊 timelineDataSelection final:", timelineDataSelection);
     };
+
+    onMount(async () => {
+        await import('bootstrap/dist/js/bootstrap.bundle.min.js');
+    });
 </script>

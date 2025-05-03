@@ -1,0 +1,9 @@
+#filters-container {
+    height:100vh;
+
+    #mapLayers {
+        border: none;
+        border-radius: 10px 10px 0 0;
+        transform: translate3d(0px, -55.6px, 0px) !important;
+    }
+}
