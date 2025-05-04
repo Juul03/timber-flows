@@ -10,8 +10,11 @@
             {uniqueLocations}
             bind:selectedWoodPurpose 
             bind:selectedType 
-            bind:selectedSubType 
+            bind:selectedSubType
+            bind:selectionPath
+            bind:selectedOption
         />
+        path: {selectionPath}
         <div class="row justify-content-end">
             <div class="col-9 py-3">
                 <Timeline 
@@ -49,6 +52,9 @@
     let selectedType = "all";
     let selectedSubType = "all";
 
+    let selectionPath = [];
+    let selectedOption = 'All';
+
     // Dynamic retrieved from timeline
     let currentYearTimeline;
 
@@ -70,7 +76,16 @@
         {
             name: "halfModels",
             data: halfModels,
-        }];
+        },
+        {
+            name: "sculptures",
+            data: null,
+        },
+        {
+            name: "panelPaintings",
+            data: null,
+        }
+    ];
 
     let dataSetsConstructions = [
         {
@@ -108,9 +123,8 @@
     uniqueLocations = getUniqueLocations(constructions);
 
     // on change, find right dataset
-    $: if(selectedWoodPurpose || selectedType || selectedSubType) {
+    $: if(selectionPath) {
         activeDataSets = filterDataOnSelection();
-        console.log(activeDataSets);
     }
 
     $: if(currentYearTimeline) {
@@ -118,36 +132,21 @@
     }
 
     const filterDataOnSelection = () => {
-        console.log("Selected:", selectedWoodPurpose, selectedType, selectedSubType);
-
-        if (selectedSubType !== "all") {
-            console.log("Filtering by SubType:", selectedSubType);
-        }
-
-        if (selectedType !== "all") {
-            console.log("Filtering by Type:", selectedType);
-            if (selectedType === "Half models") {
-                // return dataSetsArtworks
-                return halfModels;
-            }
-        }
-
-        if (selectedWoodPurpose !== "all") {
-            console.log("Filtering by Purpose:", selectedWoodPurpose);
-            if (selectedWoodPurpose === "Artworks") {
-                // return dataSetsArtworks
+        if (selectionPath[0] === "Artworks") {
+            if (selectedOption === "Artworks") {
                 return dataSetsArtworks;
+            } else if (selectedOption === "Halfmodels") {
+                const selectedSet = dataSetsArtworks.find(set => set.name === "halfModels");
+                return selectedSet ? [selectedSet] : [];
             }
-            if (selectedWoodPurpose === "Constructions") {
+        }
+
+        if (selectionPath[0] === "Constructions") {
+            if(selectedOption === "Constructions") {
                 return dataSetsConstructions;
             }
-            if (selectedWoodPurpose === "Furniture") {
-                // no data yet
-                return;
-            }
         }
-
-        console.log("Returning all data");
+        
         return dataSetsAll;
     };
 

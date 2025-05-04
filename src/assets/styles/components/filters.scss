@@ -8,6 +8,9 @@
         overflow-y: auto;
         border-radius:unset;
     }
+    #woodPurposeFilter {
+        min-height: 150px;
+    }
     #selectLocation {
         .checkbox-list {
             transform: translate3d(0px, 32px, 0px) !important;

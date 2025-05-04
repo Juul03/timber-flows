@@ -148,27 +148,60 @@
         clearTradeRoutesFromMap();
         routeDrawCounts = {};
 
-        // Handles both grouped and flat formats
-        activeDataSets.forEach(firstLevel => {
-            if ('data' in firstLevel && Array.isArray(firstLevel.data)) {
-                const objectType = firstLevel.name;
+        processActiveDataSets(activeDataSets);
 
-                firstLevel.data.forEach(secondLevel => {
-                    if ('data' in secondLevel && Array.isArray(secondLevel.data)) {
-                        // activedatasets = all
-                        secondLevel.data.forEach(item => {
-                            drawTradeRoute(item, objectType);
-                        });
-                    } else {
-                        // activedatasets = just one objecttype
-                        drawTradeRoute(secondLevel, objectType);
-                    }
-                });
-            } else {
-                console.warn("Unrecognized structure in drawMapData", firstLevel);
-            }
-        });
+        // Handles both grouped and flat formats
+        
+        // activeDataSets.forEach(firstLevel => {
+           
+        //     if ('data' in firstLevel && Array.isArray(firstLevel.data)) {
+        //         const objectType = firstLevel.name;
+
+        //         firstLevel.data.forEach(secondLevel => {
+        //             if ('data' in secondLevel && Array.isArray(secondLevel.data)) {
+        //                 // activedatasets = all
+        //                 secondLevel.data.forEach(item => {
+        //                     drawTradeRoute(item, objectType);
+        //                 });
+        //             } else {
+        //                 // activedatasets = just one objecttype
+        //                 drawTradeRoute(secondLevel, objectType);
+        //             }
+        //         });
+        //     } else {
+        //         console.warn("Unrecognized structure in drawMapData", firstLevel);
+        //     }
+        // });
     };
+    function processActiveDataSets(activeDataSets) {
+    console.log("activedatasets", activeDataSets);
+    if (!Array.isArray(activeDataSets)) {
+        console.warn("Expected activeDataSets to be an array");
+        return;
+    }
+
+    // Case 2 & 3: Structured with 'name' and 'data'
+    activeDataSets.forEach(firstLevel => {
+        const objectType = firstLevel.name || "unknown";
+
+        if (Array.isArray(firstLevel.data)) {
+            firstLevel.data.forEach(secondLevel => {
+                if (secondLevel && Array.isArray(secondLevel.data)) {
+                    // Case 3: Nested .data inside .data
+                    secondLevel.data.forEach(item => {
+                        drawTradeRoute(item, objectType);
+                    });
+                } else {
+                    // Case 2: Single layer
+                    drawTradeRoute(secondLevel, objectType);
+                }
+            });
+        } else {
+            console.warn("Unrecognized structure in item:", firstLevel);
+        }
+    });
+}
+
 
     let addZoomControl = (leaflet, map) => {
         map.removeControl(map.zoomControl);
