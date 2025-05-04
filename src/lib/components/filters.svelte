@@ -144,6 +144,9 @@
                                 </div>
                             </li>
                         {/each}
+                        {#if filteredObjects.length === 0}
+                            <li>Sorry, no matching location available</li>
+                        {/if}
                     </div>
                 </ul>
             </div>          
