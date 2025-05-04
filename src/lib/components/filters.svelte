@@ -115,19 +115,36 @@
                   </span>
                 </button>
                 <ul class="dropdown-menu checkbox-list bg-blur rounded-bottom border-0 w-100 p-3">
-                    <li class="mb-2 sticky-top z-1">
-                        <Searchbar/>
-                    </li>
-                    {#each uniqueLocations as location}
-                        <li>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="{location}" id="{location}">
-                                <label class="w-100 form-check-label" for="{location}">
-                                    {location}
-                                </label>
-                            </div>
+                    <div class="d-flex flex-column">
+                        <li class="mb-2 sticky-top z-1">
+                            <Searchbar 
+                                searchId="searchLocations"
+                                searchDataObject={uniqueLocations}
+                                bind:filteredObjects
+                            />
                         </li>
-                    {/each}
+                        {#each uniqueLocations as location}
+                            <li 
+                                class="
+                                {(filteredObjects && filteredObjects.includes(location)) ? "" : "d-none"}
+                                {selectedLocations.includes(location) ? '' : 'order-1'}
+                                ">
+                                <div class="form-check">
+                                    <input 
+                                        class="form-check-input" 
+                                        type="checkbox" 
+                                        value="{location}" 
+                                        id="{location}"
+                                        on:change={handleCheckboxChange}
+                                        checked={selectedLocations.includes(location)}
+                                    >
+                                    <label class="w-100 form-check-label" for="{location}">
+                                        {location}
+                                    </label>
+                                </div>
+                            </li>
+                        {/each}
+                    </div>
                 </ul>
             </div>          
         </div>      
@@ -184,7 +201,10 @@
     export let selectedWoodPurpose = "all";
     export let selectedType = "all";
     export let selectedSubType = "all";
-    export let uniqueLocations;
+    export let uniqueLocations
+
+    // Imported var from searchbar
+    export let filteredObjects;
 
     // export var from this component to parent
     export let selectionPath = [];
@@ -192,10 +212,32 @@
 
     // Var from this component
     let dropdownOpen = false;
+    let selectedLocations = [];
 
     let toggleDropdown = () => {
         dropdownOpen = !dropdownOpen;
     }
+
+    const handleCheckboxChange = (event) => {
+        const location = event.target.value;
+        if (event.target.checked) {
+            if (!selectedLocations.includes(location)) {
+                selectedLocations = [...selectedLocations, location];
+            }
+        } else {
+            selectedLocations = selectedLocations.filter(l => l !== location);
+        }
+    }
+
+    $: sortedLocations = [...uniqueLocations]
+        .sort((a, b) => {
+            const aSelected = selectedLocations.includes(a);
+            const bSelected = selectedLocations.includes(b);
+
+            if (aSelected && !bSelected) return -1;
+            if (!aSelected && bSelected) return 1;
+            return a.localeCompare(b); // Alphabetical fallback
+        });
 
     const getCurrentOptions = (tree, path) => {
         let node = tree;

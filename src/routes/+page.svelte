@@ -14,7 +14,6 @@
             bind:selectionPath
             bind:selectedOption
         />
-        path: {selectionPath}
         <div class="row justify-content-end">
             <div class="col-9 py-3">
                 <Timeline 
@@ -146,7 +145,7 @@
                 return dataSetsConstructions;
             }
         }
-        
+
         return dataSetsAll;
     };
 
