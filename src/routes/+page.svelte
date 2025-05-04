@@ -167,19 +167,7 @@
     const filterDataOnTimeline = () => {
         timelineDataSelection = [];
 
-        if (selectedWoodPurpose !== "all") {
-            // Not "all", filter directly
-            activeDataSets.forEach(dataSet => {
-                const matchingItems = dataSet.data.filter(item => getYear(item.fellingDate) === currentYearTimeline);
-                timelineDataSelection.push(...matchingItems);
-
-                if (matchingItems.length > 0) {
-                    console.log(`✅ Matches from "${dataSet.name}" in year ${currentYearTimeline}:`, matchingItems);
-                }
-            });
-        }
-
-        if (selectedWoodPurpose === "all") {
+        if (selectionPath[0] == null && selectedOption === 'All') {
             // 'All', nested structure, filter with extra nesting
             activeDataSets.forEach(purposes => {
                 purposes.data.forEach(group => {
@@ -193,9 +181,17 @@
                     }
                 });
             });
-        }
+        } else {
+            // Not "all", filter directly
+            activeDataSets.forEach(dataSet => {
+                const matchingItems = dataSet.data.filter(item => getYear(item.fellingDate) === currentYearTimeline);
+                timelineDataSelection.push(...matchingItems);
 
-        console.log("📊 timelineDataSelection final:", timelineDataSelection);
+                if (matchingItems.length > 0) {
+                    console.log(`✅ Matches from "${dataSet.name}" in year ${currentYearTimeline}:`, matchingItems);
+                }
+            });
+        }
     };
 
     onMount(async () => {

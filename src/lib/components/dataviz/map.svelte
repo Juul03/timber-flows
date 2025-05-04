@@ -145,6 +145,7 @@
     const drawMapData = () => {
         if (!map || !leafletReady || !activeDataSets) return;
 
+        cancelAnimatingTradeRoutes();
         clearTradeRoutesFromMap();
         routeDrawCounts = {};
 
@@ -173,35 +174,34 @@
         //     }
         // });
     };
-    function processActiveDataSets(activeDataSets) {
-    console.log("activedatasets", activeDataSets);
-    if (!Array.isArray(activeDataSets)) {
-        console.warn("Expected activeDataSets to be an array");
-        return;
-    }
-
-    // Case 2 & 3: Structured with 'name' and 'data'
-    activeDataSets.forEach(firstLevel => {
-        const objectType = firstLevel.name || "unknown";
-
-        if (Array.isArray(firstLevel.data)) {
-            firstLevel.data.forEach(secondLevel => {
-                if (secondLevel && Array.isArray(secondLevel.data)) {
-                    // Case 3: Nested .data inside .data
-                    secondLevel.data.forEach(item => {
-                        drawTradeRoute(item, objectType);
-                    });
-                } else {
-                    // Case 2: Single layer
-                    drawTradeRoute(secondLevel, objectType);
-                }
-            });
-        } else {
-            console.warn("Unrecognized structure in item:", firstLevel);
+    const processActiveDataSets = (activeDataSets) => {
+        // console.log("activedatasets", activeDataSets);
+        if (!Array.isArray(activeDataSets)) {
+            console.warn("Expected activeDataSets to be an array");
+            return;
         }
-    });
-}
 
+        // Case 2 & 3: Structured with 'name' and 'data'
+        activeDataSets.forEach(firstLevel => {
+            const objectType = firstLevel.name || "unknown";
+
+            if (Array.isArray(firstLevel.data)) {
+                firstLevel.data.forEach(secondLevel => {
+                    if (secondLevel && Array.isArray(secondLevel.data)) {
+                        // Case 3: Nested .data inside .data
+                        secondLevel.data.forEach(item => {
+                            drawTradeRoute(item, objectType);
+                        });
+                    } else {
+                        // Case 2: Single layer
+                        drawTradeRoute(secondLevel, objectType);
+                    }
+                });
+            } else {
+                console.warn("Unrecognized structure in item:", firstLevel);
+            }
+        });
+    }
 
     let addZoomControl = (leaflet, map) => {
         map.removeControl(map.zoomControl);
