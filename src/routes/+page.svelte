@@ -1,29 +1,39 @@
 <h1 class="text-primary d-none">Timber Flows</h1>
 
-<Map {activeDataSets}
-    {timelineDataSelection}
-/>
-<div class="container position-relative z-3">
-    <div class="position-absolute w-100 top-0">
-        <Filters 
-            {dataWoodPurposes}
-            {uniqueLocations}
-            bind:selectedWoodPurpose 
-            bind:selectedType 
-            bind:selectedSubType
-            bind:selectionPath
-            bind:selectedOption
-        />
-        <div class="row justify-content-end">
-            <div class="col-9 py-3">
-                <Timeline 
-                    {activeDataSets}
-                    bind:currentYearTimeline
-                />
+<main>
+    <Map {activeDataSets}
+        {timelineDataSelection}
+    />
+    <div class="container position-relative z-3">
+        <div class="position-absolute w-100 top-0">
+            <Filters 
+                {dataWoodPurposes}
+                {uniqueLocations}
+                bind:selectedWoodPurpose 
+                bind:selectedType 
+                bind:selectedSubType
+                bind:selectionPath
+                bind:selectedOption
+            />
+            <div class="row justify-content-end">
+                <div class="col-9">
+                    <Timeline 
+                        {activeDataSets}
+                        bind:currentYearTimeline
+                    />
+                </div>
             </div>
         </div>
+        <div class="position-absolute bottom-0 start-50 translate-middle-x mb-2">
+            <SwitchViews
+                bind:currentView
+            />
+        </div>
     </div>
-</div>
+</main>
+
+
+
 
 <!-- <p>Selected purpose: {selectedWoodPurpose} {selectedType} {selectedSubType}</p> -->
 
@@ -44,6 +54,7 @@
     import Filters from '$lib/components/filters.svelte';
     import Map from '$lib/components/dataviz/map.svelte';
     import Timeline from '$lib/components/timeline.svelte';
+    import SwitchViews from '$lib/components/UI/switchViews.svelte';
 
     // Variables
     // Dynamic var retrieved from filters
@@ -56,6 +67,9 @@
 
     // Dynamic retrieved from timeline
     let currentYearTimeline;
+
+    // Dynamic retrieved from view buttons
+    export let currentView = "map";
 
     // Var to store data based on timeline selection
     export let timelineDataSelection;
@@ -197,4 +211,8 @@
     onMount(async () => {
         await import('bootstrap/dist/js/bootstrap.bundle.min.js');
     });
+
+    $: if (currentView) {
+        console.log("current view changes in parent", currentView);
+    }
 </script>

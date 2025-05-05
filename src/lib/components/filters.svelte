@@ -10,7 +10,7 @@
                 </svg>
             </button>
         </div>
-        <div class="col-12">
+        <div class="col-12 mb-4">
             <Searchbar/>
         </div>
         <div class="col-12 d-flex flex-wrap gap-2 align-items-center">
@@ -54,8 +54,11 @@
                         bind:group={selectedOption}
                         on:click={() => handleSelect(null)}
                     />
-                    <label class="form-check-label w-100 {selectedOption === getCurrentLabel() ? 'fw-bold' : 'fw-normal'}" for="all">
+                    <label class="form-check-label d-flex justify-content-between w-100 {selectedOption === getCurrentLabel() ? 'fw-bold' : 'fw-normal'}" for="all">
                         {getCurrentLabel()}
+                        <span class="small text-light">
+                            157
+                        </span>
                     </label>
                 </div>
                 {#each getCurrentOptions(filtersObject, selectionPath) as option}
@@ -68,8 +71,11 @@
                             value={option}
                             on:click={() => handleSelect(option)}
                         />
-                        <label class="form-check-label w-100 {selectedOption === option ? 'fw-bold' : 'fw-normal'}" for={option}>
+                        <label class="form-check-label d-flex justify-content-between w-100 {selectedOption === option ? 'fw-bold' : 'fw-normal'}" for={option}>
                             {option}
+                            <span class="small text-light">
+                                120
+                            </span>
                         </label>
                     </div>
                 {/each}

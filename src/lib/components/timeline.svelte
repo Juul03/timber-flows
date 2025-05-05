@@ -2,7 +2,7 @@
     <div class="col-11">
         <div id="chart-container"></div>
     </div>
-    <div class="col-1 d-flex justify-content-end">
+    <div class="col-1 d-flex justify-content-end gap-1">
         <button class="btn btn-secondary bg-blur d-flex align-items-center justify-content-center" on:click={startTimelineAnimation}>
             {#if timelineRunning}
                 <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
@@ -15,6 +15,18 @@
                     <path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80L0 432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/>
                 </svg>
             {/if}
+        </button>
+        <button class="btn btn-secondary bg-blur" aria-label="open timeline events" on:click={openTimelineEvents}>
+            <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 33">
+                <g id="Group_181" data-name="Group 181" transform="translate(-1563.084 -171)">
+                  <g id="Group_67" data-name="Group 67" transform="translate(1563.084 180)">
+                    <rect id="Rectangle_33" data-name="Rectangle 33" width="20" height="8" rx="1" transform="translate(2)"/>
+                    <rect id="Rectangle_34" data-name="Rectangle 34" width="20" height="8" rx="1" transform="translate(12 10)"/>
+                    <rect id="Rectangle_35" data-name="Rectangle 35" width="8" height="8" rx="1" transform="translate(0 10)"/>
+                  </g>
+                  <line id="Line_95" data-name="Line 95" y2="32" transform="translate(1576.584 171.5)" fill="none" stroke="#000" stroke-linecap="round" stroke-width="1"/>
+                </g>
+              </svg>
         </button>
     </div>
 </div>
@@ -157,6 +169,11 @@
         }
     };
 
+    // Show timeline events
+    const openTimelineEvents = () => {
+        console.log("open timeline events");
+    }
+
 
     // onMount
     onMount(() => {
@@ -230,13 +247,14 @@
                 .attr("class", "y-axis")
                 .attr("transform", `translate(${marginLeft},0)`)
                 .call(d3.axisLeft(y).ticks(maxFrequency).tickFormat(d3.format("~s"))) 
-                .call(g => g.select(".domain").remove())  // Remove the axis line
+                .call(g => g.select(".domain").remove())
                 .call(g => g.append("text")
                     .attr("x", -marginLeft)
                     .attr("y", 10)
                     .attr("fill", "currentColor")
                     .attr("text-anchor", "start")
-                    .text("Frequency"))
+                    // .text("Frequency")
+                )
         }
 
         // append timeline selector 
