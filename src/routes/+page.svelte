@@ -1,32 +1,46 @@
 <h1 class="text-primary d-none">Timber Flows</h1>
 
-<Filters 
-    {dataWoodPurposes} 
-    bind:selectedWoodPurpose 
-    bind:selectedType 
-    bind:selectedSubType 
-/>
-<!-- <p>Selected purpose: {selectedWoodPurpose} {selectedType} {selectedSubType}</p> -->
-
-<!-- <div class="container pb-3">
-    <div class="row">
-        <div class="col">
-            <img class="w-100" src="src/assets/img/timeline.png" alt="timeline">
+<main>
+    <Map {activeDataSets}
+        {timelineDataSelection}
+    />
+    <div class="container position-relative z-3">
+        <div class="position-absolute w-100 top-0">
+            <Filters 
+                {dataWoodPurposes}
+                {uniqueLocations}
+                bind:selectedWoodPurpose 
+                bind:selectedType 
+                bind:selectedSubType
+                bind:selectionPath
+                bind:selectedOption
+            />
+            <div class="row justify-content-end">
+                <div class="col-9">
+                    <Timeline 
+                        {activeDataSets}
+                        bind:currentYearTimeline
+                    />
+                </div>
+            </div>
+        </div>
+        <div class="position-absolute bottom-0 start-50 translate-middle-x mb-2">
+            <SwitchViews
+                bind:currentView
+            />
         </div>
     </div>
-</div> -->
+</main>
 
-<Timeline {activeDataSets} 
-    bind:currentYearTimeline
-/>
 
-<Map {activeDataSets}
-    {timelineDataSelection}
-/>
+
+
+<!-- <p>Selected purpose: {selectedWoodPurpose} {selectedType} {selectedSubType}</p> -->
 
 <script>
-    import 'bootstrap/dist/css/bootstrap.min.css';
     import '../assets/styles/app.scss';
+
+    import { onMount } from 'svelte';
 
     // Data files (need to be an async function later)
     import dataWoodPurposes from '$lib/data/woodPurposes.json';
@@ -34,12 +48,13 @@
     import dataConstructions from '$lib/data/constructions/constructions.json';
 
     // Scripts
-    import { formatData, getUniqueValues, getFellingDates } from '$lib/scripts/formatData.js';
+    import { formatData, getUniqueValues, getFellingDates, getUniqueLocations } from '$lib/scripts/formatData.js';
 
     // Components
     import Filters from '$lib/components/filters.svelte';
     import Map from '$lib/components/dataviz/map.svelte';
     import Timeline from '$lib/components/timeline.svelte';
+    import SwitchViews from '$lib/components/UI/switchViews.svelte';
 
     // Variables
     // Dynamic var retrieved from filters
@@ -47,11 +62,20 @@
     let selectedType = "all";
     let selectedSubType = "all";
 
+    let selectionPath = [];
+    let selectedOption = 'All';
+
     // Dynamic retrieved from timeline
     let currentYearTimeline;
 
+    // Dynamic retrieved from view buttons
+    export let currentView = "map";
+
     // Var to store data based on timeline selection
     export let timelineDataSelection;
+
+    // exported var 
+    export let uniqueLocations;
 
     // Format data files
     let formattedDataHalfModels = formatData(dataHalfModels);
@@ -65,7 +89,17 @@
         {
             name: "halfModels",
             data: halfModels,
-        }];
+        },
+        {
+            name: "sculptures",
+            data: null,
+        },
+        {
+            name: "panelPaintings",
+            data: null,
+        }
+    ];
+
     let dataSetsConstructions = [
         {
             name: "constructions",
@@ -95,13 +129,15 @@
         ...uniqueProvenancesConstructions
     ])].sort();
 
-    // Get all felling dates
+    // Get all felling dates 
     let fellingDatesHalfModels = getFellingDates(halfModels);
+    
+    // Get all unique locations (for constructions)
+    uniqueLocations = getUniqueLocations(constructions);
 
     // on change, find right dataset
-    $: if(selectedWoodPurpose || selectedType || selectedSubType) {
+    $: if(selectionPath) {
         activeDataSets = filterDataOnSelection();
-        console.log(activeDataSets);
     }
 
     $: if(currentYearTimeline) {
@@ -109,36 +145,21 @@
     }
 
     const filterDataOnSelection = () => {
-        console.log("Selected:", selectedWoodPurpose, selectedType, selectedSubType);
-
-        if (selectedSubType !== "all") {
-            console.log("Filtering by SubType:", selectedSubType);
-        }
-
-        if (selectedType !== "all") {
-            console.log("Filtering by Type:", selectedType);
-            if (selectedType === "Half models") {
-                // return dataSetsArtworks
-                return halfModels;
-            }
-        }
-
-        if (selectedWoodPurpose !== "all") {
-            console.log("Filtering by Purpose:", selectedWoodPurpose);
-            if (selectedWoodPurpose === "Artworks") {
-                // return dataSetsArtworks
+        if (selectionPath[0] === "Artworks") {
+            if (selectedOption === "Artworks") {
                 return dataSetsArtworks;
+            } else if (selectedOption === "Halfmodels") {
+                const selectedSet = dataSetsArtworks.find(set => set.name === "halfModels");
+                return selectedSet ? [selectedSet] : [];
             }
-            if (selectedWoodPurpose === "Constructions") {
+        }
+
+        if (selectionPath[0] === "Constructions") {
+            if(selectedOption === "Constructions") {
                 return dataSetsConstructions;
             }
-            if (selectedWoodPurpose === "Furniture") {
-                // no data yet
-                return;
-            }
         }
 
-        console.log("Returning all data");
         return dataSetsAll;
     };
 
@@ -160,19 +181,7 @@
     const filterDataOnTimeline = () => {
         timelineDataSelection = [];
 
-        if (selectedWoodPurpose !== "all") {
-            // Not "all", filter directly
-            activeDataSets.forEach(dataSet => {
-                const matchingItems = dataSet.data.filter(item => getYear(item.fellingDate) === currentYearTimeline);
-                timelineDataSelection.push(...matchingItems);
-
-                if (matchingItems.length > 0) {
-                    console.log(`✅ Matches from "${dataSet.name}" in year ${currentYearTimeline}:`, matchingItems);
-                }
-            });
-        }
-
-        if (selectedWoodPurpose === "all") {
+        if (selectionPath[0] == null && selectedOption === 'All') {
             // 'All', nested structure, filter with extra nesting
             activeDataSets.forEach(purposes => {
                 purposes.data.forEach(group => {
@@ -186,8 +195,24 @@
                     }
                 });
             });
-        }
+        } else {
+            // Not "all", filter directly
+            activeDataSets.forEach(dataSet => {
+                const matchingItems = dataSet.data.filter(item => getYear(item.fellingDate) === currentYearTimeline);
+                timelineDataSelection.push(...matchingItems);
 
-        console.log("📊 timelineDataSelection final:", timelineDataSelection);
+                if (matchingItems.length > 0) {
+                    console.log(`✅ Matches from "${dataSet.name}" in year ${currentYearTimeline}:`, matchingItems);
+                }
+            });
+        }
     };
+
+    onMount(async () => {
+        await import('bootstrap/dist/js/bootstrap.bundle.min.js');
+    });
+
+    $: if (currentView) {
+        console.log("current view changes in parent", currentView);
+    }
 </script>

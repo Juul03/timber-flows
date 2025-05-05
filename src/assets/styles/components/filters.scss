@@ -1,0 +1,30 @@
+#offcanvasFilters {
+    width:25vw !important;
+    .form-select {
+        background-color:unset;
+    }
+    .checkbox-list {
+        height: 35vh;
+        overflow-y: auto;
+        border-radius:unset;
+    }
+    #woodPurposeFilter {
+        min-height: 150px;
+    }
+    #selectLocation {
+        .checkbox-list {
+            transform: translate3d(0px, 32px, 0px) !important;
+        }
+    }
+    #layers {
+        width:25vw !important;
+        .checkbox-list {
+            height: unset;
+        }
+    }
+    #mapLayers {
+        border: none;
+        border-radius: 10px 10px 0 0;
+        transform: translate3d(0px, -36px, 0px) !important;
+    }
+}

@@ -1,3 +1,10 @@
+<div 
+    id="map-container" 
+    class="position-absolute top-0 start-0 w-100 h-100 z-0" 
+    bind:this={mapContainer}
+    >
+</div>
+
 <script>
     import { onMount, onDestroy } from 'svelte';
     import { browser } from '$app/environment';
@@ -138,30 +145,71 @@
     const drawMapData = () => {
         if (!map || !leafletReady || !activeDataSets) return;
 
+        cancelAnimatingTradeRoutes();
         clearTradeRoutesFromMap();
         routeDrawCounts = {};
 
-        // Handles both grouped and flat formats
-        activeDataSets.forEach(firstLevel => {
-            if ('data' in firstLevel && Array.isArray(firstLevel.data)) {
-                const objectType = firstLevel.name;
+        processActiveDataSets(activeDataSets);
 
+        // Handles both grouped and flat formats
+        
+        // activeDataSets.forEach(firstLevel => {
+           
+        //     if ('data' in firstLevel && Array.isArray(firstLevel.data)) {
+        //         const objectType = firstLevel.name;
+
+        //         firstLevel.data.forEach(secondLevel => {
+        //             if ('data' in secondLevel && Array.isArray(secondLevel.data)) {
+        //                 // activedatasets = all
+        //                 secondLevel.data.forEach(item => {
+        //                     drawTradeRoute(item, objectType);
+        //                 });
+        //             } else {
+        //                 // activedatasets = just one objecttype
+        //                 drawTradeRoute(secondLevel, objectType);
+        //             }
+        //         });
+        //     } else {
+        //         console.warn("Unrecognized structure in drawMapData", firstLevel);
+        //     }
+        // });
+    };
+    const processActiveDataSets = (activeDataSets) => {
+        // console.log("activedatasets", activeDataSets);
+        if (!Array.isArray(activeDataSets)) {
+            console.warn("Expected activeDataSets to be an array");
+            return;
+        }
+
+        // Case 2 & 3: Structured with 'name' and 'data'
+        activeDataSets.forEach(firstLevel => {
+            const objectType = firstLevel.name || "unknown";
+
+            if (Array.isArray(firstLevel.data)) {
                 firstLevel.data.forEach(secondLevel => {
-                    if ('data' in secondLevel && Array.isArray(secondLevel.data)) {
-                        // activedatasets = all
+                    if (secondLevel && Array.isArray(secondLevel.data)) {
+                        // Case 3: Nested .data inside .data
                         secondLevel.data.forEach(item => {
                             drawTradeRoute(item, objectType);
                         });
                     } else {
-                        // activedatasets = just one objecttype
+                        // Case 2: Single layer
                         drawTradeRoute(secondLevel, objectType);
                     }
                 });
             } else {
-                console.warn("Unrecognized structure in drawMapData", firstLevel);
+                console.warn("Unrecognized structure in item:", firstLevel);
             }
         });
-    };
+    }
+
+    let addZoomControl = (leaflet, map) => {
+        map.removeControl(map.zoomControl);
+
+        leaflet.control.zoom({
+            position: 'bottomright'
+        }).addTo(map);
+    }
     
     onMount(async () => {
         if (browser) {
@@ -174,11 +222,16 @@
             //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             // }).addTo(map);
 
-            leaflet.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            // leaflet.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+            //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            // }).addTo(map);
+
+            leaflet.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             }).addTo(map);
 
-            
+            addZoomControl(leaflet, map);
+
             addMarkersToMap(leaflet, tradeCitiesCoords, map);
             addProvenancesToMap(leaflet, provenancesCoords, map);
 
@@ -220,16 +273,7 @@
     $: if (timelineDataSelection != undefined && leafletReady && map) {
         drawTimelineYearData();
     }
-</script>
-    
-    
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <div id="map-container" bind:this={mapContainer}></div>
-        </div>
-    </div>
-</div>  
+</script>  
     
 <style>
     @import 'leaflet/dist/leaflet.css';

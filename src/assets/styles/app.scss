@@ -1,3 +1,9 @@
+// variables
+@import 'variables.scss';
+
+@import 'bootstrap/scss/bootstrap';
+
+// Custom styling
 @import 'general.scss';
 @import 'components/filters.scss';
 @import 'components/dataviz/map.scss';
