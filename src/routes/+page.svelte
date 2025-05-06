@@ -119,11 +119,20 @@
 
     // Datasets filtered
     // Construction subsets
-    let dataSetBuildings;
-    let dataSetDeckBeams;
-    let dataSetTrussLegs;
-    let dataSetCorbels;
-    let dataSetChurches;
+    const keywordMap = {
+        "Buildings": ['huis', 'kerk', 'kapel', 'souterrain'],
+        "Deck beams": ['dekbalk'],
+        "Truss legs": ['spant'],
+        "Corbels": ['korbelen', 'korbeel'],
+        "Churches": ['kerk', 'kapel']
+    };
+    const dataSetCache = {
+        "Buildings": null,
+        "Deck beams": null,
+        "Truss legs": null,
+        "Corbels": null,
+        "Churches": null
+    };
 
     // Active data based on selected filters
     let activeDataSets = [];
@@ -164,53 +173,57 @@
 
     const filterDataOnSelection = () => {
         if (selectionPath[0] === "Artworks") {
-            if (selectedOption === "Artworks") {
-                return dataSetsArtworks;
-            } else if (selectedOption === "Halfmodels") {
-                const selectedSet = dataSetsArtworks.find(set => set.name === "halfModels");
-                return selectedSet ? [selectedSet] : [];
+            if (selectedOption === "Artworks") return dataSetsArtworks;
+
+            if (selectedOption === "Halfmodels") {
+                const set = dataSetsArtworks.find(set => set.name === "halfModels");
+                return set ? [set] : [];
             }
         }
 
-        if (selectionPath[0] === "Constructions") {
-            if(selectedOption === "Constructions") {
-                return dataSetsConstructions;
-            } else if (selectionPath[1] === "Buildings") {
-                if(selectedOption === "Buildings") {
-                    if(!dataSetBuildings) {
-                        const buildingsData = findAllKeysWithValue(dataSetsConstructions, location, ['huis', 'kerk', 'kapel', 'souterrain']);
-                        dataSetBuildings = buildingsData;
-                    }
-                
-                    return dataSetBuildings;
-                } else if (selectedOption === "Deck beams") {
-                    if(!dataSetDeckBeams) {
-                        const deckBeamData = findAllKeysWithValue(dataSetsConstructions, location, ['dekbalk']);
-                        dataSetDeckBeams = deckBeamData;
-                    }
-                    return dataSetDeckBeams;
-                } else if (selectedOption === "Truss legs") {
-                    if(!dataSetTrussLegs) {
-                        const trussLegData = findAllKeysWithValue(dataSetsConstructions, location, ['spant']);
-                        dataSetTrussLegs = trussLegData;
-                    }
-                    return dataSetTrussLegs;
-                } else if (selectedOption === "Corbels") {
-                    if(!dataSetTrussLegs) {
-                        const corbelsData = findAllKeysWithValue(dataSetsConstructions, location, ['korbelen', 'korbeel']);
-                        dataSetCorbels = corbelsData;
-                    }
-                    return dataSetCorbels;
-                } else if (selectionPath[2] === "Churches") {
-                    if(selectedOption === "Churches") {
-                        if(!dataSetChurches) {
-                            const churchesData = findAllKeysWithValue(dataSetsConstructions, location, ['kerk', 'kapel']);
-                            dataSetChurches = churchesData;
-                        }
-                        return dataSetChurches;
-                    }
+        const findMore = () => {
+                // If you need to support nested Church + Deck beams, you can still special-case it:
+                if (selectionPath[1] === "Buildings" && selectionPath[2] === "Churches" && selectedOption === "Deck beams") {
+                    // example: combine keywords
+                    console.log("data churches", dataSetCache["Churches"]);
+                    const churches = dataSetCache["Churches"];
+                    const deckBeamsInChurches = findAllKeysWithValue(churches, location, ['dekbalk'])
+                    console.log("deck beams in churches", deckBeamsInChurches);
+                    return deckBeamsInChurches;
+                } else if (selectionPath[1] === "Buildings" && selectionPath[2] === "Churches" && selectedOption === "Truss legs") {
+                    // example: combine keywords
+                    console.log("data churches", dataSetCache["Churches"]);
+                    const churches = dataSetCache["Churches"];
+                    const deckBeamsInChurches = findAllKeysWithValue(churches, location, ['spant'])
+                    console.log("deck beams in churches", deckBeamsInChurches);
+                    return deckBeamsInChurches;
+                } else if (selectionPath[1] === "Buildings" && selectionPath[2] === "Churches" && selectedOption === "Corbels") {
+                    // example: combine keywords
+                    console.log("data churches", dataSetCache["Churches"]);
+                    const churches = dataSetCache["Churches"];
+                    const deckBeamsInChurches = findAllKeysWithValue(churches, location, keywordMap[selectedOption]);
+                    console.log("deck beams in churches", deckBeamsInChurches);
+                    return deckBeamsInChurches;
                 }
+                return;
             }
+
+        if (selectionPath[0] === "Constructions") {
+            if (selectedOption === "Constructions") return dataSetsConstructions;
+
+            // keyword filtering on construction data to ex. "deck beams"
+            if (keywordMap[selectedOption]) {
+                if (!dataSetCache[selectedOption]) {
+                    const filtered = findAllKeysWithValue(dataSetsConstructions, location, keywordMap[selectedOption]);
+                    dataSetCache[selectedOption] = filtered;
+                }
+                const more = findMore();
+                if (more) {
+                    return more;
+                }
+                return dataSetCache[selectedOption];
+            }
+            
         }
 
         return dataSetsAll;
