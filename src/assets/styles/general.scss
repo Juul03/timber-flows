@@ -63,3 +63,7 @@ main {
 p {
     color:darkslategray;
 }
+
+.offcanvas-backdrop.show {
+    display:none !important;
+}

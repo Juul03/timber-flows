@@ -31,7 +31,7 @@
         <div class="row">
             <div class="col">
                 <h2>Compare</h2>
-                <img class="w-100" src="src/assets/img/placeholder-barchart.png" alt="barchart placeholder img">
+                <img class="w-100" src="/img/placeholder-barchart.png" alt="barchart placeholder img">
             </div>
         </div>
     </div>
