@@ -1,34 +1,44 @@
 <h1 class="text-primary d-none">Timber Flows</h1>
 
 <main>
-    <Map {activeDataSets}
-        {timelineDataSelection}
-    />
-    <div class="container position-relative z-3">
-        <div class="position-absolute w-100 top-0">
-            <Filters 
-                {dataWoodPurposes}
-                {uniqueLocations}
-                bind:selectedWoodPurpose 
-                bind:selectedType 
-                bind:selectedSubType
-                bind:selectionPath
-                bind:selectedOption
-            />
-            <div class="row justify-content-end">
-                <div class="col-9">
-                    <Timeline 
-                        {activeDataSets}
-                        bind:currentYearTimeline
-                    />
+    <div class="{currentView == "map" ? "" : "d-none"}">
+        <Map {activeDataSets}
+            {timelineDataSelection}
+        />
+        <div class="container position-relative z-3">
+            <div class="position-absolute w-100 top-0">
+                <Filters 
+                    {dataWoodPurposes}
+                    {uniqueLocations}
+                    bind:selectedWoodPurpose 
+                    bind:selectedType 
+                    bind:selectedSubType
+                    bind:selectionPath
+                    bind:selectedOption
+                />
+                <div class="row justify-content-end">
+                    <div class="col-9">
+                        <Timeline 
+                            {activeDataSets}
+                            bind:currentYearTimeline
+                        />
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="position-absolute bottom-0 start-50 translate-middle-x mb-2">
-            <SwitchViews
-                bind:currentView
-            />
+    </div>
+    <div class="container {currentView != "map" ? "" : "d-none"}">
+        <div class="row">
+            <div class="col">
+                <h2>Compare</h2>
+                <img class="w-100" src="src/assets/img/placeholder-barchart.png" alt="barchart placeholder img">
+            </div>
         </div>
+    </div>
+    <div class="position-absolute bottom-0 start-50 translate-middle-x mb-2">
+        <SwitchViews
+            bind:currentView
+        />
     </div>
 </main>
 

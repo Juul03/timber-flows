@@ -8,8 +8,8 @@
 <script>
     import { onMount, onDestroy } from 'svelte';
     import { browser } from '$app/environment';
-    import { scaleOrdinal } from 'd3-scale';
-    import { schemeCategory10 } from 'd3-scale-chromatic';
+
+    import { colorScale, subtypeMap } from '$lib/scripts/colorConfig';
 
     import tradeCitiesCoords from '$lib/data/tradeCities';
     import provenancesCoords from '$lib/data/provenances';
@@ -18,15 +18,23 @@
     // Imported variables
     export let activeDataSets;
     export let timelineDataSelection;
-    const objectTypes = ["constructions", "artworks", "furniture"];
-    const subtypeMap = {
-        halfModels: "artworks",
-        constructions: "constructions",
-    };
+    // const objectTypes = ["constructions", "artworks", "furniture"];
+    // const subtypeMap = {
+    //     halfModels: "artworks",
+    //     constructions: "constructions",
+    //     Buildings: "constructions",
+    //     Churches: "constructions",
+    //     Houses: "constructions",
+    //     "Deck beams in Buildings": "constructions",
+    //     "Truss legs in Buildings": "constructions",
+    //     "Corbels in Buildings": "constructions",
+    //     Shipwrecks: "constructions",
+    // };
 
-    const colorScale = scaleOrdinal()
-        .domain(objectTypes)
-        .range(schemeCategory10);
+    // const colorScale = scaleOrdinal()
+    //     .domain(objectTypes)
+    //     .range(schemeCategory10);
+
 
     // Compontent variables
     let drawnTradeRoutes = [];
@@ -133,6 +141,7 @@
             const offset = [0.01 * count, 0.01 * count];
             routeDrawCounts[provenance] = count + 1;
             
+            console.log("objecttype",objectType);
             const parentType = subtypeMap[objectType] || objectType;
             const color = colorScale(parentType);
 
