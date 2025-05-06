@@ -49,9 +49,9 @@
     const addProvenancesToMap = (leaflet, provenances, map) => {
         provenances.forEach(provenance => {
             let polygon = L.polygon(provenance.coordinates, {
-                color: 'black',
+                color: 'whitesmoke',
                 weight: 1,
-                fillColor: 'blue',
+                fillColor: 'dark',
                 fillOpacity: 0.2
             }).addTo(map);
             polygon.bindPopup(provenance.name);
@@ -226,9 +226,14 @@
             //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
             // }).addTo(map);
 
-            leaflet.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}{r}.png', {
+            leaflet.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}{r}.png?api_key=c4121b12-d5f5-4e00-9ce7-d8abe5389b1b', {
                 attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             }).addTo(map);
+
+            // stadia outdoors to see the rivers with names
+            // leaflet.tileLayer('https://tiles.stadiamaps.com/tiles/outdoors/{z}/{x}/{y}{r}.png', {
+            //     attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            // }).addTo(map);
 
             addZoomControl(leaflet, map);
 
@@ -236,6 +241,13 @@
             addProvenancesToMap(leaflet, provenancesCoords, map);
 
             drawMapData();
+
+            // get long and lat on click
+            const onMapClick = (event) => {
+                alert("You clicked the map at " + event.latlng);
+            }
+ 
+            map.on('click', onMapClick);
         }
     });
 

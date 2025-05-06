@@ -129,6 +129,8 @@
         ...uniqueProvenancesConstructions
     ])].sort();
 
+    console.log("unique provenances", allUniqueProvenances);
+
     // Get all felling dates 
     let fellingDatesHalfModels = getFellingDates(halfModels);
     
