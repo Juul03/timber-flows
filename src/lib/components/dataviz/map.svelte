@@ -124,6 +124,7 @@
 
     // Draw route on map
     const drawTradeRoute = (data, objectType) => {
+        console.log("active object type", objectType);
         const provenance = data.provenance;
         const matchedRoute = tradeRoutesCoords.find(route => route.name === provenance);
 
@@ -137,7 +138,7 @@
 
             addTradeRouteToMap(matchedRoute, offset, color);
         } else {
-            console.warn("No matching route for provenance:", provenance);
+            // console.warn("No matching route for provenance:", provenance);
         }
     };
     
@@ -150,30 +151,8 @@
         routeDrawCounts = {};
 
         processActiveDataSets(activeDataSets);
-
-        // Handles both grouped and flat formats
-        
-        // activeDataSets.forEach(firstLevel => {
-           
-        //     if ('data' in firstLevel && Array.isArray(firstLevel.data)) {
-        //         const objectType = firstLevel.name;
-
-        //         firstLevel.data.forEach(secondLevel => {
-        //             if ('data' in secondLevel && Array.isArray(secondLevel.data)) {
-        //                 // activedatasets = all
-        //                 secondLevel.data.forEach(item => {
-        //                     drawTradeRoute(item, objectType);
-        //                 });
-        //             } else {
-        //                 // activedatasets = just one objecttype
-        //                 drawTradeRoute(secondLevel, objectType);
-        //             }
-        //         });
-        //     } else {
-        //         console.warn("Unrecognized structure in drawMapData", firstLevel);
-        //     }
-        // });
     };
+
     const processActiveDataSets = (activeDataSets) => {
         // console.log("activedatasets", activeDataSets);
         if (!Array.isArray(activeDataSets)) {
@@ -257,7 +236,7 @@
         if (Array.isArray(timelineDataSelection)) {
             timelineDataSelection.forEach(data => {
                 const objectType = data.objectType || "unknown";
-                drawTradeRoute(data, objectType);
+                drawTradeRoute(data, data.objectType);
             });
         } else {
             console.warn("timelineDataSelection is not an array", timelineDataSelection);

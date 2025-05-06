@@ -16,11 +16,6 @@ export const filtersObject = {
             "Truss legs": null,
             "Corbels": null,
         },
-        Farmhouses: {
-            "Deck beams": null,
-            "Truss legs": null,
-            "Corbels": null,
-        },
       },
       Shipwrecks: {
             "Planks": null,

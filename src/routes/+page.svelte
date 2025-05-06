@@ -117,6 +117,14 @@
         }
     ];
 
+    // Datasets filtered
+    // Construction subsets
+    let dataSetBuildings;
+    let dataSetDeckBeams;
+    let dataSetTrussLegs;
+    let dataSetCorbels;
+    let dataSetChurches;
+
     // Active data based on selected filters
     let activeDataSets = [];
 
@@ -137,13 +145,21 @@
     // Get all unique locations (for constructions)
     uniqueLocations = getUniqueLocations(constructions);
 
-    // on change, find right dataset
-    $: if(selectionPath) {
-        activeDataSets = filterDataOnSelection();
-    }
+    const findAllKeysWithValue = (dataSetsConstructions, location, buildingKeywords) => {
+        const filteredData = dataSetsConstructions.map(dataset => {
+            const matchingItems = dataset.data.filter(item => {
+                const lowerLocation = item.location.toLowerCase();
 
-    $: if(currentYearTimeline) {
-        filterDataOnTimeline();
+                return buildingKeywords.some(keyword => lowerLocation.includes(keyword));
+            });
+
+            return {
+                name: "Buildings",
+                data: matchingItems
+            };
+        }).filter(dataset => dataset.data.length > 0);
+
+        return filteredData;
     }
 
     const filterDataOnSelection = () => {
@@ -159,6 +175,41 @@
         if (selectionPath[0] === "Constructions") {
             if(selectedOption === "Constructions") {
                 return dataSetsConstructions;
+            } else if (selectionPath[1] === "Buildings") {
+                if(selectedOption === "Buildings") {
+                    if(!dataSetBuildings) {
+                        const buildingsData = findAllKeysWithValue(dataSetsConstructions, location, ['huis', 'kerk', 'kapel', 'souterrain']);
+                        dataSetBuildings = buildingsData;
+                    }
+                
+                    return dataSetBuildings;
+                } else if (selectedOption === "Deck beams") {
+                    if(!dataSetDeckBeams) {
+                        const deckBeamData = findAllKeysWithValue(dataSetsConstructions, location, ['dekbalk']);
+                        dataSetDeckBeams = deckBeamData;
+                    }
+                    return dataSetDeckBeams;
+                } else if (selectedOption === "Truss legs") {
+                    if(!dataSetTrussLegs) {
+                        const trussLegData = findAllKeysWithValue(dataSetsConstructions, location, ['spant']);
+                        dataSetTrussLegs = trussLegData;
+                    }
+                    return dataSetTrussLegs;
+                } else if (selectedOption === "Corbels") {
+                    if(!dataSetTrussLegs) {
+                        const corbelsData = findAllKeysWithValue(dataSetsConstructions, location, ['korbelen', 'korbeel']);
+                        dataSetCorbels = corbelsData;
+                    }
+                    return dataSetCorbels;
+                } else if (selectionPath[2] === "Churches") {
+                    if(selectedOption === "Churches") {
+                        if(!dataSetChurches) {
+                            const churchesData = findAllKeysWithValue(dataSetsConstructions, location, ['kerk', 'kapel']);
+                            dataSetChurches = churchesData;
+                        }
+                        return dataSetChurches;
+                    }
+                }
             }
         }
 
@@ -213,6 +264,16 @@
     onMount(async () => {
         await import('bootstrap/dist/js/bootstrap.bundle.min.js');
     });
+
+    // on change, find right dataset
+    $: if(selectionPath) {
+        activeDataSets = filterDataOnSelection();
+        console.log("active data", activeDataSets);
+    }
+
+    $: if(currentYearTimeline) {
+        filterDataOnTimeline();
+    }
 
     $: if (currentView) {
         console.log("current view changes in parent", currentView);
