@@ -8,8 +8,8 @@
 <script>
     import { onMount, onDestroy } from 'svelte';
     import { browser } from '$app/environment';
-    import { scaleOrdinal } from 'd3-scale';
-    import { schemeCategory10 } from 'd3-scale-chromatic';
+
+    import { colorScale, subtypeMap } from '$lib/scripts/colorConfig';
 
     import tradeCitiesCoords from '$lib/data/tradeCities';
     import provenancesCoords from '$lib/data/provenances';
@@ -18,15 +18,23 @@
     // Imported variables
     export let activeDataSets;
     export let timelineDataSelection;
-    const objectTypes = ["constructions", "artworks", "furniture"];
-    const subtypeMap = {
-        halfModels: "artworks",
-        constructions: "constructions",
-    };
+    // const objectTypes = ["constructions", "artworks", "furniture"];
+    // const subtypeMap = {
+    //     halfModels: "artworks",
+    //     constructions: "constructions",
+    //     Buildings: "constructions",
+    //     Churches: "constructions",
+    //     Houses: "constructions",
+    //     "Deck beams in Buildings": "constructions",
+    //     "Truss legs in Buildings": "constructions",
+    //     "Corbels in Buildings": "constructions",
+    //     Shipwrecks: "constructions",
+    // };
 
-    const colorScale = scaleOrdinal()
-        .domain(objectTypes)
-        .range(schemeCategory10);
+    // const colorScale = scaleOrdinal()
+    //     .domain(objectTypes)
+    //     .range(schemeCategory10);
+
 
     // Compontent variables
     let drawnTradeRoutes = [];
@@ -124,6 +132,7 @@
 
     // Draw route on map
     const drawTradeRoute = (data, objectType) => {
+        console.log("active object type", objectType);
         const provenance = data.provenance;
         const matchedRoute = tradeRoutesCoords.find(route => route.name === provenance);
 
@@ -132,12 +141,13 @@
             const offset = [0.01 * count, 0.01 * count];
             routeDrawCounts[provenance] = count + 1;
             
+            console.log("objecttype",objectType);
             const parentType = subtypeMap[objectType] || objectType;
             const color = colorScale(parentType);
 
             addTradeRouteToMap(matchedRoute, offset, color);
         } else {
-            console.warn("No matching route for provenance:", provenance);
+            // console.warn("No matching route for provenance:", provenance);
         }
     };
     
@@ -150,30 +160,8 @@
         routeDrawCounts = {};
 
         processActiveDataSets(activeDataSets);
-
-        // Handles both grouped and flat formats
-        
-        // activeDataSets.forEach(firstLevel => {
-           
-        //     if ('data' in firstLevel && Array.isArray(firstLevel.data)) {
-        //         const objectType = firstLevel.name;
-
-        //         firstLevel.data.forEach(secondLevel => {
-        //             if ('data' in secondLevel && Array.isArray(secondLevel.data)) {
-        //                 // activedatasets = all
-        //                 secondLevel.data.forEach(item => {
-        //                     drawTradeRoute(item, objectType);
-        //                 });
-        //             } else {
-        //                 // activedatasets = just one objecttype
-        //                 drawTradeRoute(secondLevel, objectType);
-        //             }
-        //         });
-        //     } else {
-        //         console.warn("Unrecognized structure in drawMapData", firstLevel);
-        //     }
-        // });
     };
+
     const processActiveDataSets = (activeDataSets) => {
         // console.log("activedatasets", activeDataSets);
         if (!Array.isArray(activeDataSets)) {
@@ -257,7 +245,7 @@
         if (Array.isArray(timelineDataSelection)) {
             timelineDataSelection.forEach(data => {
                 const objectType = data.objectType || "unknown";
-                drawTradeRoute(data, objectType);
+                drawTradeRoute(data, data.objectType);
             });
         } else {
             console.warn("timelineDataSelection is not an array", timelineDataSelection);

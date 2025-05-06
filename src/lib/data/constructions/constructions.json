@@ -325,7 +325,7 @@
   },
   {
     "Keycode": "RKN00031",
-    "Location": "Roermond, Kraanpoort 3, balklagen; 1ste verdieping, 2de moerbalk vanaf achter",
+    "Location": "Roermond, Kraanpoort 3, huis, balklagen; 1ste verdieping, 2de moerbalk vanaf achter",
     "Species": "QUSP",
     "Length": 183,
     "StartYear": 1371,
@@ -349,7 +349,7 @@
   },
   {
     "Keycode": "RRM00011",
-    "Location": "Roermond, Marktstraat 8, kap; dekbalk //",
+    "Location": "Roermond, Marktstraat 8, huis, kap; dekbalk //",
     "Species": "QUSP",
     "Length": 112,
     "StartYear": 1441,
@@ -361,7 +361,7 @@
   },
   {
     "Keycode": "RRM00021",
-    "Location": "Roermond, Marktstraat 8, kap; dekbalk ///-// (met jaartallen 1555 en 1745)",
+    "Location": "Roermond, Marktstraat 8, huis, kap; dekbalk ///-// (met jaartallen 1555 en 1745)",
     "Species": "QUSP",
     "Length": 96,
     "StartYear": 1456,
@@ -529,7 +529,7 @@
   },
   {
     "Keycode": "VNL00011",
-    "Location": "Venlo, Lomstraat 4, kap - Dekbalk onderste juk ////",
+    "Location": "Venlo, Lomstraat 4, woonhuis, kap - Dekbalk onderste juk ////",
     "Species": "QUSP",
     "Length": 75,
     "StartYear": 1421,
@@ -541,7 +541,7 @@
   },
   {
     "Keycode": "VPR00021",
-    "Location": "Venlo, Parade 62, kap - Dekbalk //",
+    "Location": "Venlo, Parade 62, woonhuis, kap - Dekbalk //",
     "Species": "QUSP",
     "Length": 101,
     "StartYear": 1435,

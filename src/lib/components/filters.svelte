@@ -29,7 +29,7 @@
                     <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
                 </svg>
                 <button 
-                    class="badge rounded-pill text-dark bg-blur border-0 {index === selectionPath.length - 1 ? 'fw-bold' : 'fw-normal'}"
+                    class={`badge rounded-pill text-dark border-0 ${index === 0 ? `bg-blur-${selectionPath[0].toLowerCase()}` : ''} ${index === selectionPath.length - 1 ? 'fw-bold' : 'fw-normal'}`}
                     on:click={() => {
                         selectionPath = selectionPath.slice(0, index + 1);
                         selectedOption = `${selectionPath[selectionPath.length - 1]}`;
@@ -71,7 +71,11 @@
                             value={option}
                             on:click={() => handleSelect(option)}
                         />
-                        <label class="form-check-label d-flex justify-content-between w-100 {selectedOption === option ? 'fw-bold' : 'fw-normal'}" for={option}>
+                        <label 
+                            class="form-check-label d-flex justify-content-between w-100 {selectedOption === option ? 'fw-bold' : 'fw-normal'}"
+                            style={selectedOption == "All" ? `color: ${colorScale(option.toLowerCase())} !important` : ""} 
+                            for={option}
+                        >
                             {option}
                             <span class="small text-light">
                                 120
@@ -199,6 +203,13 @@
 </div>
 
 <script>
+    import { colorScale, subtypeMap } from '$lib/scripts/colorConfig';
+
+    const subtype = "Churches";
+    const objectType = subtypeMap[subtype];
+    const color = colorScale(objectType);
+    console.log("color in subn", color);
+
     import Searchbar from '$lib/components/inputs/searchbar.svelte';
     import MapLayers from '$lib/components/mapLayers.svelte';
 

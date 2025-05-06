@@ -25,6 +25,20 @@
     -webkit-backdrop-filter: blur(6px);
 }
 
+.bg-blur-constructions {
+    background: rgba(31, 119, 180, 0.45);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.bg-blur-artworks {
+    background: rgba(255, 127, 14, 0.45);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
 .btn {
     border:none;
 }
@@ -44,4 +58,8 @@
 main {
     height: 100vh !important;
     width: 100vw !important;
+}
+
+p {
+    color:darkslategray;
 }

@@ -1,34 +1,44 @@
 <h1 class="text-primary d-none">Timber Flows</h1>
 
 <main>
-    <Map {activeDataSets}
-        {timelineDataSelection}
-    />
-    <div class="container position-relative z-3">
-        <div class="position-absolute w-100 top-0">
-            <Filters 
-                {dataWoodPurposes}
-                {uniqueLocations}
-                bind:selectedWoodPurpose 
-                bind:selectedType 
-                bind:selectedSubType
-                bind:selectionPath
-                bind:selectedOption
-            />
-            <div class="row justify-content-end">
-                <div class="col-9">
-                    <Timeline 
-                        {activeDataSets}
-                        bind:currentYearTimeline
-                    />
+    <div class="{currentView == "map" ? "" : "d-none"}">
+        <Map {activeDataSets}
+            {timelineDataSelection}
+        />
+        <div class="container position-relative z-3">
+            <div class="position-absolute w-100 top-0">
+                <Filters 
+                    {dataWoodPurposes}
+                    {uniqueLocations}
+                    bind:selectedWoodPurpose 
+                    bind:selectedType 
+                    bind:selectedSubType
+                    bind:selectionPath
+                    bind:selectedOption
+                />
+                <div class="row justify-content-end">
+                    <div class="col-9">
+                        <Timeline 
+                            {activeDataSets}
+                            bind:currentYearTimeline
+                        />
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="position-absolute bottom-0 start-50 translate-middle-x mb-2">
-            <SwitchViews
-                bind:currentView
-            />
+    </div>
+    <div class="container {currentView != "map" ? "" : "d-none"}">
+        <div class="row">
+            <div class="col">
+                <h2>Compare</h2>
+                <img class="w-100" src="src/assets/img/placeholder-barchart.png" alt="barchart placeholder img">
+            </div>
         </div>
+    </div>
+    <div class="position-absolute bottom-0 start-50 translate-middle-x mb-2">
+        <SwitchViews
+            bind:currentView
+        />
     </div>
 </main>
 
@@ -117,6 +127,27 @@
         }
     ];
 
+    // Datasets filtered
+    // Construction subsets
+    const keywordMap = {
+        "Buildings": ['huis', 'kerk', 'kapel', 'souterrain'],
+        "Shipwrecks": ['schip', 'schepen'],
+        "Deck beams": ['dekbalk'],
+        "Truss legs": ['spant'],
+        "Corbels": ['korbelen', 'korbeel'],
+        "Churches": ['kerk', 'kapel'],
+        "Houses": ['huis', 'woning']
+    };
+    const dataSetCache = {
+        "Buildings": null,
+        "Shipwrecks": null,
+        "Deck beams": null,
+        "Truss legs": null,
+        "Corbels": null,
+        "Churches": null,
+        "Houses": null
+    };
+
     // Active data based on selected filters
     let activeDataSets = [];
 
@@ -137,29 +168,69 @@
     // Get all unique locations (for constructions)
     uniqueLocations = getUniqueLocations(constructions);
 
-    // on change, find right dataset
-    $: if(selectionPath) {
-        activeDataSets = filterDataOnSelection();
-    }
+    const findAllKeysWithValue = (dataSetsConstructions, dataSetName, location, buildingKeywords) => {
+        const filteredData = dataSetsConstructions.map(dataset => {
+            const matchingItems = dataset.data.filter(item => {
+                const lowerLocation = item.location.toLowerCase();
 
-    $: if(currentYearTimeline) {
-        filterDataOnTimeline();
+                return buildingKeywords.some(keyword => lowerLocation.includes(keyword));
+            });
+
+            return {
+                name: dataSetName,
+                data: matchingItems
+            };
+        }).filter(dataset => dataset.data.length > 0);
+
+        return filteredData;
     }
 
     const filterDataOnSelection = () => {
+        const findMore = () => {
+            if (selectionPath[1] !== "Buildings") return;
+
+            const buildingType = selectionPath[2]; // e.g., "Churches", "Houses"
+            const keywords = keywordMap[selectedOption];
+
+            if (!buildingType || !keywords) return;
+
+            const buildingData = dataSetCache[buildingType];
+            if (!buildingData) {
+                console.warn(`No cached data for ${buildingType}`);
+                return;
+            }
+
+            const dataSetName = `${selectedOption} in ${selectionPath[1]}`;
+            const filtered = findAllKeysWithValue(buildingData, dataSetName, location, keywords);
+
+            return filtered;
+        };
+
         if (selectionPath[0] === "Artworks") {
-            if (selectedOption === "Artworks") {
-                return dataSetsArtworks;
-            } else if (selectedOption === "Halfmodels") {
-                const selectedSet = dataSetsArtworks.find(set => set.name === "halfModels");
-                return selectedSet ? [selectedSet] : [];
+            if (selectedOption === "Artworks") return dataSetsArtworks;
+
+            if (selectedOption === "Halfmodels") {
+                const set = dataSetsArtworks.find(set => set.name === "halfModels");
+                return set ? [set] : [];
             }
         }
 
         if (selectionPath[0] === "Constructions") {
-            if(selectedOption === "Constructions") {
-                return dataSetsConstructions;
+            if (selectedOption === "Constructions") return dataSetsConstructions;
+
+            // keyword filtering on construction data to ex. "deck beams"
+            if (keywordMap[selectedOption]) {
+                if (!dataSetCache[selectedOption]) {
+                    const filtered = findAllKeysWithValue(dataSetsConstructions, selectedOption, location, keywordMap[selectedOption]);
+                    dataSetCache[selectedOption] = filtered;
+                }
+                const more = findMore();
+                if (more) {
+                    return more;
+                }
+                return dataSetCache[selectedOption];
             }
+            
         }
 
         return dataSetsAll;
@@ -213,6 +284,16 @@
     onMount(async () => {
         await import('bootstrap/dist/js/bootstrap.bundle.min.js');
     });
+
+    // on change, find right dataset
+    $: if(selectionPath) {
+        activeDataSets = filterDataOnSelection();
+        console.log("active data", activeDataSets);
+    }
+
+    $: if(currentYearTimeline) {
+        filterDataOnTimeline();
+    }
 
     $: if (currentView) {
         console.log("current view changes in parent", currentView);
