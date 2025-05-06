@@ -121,17 +121,21 @@
     // Construction subsets
     const keywordMap = {
         "Buildings": ['huis', 'kerk', 'kapel', 'souterrain'],
+        "Shipwrecks": ['schip', 'schepen'],
         "Deck beams": ['dekbalk'],
         "Truss legs": ['spant'],
         "Corbels": ['korbelen', 'korbeel'],
-        "Churches": ['kerk', 'kapel']
+        "Churches": ['kerk', 'kapel'],
+        "Houses": ['huis', 'woning']
     };
     const dataSetCache = {
         "Buildings": null,
+        "Shipwrecks": null,
         "Deck beams": null,
         "Truss legs": null,
         "Corbels": null,
-        "Churches": null
+        "Churches": null,
+        "Houses": null
     };
 
     // Active data based on selected filters
@@ -154,7 +158,7 @@
     // Get all unique locations (for constructions)
     uniqueLocations = getUniqueLocations(constructions);
 
-    const findAllKeysWithValue = (dataSetsConstructions, location, buildingKeywords) => {
+    const findAllKeysWithValue = (dataSetsConstructions, dataSetName, location, buildingKeywords) => {
         const filteredData = dataSetsConstructions.map(dataset => {
             const matchingItems = dataset.data.filter(item => {
                 const lowerLocation = item.location.toLowerCase();
@@ -163,7 +167,7 @@
             });
 
             return {
-                name: "Buildings",
+                name: dataSetName,
                 data: matchingItems
             };
         }).filter(dataset => dataset.data.length > 0);
@@ -172,6 +176,26 @@
     }
 
     const filterDataOnSelection = () => {
+        const findMore = () => {
+            if (selectionPath[1] !== "Buildings") return;
+
+            const buildingType = selectionPath[2]; // e.g., "Churches", "Houses"
+            const keywords = keywordMap[selectedOption];
+
+            if (!buildingType || !keywords) return;
+
+            const buildingData = dataSetCache[buildingType];
+            if (!buildingData) {
+                console.warn(`No cached data for ${buildingType}`);
+                return;
+            }
+
+            const dataSetName = `${selectedOption} in ${selectionPath[1]}`;
+            const filtered = findAllKeysWithValue(buildingData, dataSetName, location, keywords);
+
+            return filtered;
+        };
+
         if (selectionPath[0] === "Artworks") {
             if (selectedOption === "Artworks") return dataSetsArtworks;
 
@@ -181,40 +205,13 @@
             }
         }
 
-        const findMore = () => {
-                // If you need to support nested Church + Deck beams, you can still special-case it:
-                if (selectionPath[1] === "Buildings" && selectionPath[2] === "Churches" && selectedOption === "Deck beams") {
-                    // example: combine keywords
-                    console.log("data churches", dataSetCache["Churches"]);
-                    const churches = dataSetCache["Churches"];
-                    const deckBeamsInChurches = findAllKeysWithValue(churches, location, ['dekbalk'])
-                    console.log("deck beams in churches", deckBeamsInChurches);
-                    return deckBeamsInChurches;
-                } else if (selectionPath[1] === "Buildings" && selectionPath[2] === "Churches" && selectedOption === "Truss legs") {
-                    // example: combine keywords
-                    console.log("data churches", dataSetCache["Churches"]);
-                    const churches = dataSetCache["Churches"];
-                    const deckBeamsInChurches = findAllKeysWithValue(churches, location, ['spant'])
-                    console.log("deck beams in churches", deckBeamsInChurches);
-                    return deckBeamsInChurches;
-                } else if (selectionPath[1] === "Buildings" && selectionPath[2] === "Churches" && selectedOption === "Corbels") {
-                    // example: combine keywords
-                    console.log("data churches", dataSetCache["Churches"]);
-                    const churches = dataSetCache["Churches"];
-                    const deckBeamsInChurches = findAllKeysWithValue(churches, location, keywordMap[selectedOption]);
-                    console.log("deck beams in churches", deckBeamsInChurches);
-                    return deckBeamsInChurches;
-                }
-                return;
-            }
-
         if (selectionPath[0] === "Constructions") {
             if (selectedOption === "Constructions") return dataSetsConstructions;
 
             // keyword filtering on construction data to ex. "deck beams"
             if (keywordMap[selectedOption]) {
                 if (!dataSetCache[selectedOption]) {
-                    const filtered = findAllKeysWithValue(dataSetsConstructions, location, keywordMap[selectedOption]);
+                    const filtered = findAllKeysWithValue(dataSetsConstructions, selectedOption, location, keywordMap[selectedOption]);
                     dataSetCache[selectedOption] = filtered;
                 }
                 const more = findMore();
