@@ -2,7 +2,9 @@
 
 @use 'bootstrap/scss/bootstrap' with (
   $font-size-base: vars.$font-size-base,
-  $primary: vars.$primary
+  $primary: vars.$primary,
+  $light: vars.$light,
+  $blue: vars.$blue
 );
 
 @use 'general';
