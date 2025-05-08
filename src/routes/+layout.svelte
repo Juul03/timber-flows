@@ -1,8 +1,7 @@
 <script>
-	import { injectAnalytics, Analytics } from '@vercel/analytics/sveltekit';
+	import { injectAnalytics} from '@vercel/analytics/sveltekit';
 
 	injectAnalytics();
 </script>
 
 <slot />
-<Analytics />

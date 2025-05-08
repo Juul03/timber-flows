@@ -1,9 +1,10 @@
-// variables
-@import 'variables.scss';
+@use 'variables' as vars;
 
-@import 'bootstrap/scss/bootstrap';
+@use 'bootstrap/scss/bootstrap' with (
+  $font-size-base: vars.$font-size-base,
+  $primary: vars.$primary
+);
 
-// Custom styling
-@import 'general.scss';
-@import 'components/filters.scss';
-@import 'components/dataviz/map.scss';
+@use 'general';
+@use 'components/filters';
+@use 'components/dataviz/map';
