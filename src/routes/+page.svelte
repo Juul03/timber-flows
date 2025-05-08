@@ -48,8 +48,6 @@
 <!-- <p>Selected purpose: {selectedWoodPurpose} {selectedType} {selectedSubType}</p> -->
 
 <script>
-    import { injectAnalytics } from '@vercel/analytics/sveltekit'
-    
     import '../assets/styles/app.scss';
 
     import { onMount } from 'svelte';
