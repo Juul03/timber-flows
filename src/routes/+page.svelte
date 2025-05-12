@@ -4,6 +4,7 @@
     <div class="{currentView == "map" ? "" : "d-none"}">
         <Map {activeDataSets}
             {timelineDataSelection}
+            {selectedMapType}
         />
         <div class="container position-relative z-3">
             <div class="position-absolute w-100 top-0">
@@ -15,6 +16,7 @@
                     bind:selectedSubType
                     bind:selectionPath
                     bind:selectedOption
+                    bind:selectedMapType
                 />
                 <div class="row justify-content-end">
                     <div class="col-9">
@@ -74,6 +76,8 @@
 
     let selectionPath = [];
     let selectedOption = 'All';
+
+    export let selectedMapType = 'area';
 
     // Dynamic retrieved from timeline
     let currentYearTimeline;

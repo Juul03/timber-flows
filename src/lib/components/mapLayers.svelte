@@ -33,6 +33,8 @@
                                 name="maptypes"
                                 id={type.name}
                                 value={type.value}
+                                on:click={() => updateMapType(type.value)}
+                                checked={selectedMapType === type.value}
                             />
                             <label class="form-check-label w-100" for={type.name}>
                                 {type.name}
@@ -41,31 +43,21 @@
                     {/each}
                 </div>
                 <div>
-                    <ul class="dropdown-menu checkbox-list bg-blur rounded-bottom border-0 w-100 p-3">
-                        {#each mapLayers as layer}
-                            <li>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="{layer.value}" id="{layer.value}">
-                                    <label class="w-100 form-check-label" for="{layer.value}">{layer.value}</label>
-                                </div>
-                            </li>
-                        {/each}
-                    </ul>
-                    <!-- <h3 class="fs-6">Layers</h3>
-                    {#each mapLayers as layer}
+                    <h3 class="fs-6">Map layers</h3>
+                    {#each mapLayers as type}
                         <div class="form-check">
                             <input
                                 class="form-check-input"
-                                type="radio"
+                                type="checkbox"
                                 name="maplayers"
-                                id={layer.name}
-                                value={layer.value}
+                                id={type.name}
+                                value={type.value}
                             />
-                            <label class="form-check-label w-100" for={layer.name}>
-                                {layer.name}
+                            <label class="form-check-label w-100" for={type.name}>
+                                {type.name}
                             </label>
                         </div>
-                    {/each} -->
+                    {/each}
                 </div>
             </div>
         </div>
@@ -74,11 +66,9 @@
 
 <script>
     // Exported var
-    export let selectedMapType;
+    export let selectedMapType = 'area';
 
 	let dropdownOpen = false;
-
-    selectedMapType = 'area';
 
     let mapTypes = [
         {
@@ -105,4 +95,8 @@
     let toggleDropdown = () => {
 		dropdownOpen = !dropdownOpen;
 	}
+
+    let updateMapType = (value) => {
+        selectedMapType = value;
+    }
 </script>

@@ -18,23 +18,7 @@
     // Imported variables
     export let activeDataSets;
     export let timelineDataSelection;
-    // const objectTypes = ["constructions", "artworks", "furniture"];
-    // const subtypeMap = {
-    //     halfModels: "artworks",
-    //     constructions: "constructions",
-    //     Buildings: "constructions",
-    //     Churches: "constructions",
-    //     Houses: "constructions",
-    //     "Deck beams in Buildings": "constructions",
-    //     "Truss legs in Buildings": "constructions",
-    //     "Corbels in Buildings": "constructions",
-    //     Shipwrecks: "constructions",
-    // };
-
-    // const colorScale = scaleOrdinal()
-    //     .domain(objectTypes)
-    //     .range(schemeCategory10);
-
+    export let selectedMapType;
 
     // Compontent variables
     let drawnTradeRoutes = [];
@@ -206,22 +190,7 @@
 
             map = leaflet.map(mapContainer).setView([54.6128, 12.216797], 5);
 
-            // leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            // }).addTo(map);
-
-            // leaflet.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
-            //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-            // }).addTo(map);
-
-            leaflet.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}{r}.png?api_key=c4121b12-d5f5-4e00-9ce7-d8abe5389b1b', {
-                attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            }).addTo(map);
-
-            // stadia outdoors to see the rivers with names
-            // leaflet.tileLayer('https://tiles.stadiamaps.com/tiles/outdoors/{z}/{x}/{y}{r}.png', {
-            //     attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            // }).addTo(map);
+            updateCurrentMap(selectedMapType);
 
             addZoomControl(leaflet, map);
 
@@ -230,12 +199,12 @@
 
             drawMapData();
 
-            // get long and lat on click
-            const onMapClick = (event) => {
-                alert("You clicked the map at " + event.latlng);
-            }
+            // // get long and lat on click
+            // const onMapClick = (event) => {
+            //     alert("You clicked the map at " + event.latlng);
+            // }
  
-            map.on('click', onMapClick);
+            // map.on('click', onMapClick);
         }
     });
 
@@ -272,6 +241,54 @@
 
     $: if (timelineDataSelection != undefined && leafletReady && map) {
         drawTimelineYearData();
+    }
+
+
+
+
+
+    let mapTypes = [
+        {
+            value: 'area',
+            mapLink: 'https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}{r}.png?api_key=c4121b12-d5f5-4e00-9ce7-d8abe5389b1b',
+            attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+
+        },
+        {
+            value: 'dark',
+            mapLink: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        },
+        {
+            value: 'rivers',
+            mapLink: 'https://tiles.stadiamaps.com/tiles/outdoors/{z}/{x}/{y}{r}.png',
+            attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</a>'
+        },
+
+    ];
+
+    let currentTileLayer;
+
+
+    let updateCurrentMap = (mapType) => {
+        const selected = mapTypes.find(m => m.value === mapType);
+
+        if (!selected) return;
+
+        // Remove the old tile layer if it exists
+        if (currentTileLayer) {
+            map.removeLayer(currentTileLayer);
+        }
+
+        // Create and add the new tile layer
+        currentTileLayer = leaflet.tileLayer(selected.mapLink, {
+            attribution: selected.attribution
+        }).addTo(map);
+
+    }
+
+    $: if(selectedMapType && leaflet) {
+        updateCurrentMap(selectedMapType);
     }
 </script>  
     
