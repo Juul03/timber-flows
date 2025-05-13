@@ -34,6 +34,7 @@
     export let activeDataSets;
     export let timelineDataSelection;
     export let selectedMapType;
+    export let keywordMap = {};
 
     // Compontent variables
     let drawnTradeRoutes = [];
@@ -57,17 +58,8 @@
         TBP: '',
         provenance: '',
         categoryPath: [],
+        keyCode: '',
     }
-
-    const keywordMap = {
-        "Buildings": ['huis', 'kerk', 'kapel', 'souterrain'],
-        "Shipwrecks": ['schip', 'schepen'],
-        "Deck beams": ['dekbalk'],
-        "Truss legs": ['spant'],
-        "Corbels": ['korbelen', 'korbeel'],
-        "Churches": ['kerk', 'kapel'],
-        "Houses": ['huis', 'woning'],
-    };
 
     // Trade city icon
     const createCustomIcon = (leaflet) => {
@@ -188,10 +180,8 @@
             hoverPath.on('mouseover', () => {
                 showTooltipRoute = true;
 
-                // label = find subcategory in the filters
                 const location = routeData.location;
                 const categoryPath = findCategoryPathFromLocation(filtersObject, location, keywordMap);
-                console.log("location halfmodel", location);
 
                 tooltipRouteContent.fellingDate = routeData.fellingDate;
                 tooltipRouteContent.location = routeData.location;
@@ -201,7 +191,7 @@
                 tooltipRouteContent.TBP = routeData.TBP;
                 tooltipRouteContent.provenance = routeData.provenance;
                 tooltipRouteContent.categoryPath = categoryPath;
-                // tooltipRouteContent.categoryPath = ["Constructions", "Buildings", "Churches", "Truss legs"];
+                tooltipRouteContent.keyCode = routeData.keyCode;
 
                 visiblePath.setStyle({ weight: 5, opacity: 1 });
 

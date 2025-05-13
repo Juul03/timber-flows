@@ -20,20 +20,20 @@
     if (tooltipPosition.y < screenHeight / 2) {
         adjustedPosition.y = tooltipPosition.y + 10;
     } else {
-        adjustedPosition.y = tooltipPosition.y - 120;
+        adjustedPosition.y = tooltipPosition.y - 250;
     }
 </script>
 
 <div 
     id="tooltip-route" 
-    class="position-absolute col-3 bg-white rounded p-2"
+    class="position-absolute col-3 bg-white rounded p-3"
     style="left: {adjustedPosition.x}px; top: {adjustedPosition.y}px;"
 >
     <div class="row">
-        <div class="col-12 d-flex flex-wrap gap-2 align-items-center">
+        <div class="col-12 d-flex flex-wrap gap-2 align-items-center mb-2">
             {#if tooltipRouteContent.categoryPath && tooltipRouteContent.categoryPath.length}
                 <div class="col-12 d-flex flex-wrap gap-2 align-items-center mb-2">
-                    <button class="badge rounded-pill text-dark bg-blur border-0 fw-normal">
+                    <button class="badge rounded-pill text-white bg-dark border-0 fw-normal">
                         All
                     </button>
 
@@ -42,7 +42,7 @@
                             <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
                         </svg>
                         <button
-                            class={`badge rounded-pill text-dark border-0 fw-normal ${index === 0 ? `bg-blur-${label.toLowerCase()}` : 'bg-blur'}`}
+                            class={`badge rounded-pill border-0 fw-normal ${index === 0 ? `bg-blur-${label.toLowerCase()} text-dark` : 'bg-dark text-white '}`}
                         >
                             {label}
                         </button>
@@ -50,19 +50,26 @@
                 </div>
             {/if}
         </div>
-        <div class="col-4">
+        <div class="col-12 mb-2">
+            <div class="d-flex justify-content-between flex-wrap align-items-center">
+                <h3 class="m-0">{tooltipRouteContent.categoryPath[tooltipRouteContent.categoryPath.length - 1]}</h3>
+                <p class="text-dark text-small m-0">{tooltipRouteContent.keyCode}</p>
+            </div>
+            <p class="text-light text-small">{tooltipRouteContent.location}</p>
+        </div>
+        <div class="col-4 mb-2">
             <p class="text-light d-flex flex-column m-0">
                 Startyear
                 <span class="fs-5 text-dark mt-n1">{tooltipRouteContent.startYear}</span>
             </p>
         </div>
-        <div class="col-4">
+        <div class="col-4 mb-2">
             <p class="text-light d-flex flex-column m-0">
                 Endyear
                 <span class="fs-5 text-dark mt-n1">{tooltipRouteContent.endYear}</span>
             </p>
         </div>
-        <div class="col-4">
+        <div class="col-4 mb-2">
             <p class="text-light d-flex flex-column m-0">
                 Length
                 <span class="fs-5 text-dark mt-n1">{tooltipRouteContent.length}</span>
