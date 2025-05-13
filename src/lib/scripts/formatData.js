@@ -82,3 +82,77 @@ export const getUniqueLocations = (data) => {
     console.log("locations", sortedArray);
     return sortedArray;
 };
+
+export function findCategoryPath(tree, targetLabel, path = []) {
+  for (const key in tree) {
+    const newPath = [...path, key];
+
+    if (key === targetLabel) {
+      return newPath;
+    }
+
+    const child = tree[key];
+    if (child && typeof child === 'object') {
+      const result = findCategoryPath(child, targetLabel, newPath);
+      if (result) {
+        return result;
+      }
+    }
+  }
+
+  return null; // Not found
+}
+
+export function findCategoryPathFromLocation(tree, location, keywordMap) {
+  const lowerLoc = location.toLowerCase();
+
+  // Step 1: Collect all matched labels
+  const matchedLabels = new Set();
+
+  for (const [englishLabel, keywords] of Object.entries(keywordMap)) {
+    for (const keyword of keywords) {
+      if (lowerLoc.includes(keyword)) {
+        matchedLabels.add(englishLabel);
+        break;
+      }
+    }
+  }
+
+  // Step 2: Special case for Halfmodels
+  if (lowerLoc.includes('ng-mc') || lowerLoc.includes('indet')) {
+    const halfmodelPath = findCategoryPath(tree, 'Halfmodels');
+    if (halfmodelPath) return halfmodelPath;
+  }
+
+  // Step 3: Find the deepest path that includes one or more matched labels
+  let bestPath = null;
+
+  function dfs(node, path = []) {
+    for (const key in node) {
+      const newPath = [...path, key];
+      const child = node[key];
+
+      if (matchedLabels.has(key)) {
+        if (!bestPath || newPath.length > bestPath.length) {
+          bestPath = newPath;
+        }
+      }
+
+      if (child && typeof child === 'object') {
+        dfs(child, newPath);
+      }
+    }
+  }
+
+  dfs(tree);
+
+  if (!bestPath) {
+        if (lowerLoc && lowerLoc !== '' && !lowerLoc.includes('ng-mc') && !lowerLoc.includes('indet')) {
+            const constructionsPath = findCategoryPath(tree, 'Constructions');
+            if (constructionsPath) return constructionsPath;
+        }
+  }
+
+  return bestPath || ['Uncategorized'];
+}
+

@@ -4,6 +4,12 @@
     bind:this={mapContainer}
     >
 </div>
+{#if showTooltipRoute}
+    <TooltipRoute
+        {tooltipRouteContent}
+        {tooltipPosition}
+    />
+{/if}
 
 <script>
     import { onMount, onDestroy } from 'svelte';
@@ -11,17 +17,24 @@
     import { lineString } from '@turf/helpers';
     import bezierSpline from '@turf/bezier-spline';
 
-
     import { colorScale, subtypeMap } from '$lib/scripts/colorConfig';
+    import { findCategoryPathFromLocation } from '$lib/scripts/formatData.js';
+
+    import { filtersObject } from '$lib/data/filtersWoodPurpose.js';
 
     import tradeCitiesCoords from '$lib/data/tradeCities';
     import provenancesCoords from '$lib/data/provenances';
     import tradeRoutesCoords from '$lib/data/tradeRoutes';
+    
+
+    // components
+    import TooltipRoute from '$lib/components/UI/routeTooltip.svelte';
 
     // Imported variables
     export let activeDataSets;
     export let timelineDataSelection;
     export let selectedMapType;
+    export let keywordMap = {};
 
     // Compontent variables
     let drawnTradeRoutes = [];
@@ -32,14 +45,49 @@
     
     let mapContainer;
     let map;
+    let currentTileLayer;
+    
+    let showTooltipRoute = false;
+    export let tooltipPosition = { x: 0, y: 0 };
+    export let tooltipRouteContent = {
+        fellingDate: '',
+        location: '',
+        startYear: '',
+        endYear: '',
+        length: '',
+        TBP: '',
+        provenance: '',
+        categoryPath: [],
+        keyCode: '',
+    }
+
+    // Trade city icon
+    const createCustomIcon = (leaflet) => {
+        return leaflet.divIcon({
+            className: '',
+            html: `
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="#111">
+                        <path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/>
+                    </svg>
+                </div>
+            `,
+            iconSize: [24, 24],
+            iconAnchor: [12, 24],
+            popupAnchor: [0, -24]
+        });
+    };
+
 
     // Map functions
     const addMarkersToMap = (leaflet, tradeCities, map) => {
+        const customIcon = createCustomIcon(leaflet);
+
         tradeCities.forEach(city => {
-            let marker = leaflet.marker(city.coordinates).addTo(map);
+            let marker = leaflet.marker(city.coordinates, { icon: customIcon }).addTo(map);
             marker.bindPopup(city.name).openPopup();
-        })
-    }
+        });
+    };
 
     const addProvenancesToMap = (leaflet, provenances, map) => {
         provenances.forEach(provenance => {
@@ -105,7 +153,7 @@
     };
 
     // add all trade routes
-    const addTradeRouteToMap = (route, offset, color) => {
+    const addTradeRouteToMap = (route, offset, color, routeData) => {
         const offsetCoordinates = offsetPath(route.coordinates, offset);
         const smoothedCoordinates = smoothPath(offsetCoordinates);
 
@@ -114,7 +162,55 @@
             weight: 2,
             opacity: 0.7,
         }, 300, (completedPath) => {
-            drawnTradeRoutes.push(completedPath);
+            const visiblePath = completedPath;
+            let hoverPath;
+
+            // Create an invisible thicker path on top for easier hover
+            if(leaflet) {
+                hoverPath = leaflet.polyline(visiblePath.getLatLngs(), {
+                    color: 'transparent',
+                    weight: 20,
+                    opacity: 0,
+                    className: 'hover-path',
+                    pane: 'shadowPane'
+                }).addTo(map);
+            }
+          
+            // Highlight visible path on hover and show tooltip
+            hoverPath.on('mouseover', () => {
+                showTooltipRoute = true;
+
+                const location = routeData.location;
+                const categoryPath = findCategoryPathFromLocation(filtersObject, location, keywordMap);
+
+                tooltipRouteContent.fellingDate = routeData.fellingDate;
+                tooltipRouteContent.location = routeData.location;
+                tooltipRouteContent.startYear = routeData.startYear;
+                tooltipRouteContent.endYear = routeData.endYear;
+                tooltipRouteContent.length = routeData.length;
+                tooltipRouteContent.TBP = routeData.TBP;
+                tooltipRouteContent.provenance = routeData.provenance;
+                tooltipRouteContent.categoryPath = categoryPath;
+                tooltipRouteContent.keyCode = routeData.keyCode;
+
+                visiblePath.setStyle({ weight: 5, opacity: 1 });
+
+                drawnTradeRoutes.forEach(route => {
+                    if(route !== visiblePath) {
+                        route.setStyle({ opacity: 0.35 });
+                    }
+                })
+            });
+
+            hoverPath.on('mouseout', () => {
+                showTooltipRoute = false;
+                visiblePath.setStyle({ weight: 2, opacity: 0.7 });
+                drawnTradeRoutes.forEach(route => {
+                    route.setStyle({ opacity: 0.7 });
+                })
+            });
+
+            drawnTradeRoutes.push(visiblePath, hoverPath);
         });
     };
 
@@ -131,7 +227,7 @@
             const parentType = subtypeMap[objectType] || objectType;
             const color = colorScale(parentType);
 
-            addTradeRouteToMap(matchedRoute, offset, color);
+            addTradeRouteToMap(matchedRoute, offset, color, data);
         } else {
             // console.warn("No matching route for provenance:", provenance);
         }
@@ -191,8 +287,17 @@
             leafletReady = true;
 
             map = leaflet.map(mapContainer).setView([54.6128, 12.216797], 5);
+            if (map) {
+                map.on('mousemove', (event) => {
+                    // Capture the mouse position relative to the map container
+                    tooltipPosition = {
+                        x: event.originalEvent.clientX,
+                        y: event.originalEvent.clientY,
+                    };
+                });
+            }
 
-            updateCurrentMap(selectedMapType);
+            updateCurrentMap(selectedMapType || 'area');
 
             addZoomControl(leaflet, map);
 
@@ -236,19 +341,6 @@
         animatingTradeRoutes = [];
     };
 
-
-    $: if (leafletReady && map && activeDataSets) {
-        drawMapData();
-    }
-
-    $: if (timelineDataSelection != undefined && leafletReady && map) {
-        drawTimelineYearData();
-    }
-
-
-
-
-
     let mapTypes = [
         {
             value: 'area',
@@ -269,13 +361,12 @@
 
     ];
 
-    let currentTileLayer;
-
-
     let updateCurrentMap = (mapType) => {
         const selected = mapTypes.find(m => m.value === mapType);
 
-        if (!selected) return;
+        if (!selected || !selected.mapLink) {
+            return;
+        }
 
         // Remove the old tile layer if it exists
         if (currentTileLayer) {
@@ -289,8 +380,16 @@
 
     }
 
-    $: if(selectedMapType && leaflet) {
+    $: if(selectedMapType && leaflet && map) {
         updateCurrentMap(selectedMapType);
+    }
+
+    $: if (leafletReady && map && activeDataSets) {
+        drawMapData();
+    }
+
+    $: if (timelineDataSelection != undefined && leafletReady && map) {
+        drawTimelineYearData();
     }
 </script>  
     

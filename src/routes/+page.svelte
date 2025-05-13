@@ -5,6 +5,7 @@
         <Map {activeDataSets}
             {timelineDataSelection}
             {selectedMapType}
+            {keywordMap}
         />
         <div class="container position-relative z-3">
             <div class="position-absolute w-100 top-0">
@@ -133,7 +134,7 @@
 
     // Datasets filtered
     // Construction subsets
-    const keywordMap = {
+    export let keywordMap = {
         "Buildings": ['huis', 'kerk', 'kapel', 'souterrain'],
         "Shipwrecks": ['schip', 'schepen'],
         "Deck beams": ['dekbalk'],
