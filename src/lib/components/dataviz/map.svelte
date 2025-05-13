@@ -129,6 +129,7 @@
             routeDrawCounts[provenance] = count + 1;
             
             const parentType = subtypeMap[objectType] || objectType;
+            console.log("objecttype", objectType);
             const color = colorScale(parentType);
 
             addTradeRouteToMap(matchedRoute, offset, color);
