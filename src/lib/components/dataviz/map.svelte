@@ -164,32 +164,18 @@
                 }
             );
 
-            // Hover interactions
+            // Highlight visible path on hover
             hoverPath.on('mouseover', () => {
                 visiblePath.setStyle({ weight: 5, opacity: 1 });
-
-                // Dim other visible paths
-                drawnTradeRoutes.forEach(path => {
-                    if (path !== visiblePath && path.setStyle) {
-                        path.setStyle({ opacity: 0.2 });
-                    }
-                });
             });
 
             hoverPath.on('mouseout', () => {
                 visiblePath.setStyle({ weight: 2, opacity: 0.7 });
-
-                // Restore all other paths
-                drawnTradeRoutes.forEach(path => {
-                    if (path.setStyle) {
-                        path.setStyle({ opacity: 0.7 });
-                    }
-                });
             });
 
-            // Track both paths
+            // Optionally store both paths for cleanup
             drawnTradeRoutes.push(visiblePath, hoverPath);
-            });
+        });
     };
 
 
