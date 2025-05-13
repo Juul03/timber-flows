@@ -37,7 +37,6 @@
 
     // Compute provenance frequencies from the active data
     let provenanceFrequency = getProvenanceFrequencies(activeDataSets);
-    console.log("Provenance Frequency Data:", provenanceFrequency);
 
     onMount(() => {
         drawBarchart(provenanceFrequency);
@@ -45,8 +44,6 @@
 
     // Function to draw the bar chart
     const drawBarchart = (data) => {
-        console.log("data in char", provenanceFrequency);
-
         const chartContainer = document.getElementById("chart-container");
         chartContainer.innerHTML = "";
 
