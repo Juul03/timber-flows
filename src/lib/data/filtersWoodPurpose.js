@@ -1,4 +1,3 @@
-// src/lib/categoryTree.js
 export const filtersObject = {
     Constructions: {
       Archeology: null,

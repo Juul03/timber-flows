@@ -9,20 +9,17 @@
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
 
+    // Adjust horizontal (left and right)
     if (tooltipPosition.x < screenWidth / 2) {
-        // If mouse is on the left half, position tooltip on the right side of the cursor
         adjustedPosition.x = tooltipPosition.x + 10;
     } else {
-        // If mouse is on the right half, position tooltip on the left side of the cursor
         adjustedPosition.x = tooltipPosition.x - 390;
     }
 
     // Adjust vertical position (top or bottom)
     if (tooltipPosition.y < screenHeight / 2) {
-        // If mouse is on the top half, position tooltip below the cursor
         adjustedPosition.y = tooltipPosition.y + 10;
     } else {
-        // If mouse is on the bottom half, position tooltip above the cursor
         adjustedPosition.y = tooltipPosition.y - 120;
     }
 </script>
@@ -33,6 +30,26 @@
     style="left: {adjustedPosition.x}px; top: {adjustedPosition.y}px;"
 >
     <div class="row">
+        <div class="col-12 d-flex flex-wrap gap-2 align-items-center">
+            {#if tooltipRouteContent.categoryPath && tooltipRouteContent.categoryPath.length}
+                <div class="col-12 d-flex flex-wrap gap-2 align-items-center mb-2">
+                    <button class="badge rounded-pill text-dark bg-blur border-0">
+                        All
+                    </button>
+
+                    {#each tooltipRouteContent.categoryPath as label, index}
+                        <svg class="svg-icon-mini" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                            <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
+                        </svg>
+                        <button
+                            class={`badge rounded-pill text-dark border-0 ${index === 0 ? `bg-blur-${label.toLowerCase()}` : 'bg-blur'} ${index === tooltipRouteContent.categoryPath.length - 1 ? 'fw-bold' : 'fw-normal'}`}
+                        >
+                            {label}
+                        </button>
+                    {/each}
+                </div>
+            {/if}
+        </div>
         <div class="col-4">
             <p class="text-light d-flex flex-column m-0">
                 Startyear

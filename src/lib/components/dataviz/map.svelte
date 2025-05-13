@@ -5,10 +5,10 @@
     >
 </div>
 {#if showTooltipRoute}
-<TooltipRoute
-{tooltipRouteContent}
-{tooltipPosition}
-/>
+    <TooltipRoute
+        {tooltipRouteContent}
+        {tooltipPosition}
+    />
 {/if}
 
 <script>
@@ -18,10 +18,14 @@
     import bezierSpline from '@turf/bezier-spline';
 
     import { colorScale, subtypeMap } from '$lib/scripts/colorConfig';
+    import { findCategoryPathFromLocation } from '$lib/scripts/formatData.js';
+
+    import { filtersObject } from '$lib/data/filtersWoodPurpose.js';
 
     import tradeCitiesCoords from '$lib/data/tradeCities';
     import provenancesCoords from '$lib/data/provenances';
     import tradeRoutesCoords from '$lib/data/tradeRoutes';
+    
 
     // components
     import TooltipRoute from '$lib/components/UI/routeTooltip.svelte';
@@ -52,7 +56,18 @@
         length: '',
         TBP: '',
         provenance: '',
+        categoryPath: [],
     }
+
+    const keywordMap = {
+        "Buildings": ['huis', 'kerk', 'kapel', 'souterrain'],
+        "Shipwrecks": ['schip', 'schepen'],
+        "Deck beams": ['dekbalk'],
+        "Truss legs": ['spant'],
+        "Corbels": ['korbelen', 'korbeel'],
+        "Churches": ['kerk', 'kapel'],
+        "Houses": ['huis', 'woning'],
+    };
 
     // Trade city icon
     const createCustomIcon = (leaflet) => {
@@ -158,7 +173,7 @@
             const visiblePath = completedPath;
 
             // Create an invisible thicker path on top for easier hover
-            const hoverPath = L.polyline(visiblePath.getLatLngs(), {
+            const hoverPath = leaflet.polyline(visiblePath.getLatLngs(), {
                 color: 'transparent',
                 weight: 20,
                 opacity: 0,
@@ -170,6 +185,10 @@
             hoverPath.on('mouseover', () => {
                 showTooltipRoute = true;
 
+                // label = find subcategory in the filters
+                // const location = routeData.location;
+                // const categoryPath = findCategoryPathFromLocation(filtersObject, location, keywordMap);
+
                 tooltipRouteContent.fellingDate = routeData.fellingDate;
                 tooltipRouteContent.location = routeData.location;
                 tooltipRouteContent.startYear = routeData.startYear;
@@ -177,6 +196,8 @@
                 tooltipRouteContent.length = routeData.length;
                 tooltipRouteContent.TBP = routeData.TBP;
                 tooltipRouteContent.provenance = routeData.provenance;
+                // tooltipRouteContent.categoryPath = categoryPath;
+                tooltipRouteContent.categoryPath = ["Constructions", "Buildings", "Churches", "Truss legs"];
 
                 visiblePath.setStyle({ weight: 5, opacity: 1 });
 

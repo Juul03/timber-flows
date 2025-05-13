@@ -82,3 +82,48 @@ export const getUniqueLocations = (data) => {
     console.log("locations", sortedArray);
     return sortedArray;
 };
+
+export function findCategoryPathFromLocation(tree, location, keywordMap) {
+  const lowerLoc = location.toLowerCase();
+
+  // Step 1: Find all matching English labels based on Dutch keywords
+  const matchedLabels = [];
+
+  for (const [englishLabel, keywords] of Object.entries(keywordMap)) {
+    for (const keyword of keywords) {
+      if (lowerLoc.includes(keyword)) {
+        matchedLabels.push(englishLabel);
+        break;
+      }
+    }
+  }
+
+  // Step 2: Try to find a path in the tree for each matched label
+  for (const label of matchedLabels) {
+    const path = findCategoryPath(tree, label);
+    if (path) return path;
+  }
+
+  // Step 3: Optional fallback
+  return ['Uncategorized'];
+}
+
+// Your original recursive tree search remains unchanged
+export function findCategoryPath(tree, targetLabel, path = []) {
+  for (const key in tree) {
+    const newPath = [...path, key];
+
+    if (key === targetLabel) {
+      return newPath;
+    }
+
+    const child = tree[key];
+    if (child && typeof child === 'object') {
+      const result = findCategoryPath(child, targetLabel, newPath);
+      if (result) return result;
+    }
+  }
+
+  return null;
+}
+
