@@ -129,7 +129,6 @@
             routeDrawCounts[provenance] = count + 1;
             
             const parentType = subtypeMap[objectType] || objectType;
-            console.log("objecttype", objectType);
             const color = colorScale(parentType);
 
             addTradeRouteToMap(matchedRoute, offset, color);
@@ -203,11 +202,11 @@
             drawMapData();
 
             // // get long and lat on click
-            const onMapClick = (event) => {
-                alert("You clicked the map at " + event.latlng);
-            }
+            // const onMapClick = (event) => {
+            //     alert("You clicked the map at " + event.latlng);
+            // }
  
-            map.on('click', onMapClick);
+            // map.on('click', onMapClick);
         }
     });
 
