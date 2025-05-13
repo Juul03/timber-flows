@@ -1,23 +1,50 @@
-<script>
-  export let fellingDate;
-  export let location;
-  export let startYear;
-  export let endYear;
-</script>
 
-<div class="tooltip-content">
-  <h4>{location || 'Unknown'}</h4>
-  <p><strong>Felling:</strong> {fellingDate || 'n/a'}</p>
-  <p><strong>Start:</strong> {startYear || 'n/a'}</p>
-  <p><strong>End:</strong> {endYear || 'n/a'}</p>
+<div 
+    id="tooltip-route" 
+    class="position-absolute col-3 bottom-0 end-50" 
+    style="left: {tooltipPosition.x + 10}px; top: {tooltipPosition.y + 10}px;"
+    >
+    <div class="row bg-white rounded p-2">
+        <div class="col-4">
+            <p class="text-light d-flex flex-column m-0">
+                Startyear
+                <span class="fs-5 text-dark mt-n1">{tooltipRouteContent.startYear}</span>
+            </p>
+        </div>
+        <div class="col-4">
+            <p class="text-light d-flex flex-column m-0">
+                Endyear
+                <span class="fs-5 text-dark mt-n1">{tooltipRouteContent.endYear}</span>
+            </p>
+        </div>
+        <div class="col-4">
+            <p class="text-light d-flex flex-column m-0">
+                Length
+                <span class="fs-5 text-dark mt-n1">{tooltipRouteContent.length}</span>
+            </p>
+        </div>
+        <div class="col-4">
+            <p class="text-light d-flex flex-column m-0">
+                Fellingdate
+                <span class="fs-5 text-dark mt-n1">{tooltipRouteContent.fellingDate}</span>
+            </p>
+        </div>
+        <div class="col-4">
+            <p class="text-light d-flex flex-column m-0">
+                TBP
+                <span class="fs-5 text-dark mt-n1">{tooltipRouteContent.TBP}</span>
+            </p>
+        </div>
+        <div class="col-4">
+            <p class="text-light d-flex flex-column m-0">
+                Provenance
+                <span class="fs-5 text-dark mt-n1 text-wrap">{tooltipRouteContent.provenance}</span>
+            </p>
+        </div>
+    </div>
 </div>
 
-<style>
-.tooltip-content {
-  font-family: system-ui, sans-serif;
-  background: white;
-  border-radius: 6px;
-  padding: 0.5em;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-}
-</style>
+<script>
+  export let tooltipRouteContent;
+  export let tooltipPosition;
+</script>
