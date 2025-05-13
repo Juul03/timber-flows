@@ -171,23 +171,27 @@
             opacity: 0.7,
         }, 300, (completedPath) => {
             const visiblePath = completedPath;
+            let hoverPath;
 
             // Create an invisible thicker path on top for easier hover
-            const hoverPath = leaflet.polyline(visiblePath.getLatLngs(), {
-                color: 'transparent',
-                weight: 20,
-                opacity: 0,
-                className: 'hover-path',
-                pane: 'shadowPane'
-            }).addTo(map);
-
+            if(leaflet) {
+                hoverPath = leaflet.polyline(visiblePath.getLatLngs(), {
+                    color: 'transparent',
+                    weight: 20,
+                    opacity: 0,
+                    className: 'hover-path',
+                    pane: 'shadowPane'
+                }).addTo(map);
+            }
+          
             // Highlight visible path on hover and show tooltip
             hoverPath.on('mouseover', () => {
                 showTooltipRoute = true;
 
                 // label = find subcategory in the filters
-                // const location = routeData.location;
-                // const categoryPath = findCategoryPathFromLocation(filtersObject, location, keywordMap);
+                const location = routeData.location;
+                const categoryPath = findCategoryPathFromLocation(filtersObject, location, keywordMap);
+                console.log("location halfmodel", location);
 
                 tooltipRouteContent.fellingDate = routeData.fellingDate;
                 tooltipRouteContent.location = routeData.location;
@@ -196,8 +200,8 @@
                 tooltipRouteContent.length = routeData.length;
                 tooltipRouteContent.TBP = routeData.TBP;
                 tooltipRouteContent.provenance = routeData.provenance;
-                // tooltipRouteContent.categoryPath = categoryPath;
-                tooltipRouteContent.categoryPath = ["Constructions", "Buildings", "Churches", "Truss legs"];
+                tooltipRouteContent.categoryPath = categoryPath;
+                // tooltipRouteContent.categoryPath = ["Constructions", "Buildings", "Churches", "Truss legs"];
 
                 visiblePath.setStyle({ weight: 5, opacity: 1 });
 
@@ -303,7 +307,7 @@
                 });
             }
 
-            updateCurrentMap(selectedMapType);
+            updateCurrentMap(selectedMapType || 'area');
 
             addZoomControl(leaflet, map);
 
@@ -370,7 +374,9 @@
     let updateCurrentMap = (mapType) => {
         const selected = mapTypes.find(m => m.value === mapType);
 
-        if (!selected) return;
+        if (!selected || !selected.mapLink) {
+            return;
+        }
 
         // Remove the old tile layer if it exists
         if (currentTileLayer) {
@@ -384,7 +390,7 @@
 
     }
 
-    $: if(selectedMapType && leaflet) {
+    $: if(selectedMapType && leaflet && map) {
         updateCurrentMap(selectedMapType);
     }
 
