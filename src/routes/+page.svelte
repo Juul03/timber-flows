@@ -164,8 +164,6 @@
         ...uniqueProvenancesConstructions
     ])].sort();
 
-    console.log("unique provenances", allUniqueProvenances);
-
     // Get all felling dates 
     let fellingDatesHalfModels = getFellingDates(halfModels);
     
@@ -267,7 +265,7 @@
                         timelineDataSelection.push(...matchingItems);
 
                         if (matchingItems.length > 0) {
-                            console.log(`✅ Matches in group "${group.name}" of "${purposes.name}" for year ${currentYearTimeline}:`, matchingItems);
+                            // console.log(`✅ Matches in group "${group.name}" of "${purposes.name}" for year ${currentYearTimeline}:`, matchingItems);
                         }
                     }
                 });
@@ -279,7 +277,7 @@
                 timelineDataSelection.push(...matchingItems);
 
                 if (matchingItems.length > 0) {
-                    console.log(`✅ Matches from "${dataSet.name}" in year ${currentYearTimeline}:`, matchingItems);
+                    // console.log(`✅ Matches from "${dataSet.name}" in year ${currentYearTimeline}:`, matchingItems);
                 }
             });
         }
@@ -292,7 +290,6 @@
     // on change, find right dataset
     $: if(selectionPath) {
         activeDataSets = filterDataOnSelection();
-        console.log("active data", activeDataSets);
     }
 
     $: if(currentYearTimeline) {

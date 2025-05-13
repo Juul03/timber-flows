@@ -8,6 +8,9 @@
 <script>
     import { onMount, onDestroy } from 'svelte';
     import { browser } from '$app/environment';
+    import { lineString } from '@turf/helpers';
+    import bezierSpline from '@turf/bezier-spline';
+
 
     import { colorScale, subtypeMap } from '$lib/scripts/colorConfig';
 
@@ -57,6 +60,14 @@
         // routeDrawCounts = {};
     };
 
+    const smoothPath = (coords) => {
+        // Turf expects [lng, lat], not [lat, lng]
+        const line = lineString(coords.map(([lat, lng]) => [lng, lat]));
+        const curved = bezierSpline(line, { sharpness: 0.85 });
+
+        // Convert back to [lat, lng]
+        return curved.geometry.coordinates.map(([lng, lat]) => [lat, lng]);
+    };
 
     // Calculate offset of path
     const offsetPath = (path, [latOffset = 0, lngOffset = 0]) => {
@@ -66,13 +77,16 @@
             return [lat + latOffset, lng + lngOffset];
         });
     };
-
     
-    const animatePath = (coords, options = {}, interval = 200, onComplete = () => {}) => {
+    const animatePath = (coords, options = {}, totalDuration = 3000, onComplete = () => {}) => {
+        if (!coords.length) return;
+
         let index = 1;
         const path = L.polyline([coords[0]], options).addTo(map);
 
         animatingTradeRoutes.push(path);
+
+        const interval = totalDuration / coords.length;
 
         const drawNextPoint = () => {
             if (index < coords.length) {
@@ -88,24 +102,14 @@
 
         drawNextPoint();
         return path;
-    }
+    };
 
     // add all trade routes
-    const addTradeRoutesToMap = (leaflet, routes, map) => {
-        routes.forEach(route => {
-            animatePath(route.coordinates, {
-                color: 'purple',
-                weight: 2,
-                opacity: 0.7,
-            }, 300);
-        })
-    }
-
-    // add trade route based on data
     const addTradeRouteToMap = (route, offset, color) => {
         const offsetCoordinates = offsetPath(route.coordinates, offset);
+        const smoothedCoordinates = smoothPath(offsetCoordinates);
 
-        animatePath(offsetCoordinates, {
+        animatePath(smoothedCoordinates, {
             color: color,
             weight: 2,
             opacity: 0.7,
@@ -116,16 +120,14 @@
 
     // Draw route on map
     const drawTradeRoute = (data, objectType) => {
-        console.log("active object type", objectType);
         const provenance = data.provenance;
         const matchedRoute = tradeRoutesCoords.find(route => route.name === provenance);
 
         if (matchedRoute) {
             const count = routeDrawCounts[provenance] || 0;
-            const offset = [0.01 * count, 0.01 * count];
+            const offset = [0.03 * count, 0.03 * count];
             routeDrawCounts[provenance] = count + 1;
             
-            console.log("objecttype",objectType);
             const parentType = subtypeMap[objectType] || objectType;
             const color = colorScale(parentType);
 
