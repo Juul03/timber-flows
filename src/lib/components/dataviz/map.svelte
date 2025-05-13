@@ -33,6 +33,8 @@
     let mapContainer;
     let map;
 
+    let currentTileLayer;
+
     // Trade city icon
     const createCustomIcon = (leaflet) => {
         return leaflet.divIcon({
@@ -124,8 +126,9 @@
         return path;
     };
 
+
     // add all trade routes
-    const addTradeRouteToMap = (route, offset, color) => {
+    const addTradeRouteToMap = (route, offset, color, routeData) => {
         const offsetCoordinates = offsetPath(route.coordinates, offset);
         const smoothedCoordinates = smoothPath(offsetCoordinates);
 
@@ -134,9 +137,61 @@
             weight: 2,
             opacity: 0.7,
         }, 300, (completedPath) => {
-            drawnTradeRoutes.push(completedPath);
-        });
+            const visiblePath = completedPath;
+
+            // Create an invisible thicker path on top for easier hover
+            const hoverPath = L.polyline(visiblePath.getLatLngs(), {
+                color: 'transparent',
+                weight: 20, // Big hover area
+                opacity: 0,
+                className: 'hover-path',
+                pane: 'shadowPane' // Ensure it's on top
+            }).addTo(map);
+
+            // Add tooltip with data after drawing
+            hoverPath.bindTooltip(
+                `
+                    <strong>Felling Date:</strong> ${routeData.fellingDate || 'n/a'}<br>
+                    <strong>Location:</strong> ${routeData.location || 'Unknown'}<br>
+                    <strong>Start Year:</strong> ${routeData.startYear || 'n/a'}<br>
+                    <strong>End Year:</strong> ${routeData.endYear || 'n/a'}
+                `,
+                {
+                    sticky: true,
+                    direction: 'top',
+                    opacity: 0.9,
+                    className: 'custom-route-tooltip'
+                }
+            );
+
+            // Hover interactions
+            hoverPath.on('mouseover', () => {
+                visiblePath.setStyle({ weight: 5, opacity: 1 });
+
+                // Dim other visible paths
+                drawnTradeRoutes.forEach(path => {
+                    if (path !== visiblePath && path.setStyle) {
+                        path.setStyle({ opacity: 0.2 });
+                    }
+                });
+            });
+
+            hoverPath.on('mouseout', () => {
+                visiblePath.setStyle({ weight: 2, opacity: 0.7 });
+
+                // Restore all other paths
+                drawnTradeRoutes.forEach(path => {
+                    if (path.setStyle) {
+                        path.setStyle({ opacity: 0.7 });
+                    }
+                });
+            });
+
+            // Track both paths
+            drawnTradeRoutes.push(visiblePath, hoverPath);
+            });
     };
+
 
     // Draw route on map
     const drawTradeRoute = (data, objectType) => {
@@ -151,7 +206,7 @@
             const parentType = subtypeMap[objectType] || objectType;
             const color = colorScale(parentType);
 
-            addTradeRouteToMap(matchedRoute, offset, color);
+            addTradeRouteToMap(matchedRoute, offset, color, data);
         } else {
             // console.warn("No matching route for provenance:", provenance);
         }
@@ -256,19 +311,6 @@
         animatingTradeRoutes = [];
     };
 
-
-    $: if (leafletReady && map && activeDataSets) {
-        drawMapData();
-    }
-
-    $: if (timelineDataSelection != undefined && leafletReady && map) {
-        drawTimelineYearData();
-    }
-
-
-
-
-
     let mapTypes = [
         {
             value: 'area',
@@ -289,9 +331,6 @@
 
     ];
 
-    let currentTileLayer;
-
-
     let updateCurrentMap = (mapType) => {
         const selected = mapTypes.find(m => m.value === mapType);
 
@@ -311,6 +350,14 @@
 
     $: if(selectedMapType && leaflet) {
         updateCurrentMap(selectedMapType);
+    }
+
+    $: if (leafletReady && map && activeDataSets) {
+        drawMapData();
+    }
+
+    $: if (timelineDataSelection != undefined && leafletReady && map) {
+        drawTimelineYearData();
     }
 </script>  
     
