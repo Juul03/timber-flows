@@ -40,6 +40,7 @@
     
     let mapContainer;
     let map;
+    let currentTileLayer;
     
     let showTooltipRoute = false;
     export let tooltipPosition = { x: 0, y: 0 };
@@ -52,8 +53,6 @@
         TBP: '',
         provenance: '',
     }
-
-    let currentTileLayer;
 
     // Trade city icon
     const createCustomIcon = (leaflet) => {
@@ -146,7 +145,6 @@
         return path;
     };
 
-
     // add all trade routes
     const addTradeRouteToMap = (route, offset, color, routeData) => {
         const offsetCoordinates = offsetPath(route.coordinates, offset);
@@ -181,18 +179,25 @@
                 tooltipRouteContent.provenance = routeData.provenance;
 
                 visiblePath.setStyle({ weight: 5, opacity: 1 });
+
+                drawnTradeRoutes.forEach(route => {
+                    if(route !== visiblePath) {
+                        route.setStyle({ opacity: 0.35 });
+                    }
+                })
             });
 
             hoverPath.on('mouseout', () => {
                 showTooltipRoute = false;
                 visiblePath.setStyle({ weight: 2, opacity: 0.7 });
+                drawnTradeRoutes.forEach(route => {
+                    route.setStyle({ opacity: 0.7 });
+                })
             });
 
-            // Optionally store both paths for cleanup
             drawnTradeRoutes.push(visiblePath, hoverPath);
         });
     };
-
 
     // Draw route on map
     const drawTradeRoute = (data, objectType) => {

@@ -1,10 +1,38 @@
+<script>
+    export let tooltipRouteContent;
+    export let tooltipPosition;
+
+    // Calculate tooltip position dynamically based on mouse location
+    let adjustedPosition = { x: tooltipPosition.x, y: tooltipPosition.y };
+
+    // code from previous project - disney incident matcher rep https://github.com/Juul03/ID-tech-track-23-24
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+
+    if (tooltipPosition.x < screenWidth / 2) {
+        // If mouse is on the left half, position tooltip on the right side of the cursor
+        adjustedPosition.x = tooltipPosition.x + 10;
+    } else {
+        // If mouse is on the right half, position tooltip on the left side of the cursor
+        adjustedPosition.x = tooltipPosition.x - 390;
+    }
+
+    // Adjust vertical position (top or bottom)
+    if (tooltipPosition.y < screenHeight / 2) {
+        // If mouse is on the top half, position tooltip below the cursor
+        adjustedPosition.y = tooltipPosition.y + 10;
+    } else {
+        // If mouse is on the bottom half, position tooltip above the cursor
+        adjustedPosition.y = tooltipPosition.y - 120;
+    }
+</script>
 
 <div 
     id="tooltip-route" 
-    class="position-absolute col-3 bottom-0 end-50" 
-    style="left: {tooltipPosition.x + 10}px; top: {tooltipPosition.y + 10}px;"
-    >
-    <div class="row bg-white rounded p-2">
+    class="position-absolute col-3 bg-white rounded p-2"
+    style="left: {adjustedPosition.x}px; top: {adjustedPosition.y}px;"
+>
+    <div class="row">
         <div class="col-4">
             <p class="text-light d-flex flex-column m-0">
                 Startyear
@@ -43,8 +71,3 @@
         </div>
     </div>
 </div>
-
-<script>
-  export let tooltipRouteContent;
-  export let tooltipPosition;
-</script>
