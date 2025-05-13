@@ -4,6 +4,52 @@
     bind:this={mapContainer}
     >
 </div>
+{#if showTooltipRoute}
+<div 
+    id="tooltip-route" 
+    class="position-absolute col-3 bottom-0 end-50" 
+    style="left: {tooltipPosition.x + 10}px; top: {tooltipPosition.y + 10}px;"
+    >
+        <div class="row bg-white rounded p-2">
+            <div class="col-4">
+                <p class="text-light d-flex flex-column m-0">
+                    Startyear
+                    <span class="fs-5 text-dark mt-n1">{tooltipRouteContent.startYear}</span>
+                </p>
+            </div>
+            <div class="col-4">
+                <p class="text-light d-flex flex-column m-0">
+                    Endyear
+                    <span class="fs-5 text-dark mt-n1">{tooltipRouteContent.endYear}</span>
+                </p>
+            </div>
+            <div class="col-4">
+                <p class="text-light d-flex flex-column m-0">
+                    Length
+                    <span class="fs-5 text-dark mt-n1">{tooltipRouteContent.length}</span>
+                </p>
+            </div>
+            <div class="col-4">
+                <p class="text-light d-flex flex-column m-0">
+                    Fellingdate
+                    <span class="fs-5 text-dark mt-n1">{tooltipRouteContent.fellingDate}</span>
+                </p>
+            </div>
+            <div class="col-4">
+                <p class="text-light d-flex flex-column m-0">
+                    TBP
+                    <span class="fs-5 text-dark mt-n1">{tooltipRouteContent.TBP}</span>
+                </p>
+            </div>
+            <div class="col-4">
+                <p class="text-light d-flex flex-column m-0">
+                    Provenance
+                    <span class="fs-5 text-dark mt-n1 text-wrap">{tooltipRouteContent.provenance}</span>
+                </p>
+            </div>
+        </div>
+    </div>
+{/if}
 
 <script>
     import { onMount, onDestroy } from 'svelte';
@@ -32,6 +78,18 @@
     
     let mapContainer;
     let map;
+    
+    let showTooltipRoute = false;
+    let tooltipPosition = { x: 0, y: 0 };
+    let tooltipRouteContent = {
+        fellingDate: '',
+        location: '',
+        startYear: '',
+        endYear: '',
+        length: '',
+        TBP: '',
+        provenance: '',
+    }
 
     let currentTileLayer;
 
@@ -142,34 +200,29 @@
             // Create an invisible thicker path on top for easier hover
             const hoverPath = L.polyline(visiblePath.getLatLngs(), {
                 color: 'transparent',
-                weight: 20, // Big hover area
+                weight: 20,
                 opacity: 0,
                 className: 'hover-path',
-                pane: 'shadowPane' // Ensure it's on top
+                pane: 'shadowPane'
             }).addTo(map);
 
-            // Add tooltip with data after drawing
-            hoverPath.bindTooltip(
-                `
-                    <strong>Felling Date:</strong> ${routeData.fellingDate || 'n/a'}<br>
-                    <strong>Location:</strong> ${routeData.location || 'Unknown'}<br>
-                    <strong>Start Year:</strong> ${routeData.startYear || 'n/a'}<br>
-                    <strong>End Year:</strong> ${routeData.endYear || 'n/a'}
-                `,
-                {
-                    sticky: true,
-                    direction: 'top',
-                    opacity: 0.9,
-                    className: 'custom-route-tooltip'
-                }
-            );
-
-            // Highlight visible path on hover
+            // Highlight visible path on hover and show tooltip
             hoverPath.on('mouseover', () => {
+                showTooltipRoute = true;
+
+                tooltipRouteContent.fellingDate = routeData.fellingDate;
+                tooltipRouteContent.location = routeData.location;
+                tooltipRouteContent.startYear = routeData.startYear;
+                tooltipRouteContent.endYear = routeData.endYear;
+                tooltipRouteContent.length = routeData.length;
+                tooltipRouteContent.TBP = routeData.TBP;
+                tooltipRouteContent.provenance = routeData.provenance;
+
                 visiblePath.setStyle({ weight: 5, opacity: 1 });
             });
 
             hoverPath.on('mouseout', () => {
+                showTooltipRoute = false;
                 visiblePath.setStyle({ weight: 2, opacity: 0.7 });
             });
 
@@ -252,6 +305,15 @@
             leafletReady = true;
 
             map = leaflet.map(mapContainer).setView([54.6128, 12.216797], 5);
+            if (map) {
+                map.on('mousemove', (event) => {
+                    // Capture the mouse position relative to the map container
+                    tooltipPosition = {
+                        x: event.originalEvent.clientX,
+                        y: event.originalEvent.clientY,
+                    };
+                });
+            }
 
             updateCurrentMap(selectedMapType);
 
