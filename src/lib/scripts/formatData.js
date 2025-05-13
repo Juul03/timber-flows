@@ -146,6 +146,13 @@ export function findCategoryPathFromLocation(tree, location, keywordMap) {
 
   dfs(tree);
 
+  if (!bestPath) {
+        if (lowerLoc && lowerLoc !== '' && !lowerLoc.includes('ng-mc') && !lowerLoc.includes('indet')) {
+            const constructionsPath = findCategoryPath(tree, 'Constructions');
+            if (constructionsPath) return constructionsPath;
+        }
+  }
+
   return bestPath || ['Uncategorized'];
 }
 
