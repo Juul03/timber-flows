@@ -174,8 +174,8 @@
 
             if (index < coords.length) {
                 if(totalDuration === animationSpeedFast) {
-                    // Calculate fading
-                    const newOpacity = initialOpacity - opacityStep * index;
+                    const easedProgress = Math.pow(progress, 2);
+                    const newOpacity = initialOpacity - easedProgress * (initialOpacity - finalOpacity);
                     path.setStyle({ opacity: newOpacity });
                 }
                 
@@ -211,49 +211,49 @@
             let hoverPath;
 
             // Create an invisible thicker path on top for easier hover
-            // if(leaflet && map) {
-            //     hoverPath = leaflet.polyline(visiblePath.getLatLngs(), {
-            //         color: 'transparent',
-            //         weight: 20,
-            //         opacity: 0,
-            //         className: 'hover-path',
-            //         pane: 'shadowPane'
-            //     }).addTo(map);
-            // }
+            if(leaflet && map !== null) {
+                hoverPath = leaflet.polyline(visiblePath.getLatLngs(), {
+                    color: 'transparent',
+                    weight: 20,
+                    opacity: 0,
+                    className: 'hover-path',
+                    pane: 'shadowPane'
+                }).addTo(map);
+            }
           
             // Highlight visible path on hover and show tooltip
-            // hoverPath.on('mouseover', () => {
-            //     showTooltipRoute = true;
+            hoverPath.on('mouseover', () => {
+                showTooltipRoute = true;
 
-            //     const location = routeData.location;
-            //     const categoryPath = findCategoryPathFromLocation(filtersObject, location, keywordMap);
+                const location = routeData.location;
+                const categoryPath = findCategoryPathFromLocation(filtersObject, location, keywordMap);
 
-            //     tooltipRouteContent.fellingDate = routeData.fellingDate;
-            //     tooltipRouteContent.location = routeData.location;
-            //     tooltipRouteContent.startYear = routeData.startYear;
-            //     tooltipRouteContent.endYear = routeData.endYear;
-            //     tooltipRouteContent.length = routeData.length;
-            //     tooltipRouteContent.TBP = routeData.TBP;
-            //     tooltipRouteContent.provenance = routeData.provenance;
-            //     tooltipRouteContent.categoryPath = categoryPath;
-            //     tooltipRouteContent.keyCode = routeData.keyCode;
+                tooltipRouteContent.fellingDate = routeData.fellingDate;
+                tooltipRouteContent.location = routeData.location;
+                tooltipRouteContent.startYear = routeData.startYear;
+                tooltipRouteContent.endYear = routeData.endYear;
+                tooltipRouteContent.length = routeData.length;
+                tooltipRouteContent.TBP = routeData.TBP;
+                tooltipRouteContent.provenance = routeData.provenance;
+                tooltipRouteContent.categoryPath = categoryPath;
+                tooltipRouteContent.keyCode = routeData.keyCode;
 
-            //     visiblePath.setStyle({ weight: 5, opacity: 1 });
+                visiblePath.setStyle({ weight: 5, opacity: 1 });
 
-            //     drawnTradeRoutes.forEach(route => {
-            //         if(route !== visiblePath) {
-            //             route.setStyle({ opacity: 0.35 });
-            //         }
-            //     })
-            // });
+                drawnTradeRoutes.forEach(route => {
+                    if(route !== visiblePath) {
+                        route.setStyle({ opacity: 0.35 });
+                    }
+                })
+            });
 
-            // hoverPath.on('mouseout', () => {
-            //     showTooltipRoute = false;
-            //     visiblePath.setStyle({ weight: 2, opacity: 0.7 });
-            //     drawnTradeRoutes.forEach(route => {
-            //         route.setStyle({ opacity: 0.7 });
-            //     })
-            // });
+            hoverPath.on('mouseout', () => {
+                showTooltipRoute = false;
+                visiblePath.setStyle({ weight: 2, opacity: 0.7 });
+                drawnTradeRoutes.forEach(route => {
+                    route.setStyle({ opacity: 0.7 });
+                })
+            });
 
             drawnTradeRoutes.push(visiblePath, hoverPath);
         });
