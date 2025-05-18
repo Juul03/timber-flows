@@ -153,7 +153,8 @@
 
         const duration = 5000;
         const totalSteps = filledData.length;
-        stepDuration = duration / totalSteps;
+        // stepDuration = duration / totalSteps;
+        stepDuration = 100;
 
         // If it's already at the end, reset to the beginning
         if (timelineIndex >= filledData.length) {

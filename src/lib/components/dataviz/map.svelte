@@ -46,6 +46,10 @@
     let mapContainer;
     let map;
     let currentTileLayer;
+
+    let animationSpeed;
+    let animationSpeedSlow = 5000;
+    let animationSpeedFast = 250;
     
     let showTooltipRoute = false;
     export let tooltipPosition = { x: 0, y: 0 };
@@ -126,21 +130,29 @@
         });
     };
     
-    const animatePath = (coords, options = {}, totalDuration = 3000, onComplete = () => {}) => {
+    const animatePath = (coords, options = {}, totalDuration = animationSpeed, onComplete = () => {}) => {
         if (!coords.length) return;
 
-        let index = 1;
-        const path = L.polyline([coords[0]], options).addTo(map);
-
+        const path = leaflet.polyline([coords[0]], options).addTo(map);
         animatingTradeRoutes.push(path);
 
-        const interval = totalDuration / coords.length;
+        let startTime = null;
+        let index = 1;
 
-        const drawNextPoint = () => {
-            if (index < coords.length) {
+        const step = (timestamp) => {
+            if (!startTime) startTime = timestamp;
+
+            const elapsed = timestamp - startTime;
+            const progress = Math.min(elapsed / totalDuration, 1);
+            const targetIndex = Math.floor(progress * coords.length);
+
+            while (index < targetIndex && index < coords.length) {
                 path.addLatLng(coords[index]);
                 index++;
-                setTimeout(drawNextPoint, interval);
+            }
+
+            if (index < coords.length) {
+                requestAnimationFrame(step);
             } else {
                 animatingTradeRoutes = animatingTradeRoutes.filter(p => p !== path);
                 drawnTradeRoutes.push(path);
@@ -148,9 +160,10 @@
             }
         };
 
-        drawNextPoint();
+        requestAnimationFrame(step);
         return path;
     };
+
 
     // add all trade routes
     const addTradeRouteToMap = (route, offset, color, routeData) => {
@@ -161,7 +174,7 @@
             color: color,
             weight: 2,
             opacity: 0.7,
-        }, 300, (completedPath) => {
+        }, animationSpeed, (completedPath) => {
             const visiblePath = completedPath;
             let hoverPath;
 
@@ -296,7 +309,7 @@
                     };
                 });
             }
-
+            animationSpeed = animationSpeedSlow;
             updateCurrentMap(selectedMapType || 'area');
 
             addZoomControl(leaflet, map);
@@ -385,10 +398,12 @@
     }
 
     $: if (leafletReady && map && activeDataSets) {
+        animationSpeed = animationSpeedSlow;
         drawMapData();
     }
 
     $: if (timelineDataSelection != undefined && leafletReady && map) {
+        animationSpeed = animationSpeedFast;
         drawTimelineYearData();
     }
 </script>  
