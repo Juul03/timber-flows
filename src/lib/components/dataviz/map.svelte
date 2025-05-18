@@ -133,10 +133,17 @@
     const animatePath = (coords, options = {}, totalDuration = animationSpeed, onComplete = () => {}) => {
         if (!coords.length) return;
 
-        const path = leaflet.polyline([coords[0]], options).addTo(map);
+        const path = leaflet.polyline([coords[0]], {
+            ...options,
+            opacity: 1
+        }).addTo(map);
         animatingTradeRoutes.push(path);
 
         let startTime = null;
+        const initialOpacity = 1;
+        const finalOpacity = 0.1;
+        const opacityStep = (initialOpacity - finalOpacity) / coords.length;
+
         let index = 1;
 
         const step = (timestamp) => {
@@ -152,10 +159,21 @@
             }
 
             if (index < coords.length) {
+                if(totalDuration === animationSpeedFast) {
+                    // Calculate fading
+                    const newOpacity = initialOpacity - opacityStep * index;
+                    path.setStyle({ opacity: newOpacity });
+                }
+                
                 requestAnimationFrame(step);
             } else {
                 animatingTradeRoutes = animatingTradeRoutes.filter(p => p !== path);
                 drawnTradeRoutes.push(path);
+
+                if(totalDuration === animationSpeedFast) {
+                    path.setStyle({ opacity: finalOpacity });
+                }
+                
                 onComplete(path);
             }
         };
@@ -329,17 +347,22 @@
     });
 
     const drawTimelineYearData = () => {
-        clearTradeRoutesFromMap();
+    clearTradeRoutesFromMap();
 
-        if (Array.isArray(timelineDataSelection)) {
-            timelineDataSelection.forEach(data => {
-                const objectType = data.objectType || "unknown";
-                drawTradeRoute(data, data.objectType);
-            });
-        } else {
-            console.warn("timelineDataSelection is not an array", timelineDataSelection);
-        }
-    };
+    // Reset the draw counts per year
+    routeDrawCounts = {};
+
+    if (Array.isArray(timelineDataSelection)) {
+        console.log("timeline selection length", timelineDataSelection.length);
+        timelineDataSelection.forEach(data => {
+            const objectType = data.objectType || "unknown";
+            drawTradeRoute(data, objectType);
+        });
+    } else {
+        console.warn("timelineDataSelection is not an array", timelineDataSelection);
+    }
+};
+
 
     onDestroy(async () => {
        if(map) {
