@@ -66,6 +66,26 @@
         keyCode: '',
     }
 
+    let mapTypes = [
+        {
+            value: 'area',
+            mapLink: 'https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}{r}.png?api_key=c4121b12-d5f5-4e00-9ce7-d8abe5389b1b',
+            attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+
+        },
+        {
+            value: 'dark',
+            mapLink: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        },
+        {
+            value: 'rivers',
+            mapLink: 'https://tiles.stadiamaps.com/tiles/outdoors/{z}/{x}/{y}{r}.png',
+            attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</a>'
+        },
+
+    ];
+
     // Trade city icon
     const createCustomIcon = (leaflet) => {
         return leaflet.divIcon({
@@ -96,22 +116,28 @@
 
     const addProvenancesToMap = (leaflet, provenances, map) => {
         provenances.forEach(provenance => {
-            let polygon = L.polygon(provenance.coordinates, {
-                color: 'whitesmoke',
-                weight: 1,
+            let ellipse = L.ellipse(provenance.coordinateCenter, [provenance.xRadius, provenance.yRadius], 0, {
                 fillColor: 'dark',
-                fillOpacity: 0.2
+                fillOpacity: 0.15,
+                color: 'whitesmoke',
+                weight: 0.5
             }).addTo(map);
-            polygon.bindPopup(provenance.name);
+            ellipse.bindPopup(provenance.name);
+
         })
     }
+    
 
     // Clear traderoutes when data is updated
     const clearTradeRoutesFromMap = () => {
-        drawnTradeRoutes.forEach(layer => map.removeLayer(layer));
+        drawnTradeRoutes.forEach(layer => {
+            if (layer && map.hasLayer(layer)) {
+                map.removeLayer(layer);
+            }
+        });
         drawnTradeRoutes = [];
-        // routeDrawCounts = {};
     };
+
 
     const smoothPath = (coords) => {
         // Turf expects [lng, lat], not [lat, lng]
@@ -168,8 +194,8 @@
 
             if (index < coords.length) {
                 if(totalDuration === animationSpeedFast) {
-                    // Calculate fading
-                    const newOpacity = initialOpacity - opacityStep * index;
+                    const easedProgress = Math.pow(progress, 2);
+                    const newOpacity = initialOpacity - easedProgress * (initialOpacity - finalOpacity);
                     path.setStyle({ opacity: newOpacity });
                 }
                 
@@ -205,7 +231,7 @@
             let hoverPath;
 
             // Create an invisible thicker path on top for easier hover
-            if(leaflet && map) {
+            if(leaflet && map !== undefined) {
                 hoverPath = leaflet.polyline(visiblePath.getLatLngs(), {
                     color: 'transparent',
                     weight: 20,
@@ -263,7 +289,9 @@
             const offset = [0.03 * count, 0.03 * count];
             routeDrawCounts[provenance] = count + 1;
             
+            console.log("pbecttype", objectType);
             const parentType = subtypeMap[objectType] || objectType;
+            console.log("parenttype", parentType);
             const color = colorScale(parentType);
 
             addTradeRouteToMap(matchedRoute, offset, color, data);
@@ -284,7 +312,7 @@
     };
 
     const processActiveDataSets = (activeDataSets) => {
-        // console.log("activedatasets", activeDataSets);
+        console.log("activedatasets", activeDataSets);
         if (!Array.isArray(activeDataSets)) {
             console.warn("Expected activeDataSets to be an array");
             return;
@@ -324,6 +352,7 @@
         if (browser) {
             leaflet = await import('leaflet');
             leafletReady = true;
+            await import('leaflet-ellipse');
 
             map = leaflet.map(mapContainer).setView([54.6128, 12.216797], 5);
             if (map) {
@@ -335,6 +364,14 @@
                     };
                 });
             }
+
+            // get long and lat on click
+            // const onMapClick = (event) => {
+            //     alert("You clicked the map at " + event.latlng);
+            // }
+ 
+            // map.on('click', onMapClick);
+
             animationSpeed = animationSpeedSlow;
             updateCurrentMap(selectedMapType || 'area');
 
@@ -344,32 +381,36 @@
             addProvenancesToMap(leaflet, provenancesCoords, map);
 
             drawMapData();
-
-            // // get long and lat on click
-            // const onMapClick = (event) => {
-            //     alert("You clicked the map at " + event.latlng);
-            // }
- 
-            // map.on('click', onMapClick);
         }
     });
 
     const drawTimelineYearData = () => {
         clearTradeRoutesFromMap();
 
-        // Reset the draw counts per year
         routeDrawCounts = {};
 
         if (Array.isArray(timelineDataSelection)) {
-            timelineDataSelection.forEach(data => {
-                const objectType = data.objectType || "unknown";
-                drawTradeRoute(data, objectType);
+            timelineDataSelection.forEach(firstLevel => {
+                const objectType = firstLevel.name || "unknown";
+
+                if (Array.isArray(firstLevel.data)) {
+                    firstLevel.data.forEach(secondLevel => {
+                        if (secondLevel && Array.isArray(secondLevel.data)) {
+                            // Nested data, draw each item
+                            secondLevel.data.forEach(item => {
+                                drawTradeRoute(item, objectType);
+                            });
+                        } else {
+                            // Single layer data (unlikely here, but just in case)
+                            drawTradeRoute(secondLevel, objectType);
+                        }
+                    });
+                }
             });
         } else {
             console.warn("timelineDataSelection is not an array", timelineDataSelection);
         }
     };
-
 
     onDestroy(async () => {
        if(map) {
@@ -383,26 +424,6 @@
         });
         animatingTradeRoutes = [];
     };
-
-    let mapTypes = [
-        {
-            value: 'area',
-            mapLink: 'https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}{r}.png?api_key=c4121b12-d5f5-4e00-9ce7-d8abe5389b1b',
-            attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-
-        },
-        {
-            value: 'dark',
-            mapLink: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        },
-        {
-            value: 'rivers',
-            mapLink: 'https://tiles.stadiamaps.com/tiles/outdoors/{z}/{x}/{y}{r}.png',
-            attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</a>'
-        },
-
-    ];
 
     let updateCurrentMap = (mapType) => {
         const selected = mapTypes.find(m => m.value === mapType);
