@@ -289,9 +289,7 @@
             const offset = [0.03 * count, 0.03 * count];
             routeDrawCounts[provenance] = count + 1;
             
-            console.log("pbecttype", objectType);
             const parentType = subtypeMap[objectType] || objectType;
-            console.log("parenttype", parentType);
             const color = colorScale(parentType);
 
             addTradeRouteToMap(matchedRoute, offset, color, data);
@@ -312,7 +310,7 @@
     };
 
     const processActiveDataSets = (activeDataSets) => {
-        console.log("activedatasets", activeDataSets);
+        // console.log("activedatasets", activeDataSets);
         if (!Array.isArray(activeDataSets)) {
             console.warn("Expected activeDataSets to be an array");
             return;
