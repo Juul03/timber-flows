@@ -178,12 +178,49 @@
         console.log("open timeline events");
     }
 
-
     // onMount
     onMount(() => {
         fellingDateFrequency = getFellingDateFrequency(activeDataSets);
         drawBarchart(fellingDateFrequency);
     });
+
+    // timeline tooltip
+    const showTooltip = (event, year) => {
+        let tooltip = d3.select("#tooltip");
+        if (tooltip.empty()) {
+            tooltip = d3.select("body").append("div").attr("id", "tooltip")
+            .style("position", "absolute")
+            .style("z-index", "10000")
+            .style("background", "black")
+            .style("color", "white")
+            .style("padding", "4px 8px")
+            .style("border-radius", "4px")
+            .style("pointer-events", "none");
+        }
+        tooltip
+            .style("left", (event.pageX - 35) + "px")
+            // .style("top", (event.pageY + 25) + "px")
+            .style("top", (event.pageY - 45) + "px")
+            .style("display", "block")
+            .text(`Year: ${year}`);
+    }
+
+    const hideTooltip = () => {
+        d3.select("#tooltip").style("display", "none");
+    }
+
+    const highlightBar = (year) => {
+        svg.selectAll(".bar")
+            .transition().duration(50)
+            .attr("fill", d => d.fellingDate === year ? "white" : "rgba(0, 0, 0, 0.65)");
+    }
+
+    const resetBarHighlight = () => {
+        svg.selectAll(".bar")
+            .transition().duration(50)
+            .attr("fill", "rgba(0, 0, 0, 0.65)");
+    }
+
 
     // Function to draw the bar chart
     const drawBarchart = (data) => {
@@ -311,6 +348,14 @@
             .transition().duration(500)
             .attr("y", d => y(d.frequency))
             .attr("height", d => y(0) - y(d.frequency));
+        
+        bars.on("mouseover", (event, d, nodes) => {
+            d3.select(nodes[0]).attr("fill", "blue");
+        })
+        .on("mouseout", (event, d, nodes) => {
+            d3.select(nodes[0]).attr("fill", "rgba(0, 0, 0, 0.65)");
+        });
+
 
         svg.append("defs")
         .append("filter")
@@ -323,10 +368,10 @@
                         0 0 1 0 0
                         0 0 0 0.3 0" result="blurry"/>
             <feBlend in="SourceGraphic" in2="blurry" mode="normal"/>
-        `);    
+        `);
 
         // Add overlay for click detection
-        svg.append("rect")
+       svg.append("rect")
             .attr("class", "click-overlay")
             .attr("x", marginLeft)
             .attr("y", 0)
@@ -354,7 +399,27 @@
 
                 currentYearTimeline = closest;
                 timelineIndex = filledData.findIndex(d => d.fellingDate == closest);
+            })
+            .on("mousemove", (event) => {
+                const [mouseX] = d3.pointer(event);
+                const years = x.domain();
+                const closest = years.reduce((a, b) => {
+                const aDist = Math.abs(x(a) + x.bandwidth() / 2 - mouseX);
+                const bDist = Math.abs(x(b) + x.bandwidth() / 2 - mouseX);
+                return aDist < bDist ? a : b;
+                });
+
+                // Show or update tooltip with the year 'closest'
+                showTooltip(event, closest);
+
+                // Highlight the corresponding bar
+                highlightBar(closest);
+            })
+            .on("mouseout", () => {
+                hideTooltip();
+                resetBarHighlight();
             });
+
 
         // Append the SVG to the DOM (to the element with id 'chart-container')
         chartContainer.appendChild(svg.node());
