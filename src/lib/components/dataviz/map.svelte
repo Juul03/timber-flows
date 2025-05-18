@@ -95,56 +95,29 @@
     };
 
     const addProvenancesToMap = (leaflet, provenances, map) => {
-        // provenances.forEach(provenance => {
-        //     let polygon = leaflet.polygon(provenance.coordinates, {
-        //         color: 'whitesmoke',
-        //         weight: 1,
-        //         fillColor: 'dark',
-        //         fillOpacity: 0.2
-        //     }).addTo(map);
-        //     polygon.bindPopup(provenance.name);
-        // })
-
         provenances.forEach(provenance => {
             let ellipse = L.ellipse(provenance.coordinateCenter, [provenance.xRadius, provenance.yRadius], 0, {
                 fillColor: 'dark',
-                fillOpacity: 0.2,
+                fillOpacity: 0.15,
                 color: 'whitesmoke',
                 weight: 0.5
             }).addTo(map);
             ellipse.bindPopup(provenance.name);
 
         })
-
-       
-        // const center = [50.708634, 15.034357];
-        // const xRadius = 10000; // meters
-        // const yRadius = 5000;  // meters
-
-        // const ellipse = leaflet.ellipse(center, [xRadius, yRadius], {
-        //     color: 'blue',
-        //     weight: 2,
-        //     fillColor: 'blue',
-        //     fillOpacity: 0.3
-        // }).addTo(map);
-
-        // const ellipseLat = leaflet.circle([50.708634, 15.034357], {
-        //     radius: 5000,
-        //     color: 'blue',
-        //     fillOpacity: 0.3,
-        // }).addTo(map);
-
-
-        
     }
     
 
     // Clear traderoutes when data is updated
     const clearTradeRoutesFromMap = () => {
-        drawnTradeRoutes.forEach(layer => map.removeLayer(layer));
+        drawnTradeRoutes.forEach(layer => {
+            if (layer && map.hasLayer(layer)) {
+                map.removeLayer(layer);
+            }
+        });
         drawnTradeRoutes = [];
-        // routeDrawCounts = {};
     };
+
 
     const smoothPath = (coords) => {
         // Turf expects [lng, lat], not [lat, lng]

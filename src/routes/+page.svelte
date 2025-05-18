@@ -276,6 +276,7 @@
             });
         } else {
             // Not "all", filter directly
+            console.log("active", activeDataSets);
             activeDataSets.forEach(dataSet => {
                 const matchingItems = dataSet.data.filter(item => getYear(item.fellingDate) === currentYearTimeline);
                 timelineDataSelection.push(...matchingItems);
