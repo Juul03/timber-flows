@@ -6,6 +6,7 @@
             {timelineDataSelection}
             {selectedMapType}
             {keywordMap}
+            {timelineClicked}
         />
         <div class="container position-relative z-3">
             <div class="position-absolute w-100 top-0">
@@ -24,6 +25,7 @@
                         <Timeline 
                             {activeDataSets}
                             bind:currentYearTimeline
+                            bind:timelineClicked
                         />
                     </div>
                 </div>
@@ -82,6 +84,7 @@
 
     // Dynamic retrieved from timeline
     let currentYearTimeline;
+    let timelineClicked = false;
 
     // Dynamic retrieved from view buttons
     export let currentView = "map";

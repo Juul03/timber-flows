@@ -35,6 +35,7 @@
     export let timelineDataSelection;
     export let selectedMapType;
     export let keywordMap = {};
+    export let timelineClicked;
 
     // Compontent variables
     let drawnTradeRoutes = [];
@@ -141,7 +142,14 @@
 
         let startTime = null;
         const initialOpacity = 1;
-        const finalOpacity = 0.1;
+        let finalOpacity;
+
+        if(timelineClicked) {
+            finalOpacity = 1;
+        } else if (!timelineClicked) {
+            finalOpacity = 0.1;
+        }
+        
         const opacityStep = (initialOpacity - finalOpacity) / coords.length;
 
         let index = 1;
@@ -347,21 +355,20 @@
     });
 
     const drawTimelineYearData = () => {
-    clearTradeRoutesFromMap();
+        clearTradeRoutesFromMap();
 
-    // Reset the draw counts per year
-    routeDrawCounts = {};
+        // Reset the draw counts per year
+        routeDrawCounts = {};
 
-    if (Array.isArray(timelineDataSelection)) {
-        console.log("timeline selection length", timelineDataSelection.length);
-        timelineDataSelection.forEach(data => {
-            const objectType = data.objectType || "unknown";
-            drawTradeRoute(data, objectType);
-        });
-    } else {
-        console.warn("timelineDataSelection is not an array", timelineDataSelection);
-    }
-};
+        if (Array.isArray(timelineDataSelection)) {
+            timelineDataSelection.forEach(data => {
+                const objectType = data.objectType || "unknown";
+                drawTradeRoute(data, objectType);
+            });
+        } else {
+            console.warn("timelineDataSelection is not an array", timelineDataSelection);
+        }
+    };
 
 
     onDestroy(async () => {
