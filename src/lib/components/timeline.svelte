@@ -1,4 +1,30 @@
 <div class="row align-items-center">
+    <div class="col-12 pt-2">
+        <input 
+            class="bg-blur border-0 rounded-pill px-3 py-1 text-truncate" 
+            type="number" 
+            name="" 
+            id="" 
+            placeholder="Select startyear"
+            min={minYear}
+            max={maxYear}
+            bind:value={currentYearTimeline}
+            on:change={onInputYearChange}
+        >
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="2" viewBox="0 0 12 2">
+            <line id="Line_103" data-name="Line 103" x2="10" transform="translate(1 1)" fill="none" stroke="#000" stroke-linecap="round" stroke-width="2"/>
+        </svg>
+        <input 
+            class="bg-blur border-0 rounded-pill px-3 py-1 text-truncate" 
+            type="number"
+            name="" 
+            id="" 
+            placeholder="Select endyear" 
+            min={currentYearTimeline}
+            max={maxYear}
+            value=""
+        >
+    </div>
     <div class="col-11">
         <div id="chart-container"></div>
     </div>
@@ -120,6 +146,32 @@
             return standard
         }
     }
+
+        const onInputYearChange = () => {
+        if (!svg || !filledData || filledData.length === 0) return;
+
+        const year = Number(currentYearTimeline);
+        const x = xScaleTimeline(year) + xScaleTimeline.bandwidth() / 2;
+
+        // Clamp the value to a valid year
+        const validYears = filledData.map(d => d.fellingDate);
+        const closest = validYears.reduce((a, b) => {
+            return Math.abs(b - year) < Math.abs(a - year) ? b : a;
+        });
+
+        const xPos = xScaleTimeline(closest) + xScaleTimeline.bandwidth() / 2;
+
+        // Move the line
+        svg.select(".timeline-line")
+            .transition()
+            .duration(300)
+            .attr("x1", xPos)
+            .attr("x2", xPos);
+
+        // Update internal state
+        currentYearTimeline = closest;
+        timelineIndex = filledData.findIndex(d => d.fellingDate == closest);
+    };
 
     const animateTimeline = () => {
         if (!timelineRunning) return;
@@ -255,6 +307,11 @@
 
         // Fill in missing years
         filledData = fillMissingYears(data, minYear, maxYear);
+
+        xScaleTimeline = d3.scaleBand()
+            .domain(filledData.map(d => d.fellingDate))
+            .range([marginLeft, containerWidth - marginRight])
+            .padding(0);
 
         // X scale: Position of the bars (based on fellingDate)
         const x = d3.scaleBand()
@@ -399,6 +456,7 @@
 
                 currentYearTimeline = closest;
                 timelineIndex = filledData.findIndex(d => d.fellingDate == closest);
+                console.log("index", currentYearTimeline);
             })
             .on("mousemove", (event) => {
                 const [mouseX] = d3.pointer(event);
@@ -414,6 +472,7 @@
 
                 // Highlight the corresponding bar
                 highlightBar(closest);
+
             })
             .on("mouseout", () => {
                 hideTooltip();
@@ -424,6 +483,7 @@
         // Append the SVG to the DOM (to the element with id 'chart-container')
         chartContainer.appendChild(svg.node());
     };
+
 
     $: if (activeDataSets && chartContainer) {
         fellingDateFrequency = getFellingDateFrequency(activeDataSets);
