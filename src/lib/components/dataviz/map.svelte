@@ -35,6 +35,7 @@
     export let timelineDataSelection;
     export let selectedMapType;
     export let keywordMap = {};
+    export let timelineClicked;
 
     // Compontent variables
     let drawnTradeRoutes = [];
@@ -46,6 +47,10 @@
     let mapContainer;
     let map;
     let currentTileLayer;
+
+    let animationSpeed;
+    let animationSpeedSlow = 5000;
+    let animationSpeedFast = 250;
     
     let showTooltipRoute = false;
     export let tooltipPosition = { x: 0, y: 0 };
@@ -126,31 +131,65 @@
         });
     };
     
-    const animatePath = (coords, options = {}, totalDuration = 3000, onComplete = () => {}) => {
+    const animatePath = (coords, options = {}, totalDuration = animationSpeed, onComplete = () => {}) => {
         if (!coords.length) return;
 
-        let index = 1;
-        const path = L.polyline([coords[0]], options).addTo(map);
-
+        const path = leaflet.polyline([coords[0]], {
+            ...options,
+            opacity: 1
+        }).addTo(map);
         animatingTradeRoutes.push(path);
 
-        const interval = totalDuration / coords.length;
+        let startTime = null;
+        const initialOpacity = 1;
+        let finalOpacity;
 
-        const drawNextPoint = () => {
-            if (index < coords.length) {
+        if(timelineClicked) {
+            finalOpacity = 1;
+        } else if (!timelineClicked) {
+            finalOpacity = 0.1;
+        }
+
+        const opacityStep = (initialOpacity - finalOpacity) / coords.length;
+
+        let index = 1;
+
+        const step = (timestamp) => {
+            if (!startTime) startTime = timestamp;
+
+            const elapsed = timestamp - startTime;
+            const progress = Math.min(elapsed / totalDuration, 1);
+            const targetIndex = Math.floor(progress * coords.length);
+
+            while (index < targetIndex && index < coords.length) {
                 path.addLatLng(coords[index]);
                 index++;
-                setTimeout(drawNextPoint, interval);
+            }
+
+            if (index < coords.length) {
+                if(totalDuration === animationSpeedFast) {
+                    // Calculate fading
+                    const newOpacity = initialOpacity - opacityStep * index;
+                    path.setStyle({ opacity: newOpacity });
+                }
+                
+                requestAnimationFrame(step);
             } else {
                 animatingTradeRoutes = animatingTradeRoutes.filter(p => p !== path);
                 drawnTradeRoutes.push(path);
+
+                if(totalDuration === animationSpeedFast) {
+                    path.setStyle({ opacity: finalOpacity });
+                }
+                
                 onComplete(path);
             }
         };
 
-        drawNextPoint();
+        requestAnimationFrame(step);
         return path;
     };
+
 
     // add all trade routes
     const addTradeRouteToMap = (route, offset, color, routeData) => {
@@ -161,12 +200,12 @@
             color: color,
             weight: 2,
             opacity: 0.7,
-        }, 300, (completedPath) => {
+        }, animationSpeed, (completedPath) => {
             const visiblePath = completedPath;
             let hoverPath;
 
             // Create an invisible thicker path on top for easier hover
-            if(leaflet) {
+            if(leaflet && map) {
                 hoverPath = leaflet.polyline(visiblePath.getLatLngs(), {
                     color: 'transparent',
                     weight: 20,
@@ -296,7 +335,7 @@
                     };
                 });
             }
-
+            animationSpeed = animationSpeedSlow;
             updateCurrentMap(selectedMapType || 'area');
 
             addZoomControl(leaflet, map);
@@ -318,15 +357,19 @@
     const drawTimelineYearData = () => {
         clearTradeRoutesFromMap();
 
+        // Reset the draw counts per year
+        routeDrawCounts = {};
+
         if (Array.isArray(timelineDataSelection)) {
             timelineDataSelection.forEach(data => {
                 const objectType = data.objectType || "unknown";
-                drawTradeRoute(data, data.objectType);
+                drawTradeRoute(data, objectType);
             });
         } else {
             console.warn("timelineDataSelection is not an array", timelineDataSelection);
         }
     };
+
 
     onDestroy(async () => {
        if(map) {
@@ -385,10 +428,12 @@
     }
 
     $: if (leafletReady && map && activeDataSets) {
+        animationSpeed = animationSpeedSlow;
         drawMapData();
     }
 
     $: if (timelineDataSelection != undefined && leafletReady && map) {
+        animationSpeed = animationSpeedFast;
         drawTimelineYearData();
     }
 </script>  

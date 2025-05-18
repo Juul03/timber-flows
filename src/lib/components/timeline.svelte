@@ -54,6 +54,7 @@
     let xScaleTimeline;
     let timelineIndex = 0;
     let timelineRunning = false;
+    export let timelineClicked = false;
 
     // variables
     let fellingDateFrequency
@@ -153,7 +154,8 @@
 
         const duration = 5000;
         const totalSteps = filledData.length;
-        stepDuration = duration / totalSteps;
+        // stepDuration = duration / totalSteps;
+        stepDuration = 100;
 
         // If it's already at the end, reset to the beginning
         if (timelineIndex >= filledData.length) {
@@ -162,10 +164,12 @@
 
         if (!timelineRunning) {
             timelineRunning = true;
+            timelineClicked = false;
             animateTimeline();
         } else {
             // If it's running, stop it
             timelineRunning = false;
+            timelineClicked = false;
         }
     };
 
@@ -331,6 +335,7 @@
             .style("fill", "transparent")
             .style("cursor", "pointer")
             .on("click", (event) => {
+                timelineClicked = true;
                 timelineRunning = false;
                 const [mouseX] = d3.pointer(event);
                 const years = x.domain();
@@ -358,5 +363,9 @@
     $: if (activeDataSets && chartContainer) {
         fellingDateFrequency = getFellingDateFrequency(activeDataSets);
         drawBarchart(fellingDateFrequency);
+    }
+
+    $: if(timelineClicked) {
+        console.log("timeline clicked child", timelineClicked);
     }
 </script>
