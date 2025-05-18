@@ -66,6 +66,26 @@
         keyCode: '',
     }
 
+    let mapTypes = [
+        {
+            value: 'area',
+            mapLink: 'https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}{r}.png?api_key=c4121b12-d5f5-4e00-9ce7-d8abe5389b1b',
+            attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+
+        },
+        {
+            value: 'dark',
+            mapLink: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        },
+        {
+            value: 'rivers',
+            mapLink: 'https://tiles.stadiamaps.com/tiles/outdoors/{z}/{x}/{y}{r}.png',
+            attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</a>'
+        },
+
+    ];
+
     // Trade city icon
     const createCustomIcon = (leaflet) => {
         return leaflet.divIcon({
@@ -211,7 +231,7 @@
             let hoverPath;
 
             // Create an invisible thicker path on top for easier hover
-            if(leaflet && map !== null) {
+            if(leaflet && map !== undefined) {
                 hoverPath = leaflet.polyline(visiblePath.getLatLngs(), {
                     color: 'transparent',
                     weight: 20,
@@ -269,7 +289,9 @@
             const offset = [0.03 * count, 0.03 * count];
             routeDrawCounts[provenance] = count + 1;
             
+            console.log("pbecttype", objectType);
             const parentType = subtypeMap[objectType] || objectType;
+            console.log("parenttype", parentType);
             const color = colorScale(parentType);
 
             addTradeRouteToMap(matchedRoute, offset, color, data);
@@ -290,7 +312,7 @@
     };
 
     const processActiveDataSets = (activeDataSets) => {
-        // console.log("activedatasets", activeDataSets);
+        console.log("activedatasets", activeDataSets);
         if (!Array.isArray(activeDataSets)) {
             console.warn("Expected activeDataSets to be an array");
             return;
@@ -365,19 +387,30 @@
     const drawTimelineYearData = () => {
         clearTradeRoutesFromMap();
 
-        // Reset the draw counts per year
         routeDrawCounts = {};
 
         if (Array.isArray(timelineDataSelection)) {
-            timelineDataSelection.forEach(data => {
-                const objectType = data.objectType || "unknown";
-                drawTradeRoute(data, objectType);
+            timelineDataSelection.forEach(firstLevel => {
+                const objectType = firstLevel.name || "unknown";
+
+                if (Array.isArray(firstLevel.data)) {
+                    firstLevel.data.forEach(secondLevel => {
+                        if (secondLevel && Array.isArray(secondLevel.data)) {
+                            // Nested data, draw each item
+                            secondLevel.data.forEach(item => {
+                                drawTradeRoute(item, objectType);
+                            });
+                        } else {
+                            // Single layer data (unlikely here, but just in case)
+                            drawTradeRoute(secondLevel, objectType);
+                        }
+                    });
+                }
             });
         } else {
             console.warn("timelineDataSelection is not an array", timelineDataSelection);
         }
     };
-
 
     onDestroy(async () => {
        if(map) {
@@ -391,26 +424,6 @@
         });
         animatingTradeRoutes = [];
     };
-
-    let mapTypes = [
-        {
-            value: 'area',
-            mapLink: 'https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}{r}.png?api_key=c4121b12-d5f5-4e00-9ce7-d8abe5389b1b',
-            attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-
-        },
-        {
-            value: 'dark',
-            mapLink: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        },
-        {
-            value: 'rivers',
-            mapLink: 'https://tiles.stadiamaps.com/tiles/outdoors/{z}/{x}/{y}{r}.png',
-            attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</a>'
-        },
-
-    ];
 
     let updateCurrentMap = (mapType) => {
         const selected = mapTypes.find(m => m.value === mapType);
