@@ -1,152 +1,86 @@
 [
-    { 
-        "name": "Northwest Germany", 
-        "coordinates": [
-            [54.357517, 11.381836],
-            [53.083467, 11.513672],
-            [53.267841, 12.216797],
-            [53.109855, 13.095703],
-            [53.7643, 14.326172],
-            [54.739845, 13.447266],
-            [54.357517, 11.381836]
-        ]
-    },
-    {
-        "name": "Ardennen",
-        "coordinates": [
-            [50.25, 4.5],
-            [50.1, 5.5],
-            [49.7, 6.0],
-            [49.6, 5.2],
-            [50.0, 4.2],
-            [50.25, 4.5]
-        ]
-    },
-    {
-        "name": "Belgium Meuse Basin",
-        "coordinates": [
-            [50.5, 4.5],
-            [50.0, 5.0],
-            [49.7, 5.5],
-            [50.0, 6.0],
-            [50.5, 5.5],
-            [50.5, 4.5]
-        ]
-    },
-    {
-        "name": "Central Germany",
-        "coordinates": [
-          [51.5, 9.0],
-          [51.0, 10.0],
-          [50.5, 9.5],
-          [51.0, 8.5],
-          [51.5, 9.0]
-        ]
-    },
-    {
-        "name": "Central Western Germany",
-        "coordinates": [
-            [50.443513, 9.286452],
-            [50.562304, 8.187239],
-            [50.324423, 8.22021],
-            [49.894634, 8.374105],
-            [50.057139, 9.286452],
-            [50.443513, 9.286452]
-        ]
-      },
-      {
-        "name": "Eastern France",
-        "coordinates": [
-          [48.5, 6.0],
-          [48.0, 6.5],
-          [47.5, 6.0],
-          [48.0, 5.5],
-          [48.5, 6.0]
-        ]
-      },
-      {
-        "name": "Klaipeda, Lithuania",
-        "coordinates": [
-          [55.710093, 21.07511],
-          [55.410307, 21.246545],
-          [55.22589, 21.276344],
-          [55.160043, 21.68854],
-          [55.807456, 21.595116],
-          [56.206704, 22.034801],
-          [56.368293, 21.968848],
-          [56.050567, 21.089478],
-          [55.710093, 21.07511]
-        ]
-      },
-      {
-        "name": "Northeastern France",
-        "coordinates": [
-          [49.5, 6.0],
-          [49.0, 6.5],
-          [48.5, 6.0],
-          [49.0, 5.5],
-          [49.5, 6.0]
-        ]
-      },
-      {
-        "name": "Northeastern Germany",
-        "coordinates": [
-          [53.5, 13.0],
-          [53.0, 13.5],
-          [52.5, 13.0],
-          [53.0, 12.5],
-          [53.5, 13.0]
-        ]
-      },
-      {
-        "name": "Northern Germany",
-        "coordinates": [
-          [54.0, 9.0],
-          [53.5, 10.0],
-          [53.0, 9.5],
-          [53.5, 8.5],
-          [54.0, 9.0]
-        ]
-      },
-      {
-        "name": "Upper Meuse Valley",
-        "coordinates": [
-          [50.0, 5.0],
-          [49.5, 5.5],
-          [49.0, 5.0],
-          [49.5, 4.5],
-          [50.0, 5.0]
-        ]
-      },
-      {
-        "name": "West Germany (Moezel)",
-        "coordinates": [
-          [50.0, 7.0],
-          [49.5, 7.5],
-          [49.0, 7.0],
-          [49.5, 6.5],
-          [50.0, 7.0]
-        ]
-      },
-      {
-        "name": "Western Germany",
-        "coordinates": [
-          [51.0, 7.0],
-          [50.5, 7.5],
-          [50.0, 7.0],
-          [50.5, 6.5],
-          [51.0, 7.0]
-        ]
-      },
-      {
-        "name": "South Germany",
-        "coordinates": [
-          [48.608606, 10.546875],
-          [48.346495, 13.579102],
-          [47.403561, 13.095703],
-          [47.72963, 7.822266],
-          [48.404859, 9.316406],
-          [48.608606, 10.546875]
-        ]
-      } 
+  {
+    "name": "Northwest Germany",
+    "coordinateCenter": [52.5, 9.5],
+    "xRadius": 200000,
+    "yRadius": 100000
+  },
+  {
+    "name": "Ardennen",
+    "coordinateCenter": [50.1, 5.8],
+    "xRadius": 120000,
+    "yRadius": 60000
+  },
+  {
+    "name": "Belgium Meuse Basin",
+    "coordinateCenter": [50.5, 5.3],
+    "xRadius": 100000,
+    "yRadius": 50000
+  },
+  {
+    "name": "Central Germany",
+    "coordinateCenter": [51.0, 10.0],
+    "xRadius": 180000,
+    "yRadius": 90000
+  },
+  {
+    "name": "Central Western Germany",
+    "coordinateCenter": [50.8, 8.0],
+    "xRadius": 160000,
+    "yRadius": 80000
+  },
+  {
+    "name": "Eastern France",
+    "coordinateCenter": [47.8, 6.8],
+    "xRadius": 220000,
+    "yRadius": 110000
+  },
+  {
+    "name": "Klaipeda, Lithuania",
+    "coordinateCenter": [55.7, 21.1],
+    "xRadius": 30000,
+    "yRadius": 60000
+  },
+  {
+    "name": "Northeastern France",
+    "coordinateCenter": [49.1, 6.0],
+    "xRadius": 40000,
+    "yRadius": 45000
+  },
+  {
+    "name": "Northeastern Germany",
+    "coordinateCenter": [53.3, 13.2],
+    "xRadius": 150000,
+    "yRadius": 75000
+  },
+  {
+    "name": "Northern Germany",
+    "coordinateCenter": [53.0, 10.0],
+    "xRadius": 200000,
+    "yRadius": 100000
+  },
+  {
+    "name": "Upper Meuse Valley",
+    "coordinateCenter": [50.2, 5.2],
+    "xRadius": 80000,
+    "yRadius": 40000
+  },
+  {
+    "name": "West Germany (Moezel)",
+    "coordinateCenter": [49.8, 6.9],
+    "xRadius": 100000,
+    "yRadius": 50000
+  },
+  {
+    "name": "Western Germany",
+    "coordinateCenter": [50.9, 7.1],
+    "xRadius": 180000,
+    "yRadius": 90000
+  },
+  {
+    "name": "South Germany",
+    "coordinateCenter": [48.3, 10.8],
+    "xRadius": 250000,
+    "yRadius": 125000
+  }
 ]

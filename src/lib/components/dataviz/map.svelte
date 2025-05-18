@@ -95,16 +95,49 @@
     };
 
     const addProvenancesToMap = (leaflet, provenances, map) => {
+        // provenances.forEach(provenance => {
+        //     let polygon = leaflet.polygon(provenance.coordinates, {
+        //         color: 'whitesmoke',
+        //         weight: 1,
+        //         fillColor: 'dark',
+        //         fillOpacity: 0.2
+        //     }).addTo(map);
+        //     polygon.bindPopup(provenance.name);
+        // })
+
         provenances.forEach(provenance => {
-            let polygon = L.polygon(provenance.coordinates, {
-                color: 'whitesmoke',
-                weight: 1,
+            let ellipse = L.ellipse(provenance.coordinateCenter, [provenance.xRadius, provenance.yRadius], 0, {
                 fillColor: 'dark',
-                fillOpacity: 0.2
+                fillOpacity: 0.2,
+                color: 'whitesmoke',
+                weight: 0.5
             }).addTo(map);
-            polygon.bindPopup(provenance.name);
+            ellipse.bindPopup(provenance.name);
+
         })
+
+       
+        // const center = [50.708634, 15.034357];
+        // const xRadius = 10000; // meters
+        // const yRadius = 5000;  // meters
+
+        // const ellipse = leaflet.ellipse(center, [xRadius, yRadius], {
+        //     color: 'blue',
+        //     weight: 2,
+        //     fillColor: 'blue',
+        //     fillOpacity: 0.3
+        // }).addTo(map);
+
+        // const ellipseLat = leaflet.circle([50.708634, 15.034357], {
+        //     radius: 5000,
+        //     color: 'blue',
+        //     fillOpacity: 0.3,
+        // }).addTo(map);
+
+
+        
     }
+    
 
     // Clear traderoutes when data is updated
     const clearTradeRoutesFromMap = () => {
@@ -205,49 +238,49 @@
             let hoverPath;
 
             // Create an invisible thicker path on top for easier hover
-            if(leaflet && map) {
-                hoverPath = leaflet.polyline(visiblePath.getLatLngs(), {
-                    color: 'transparent',
-                    weight: 20,
-                    opacity: 0,
-                    className: 'hover-path',
-                    pane: 'shadowPane'
-                }).addTo(map);
-            }
+            // if(leaflet && map) {
+            //     hoverPath = leaflet.polyline(visiblePath.getLatLngs(), {
+            //         color: 'transparent',
+            //         weight: 20,
+            //         opacity: 0,
+            //         className: 'hover-path',
+            //         pane: 'shadowPane'
+            //     }).addTo(map);
+            // }
           
             // Highlight visible path on hover and show tooltip
-            hoverPath.on('mouseover', () => {
-                showTooltipRoute = true;
+            // hoverPath.on('mouseover', () => {
+            //     showTooltipRoute = true;
 
-                const location = routeData.location;
-                const categoryPath = findCategoryPathFromLocation(filtersObject, location, keywordMap);
+            //     const location = routeData.location;
+            //     const categoryPath = findCategoryPathFromLocation(filtersObject, location, keywordMap);
 
-                tooltipRouteContent.fellingDate = routeData.fellingDate;
-                tooltipRouteContent.location = routeData.location;
-                tooltipRouteContent.startYear = routeData.startYear;
-                tooltipRouteContent.endYear = routeData.endYear;
-                tooltipRouteContent.length = routeData.length;
-                tooltipRouteContent.TBP = routeData.TBP;
-                tooltipRouteContent.provenance = routeData.provenance;
-                tooltipRouteContent.categoryPath = categoryPath;
-                tooltipRouteContent.keyCode = routeData.keyCode;
+            //     tooltipRouteContent.fellingDate = routeData.fellingDate;
+            //     tooltipRouteContent.location = routeData.location;
+            //     tooltipRouteContent.startYear = routeData.startYear;
+            //     tooltipRouteContent.endYear = routeData.endYear;
+            //     tooltipRouteContent.length = routeData.length;
+            //     tooltipRouteContent.TBP = routeData.TBP;
+            //     tooltipRouteContent.provenance = routeData.provenance;
+            //     tooltipRouteContent.categoryPath = categoryPath;
+            //     tooltipRouteContent.keyCode = routeData.keyCode;
 
-                visiblePath.setStyle({ weight: 5, opacity: 1 });
+            //     visiblePath.setStyle({ weight: 5, opacity: 1 });
 
-                drawnTradeRoutes.forEach(route => {
-                    if(route !== visiblePath) {
-                        route.setStyle({ opacity: 0.35 });
-                    }
-                })
-            });
+            //     drawnTradeRoutes.forEach(route => {
+            //         if(route !== visiblePath) {
+            //             route.setStyle({ opacity: 0.35 });
+            //         }
+            //     })
+            // });
 
-            hoverPath.on('mouseout', () => {
-                showTooltipRoute = false;
-                visiblePath.setStyle({ weight: 2, opacity: 0.7 });
-                drawnTradeRoutes.forEach(route => {
-                    route.setStyle({ opacity: 0.7 });
-                })
-            });
+            // hoverPath.on('mouseout', () => {
+            //     showTooltipRoute = false;
+            //     visiblePath.setStyle({ weight: 2, opacity: 0.7 });
+            //     drawnTradeRoutes.forEach(route => {
+            //         route.setStyle({ opacity: 0.7 });
+            //     })
+            // });
 
             drawnTradeRoutes.push(visiblePath, hoverPath);
         });
@@ -324,6 +357,7 @@
         if (browser) {
             leaflet = await import('leaflet');
             leafletReady = true;
+            await import('leaflet-ellipse');
 
             map = leaflet.map(mapContainer).setView([54.6128, 12.216797], 5);
             if (map) {
@@ -335,6 +369,14 @@
                     };
                 });
             }
+
+                        // get long and lat on click
+            const onMapClick = (event) => {
+                alert("You clicked the map at " + event.latlng);
+            }
+ 
+            map.on('click', onMapClick);
+
             animationSpeed = animationSpeedSlow;
             updateCurrentMap(selectedMapType || 'area');
 
@@ -344,13 +386,6 @@
             addProvenancesToMap(leaflet, provenancesCoords, map);
 
             drawMapData();
-
-            // // get long and lat on click
-            // const onMapClick = (event) => {
-            //     alert("You clicked the map at " + event.latlng);
-            // }
- 
-            // map.on('click', onMapClick);
         }
     });
 
