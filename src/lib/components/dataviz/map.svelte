@@ -149,7 +149,7 @@
         } else if (!timelineClicked) {
             finalOpacity = 0.1;
         }
-        
+
         const opacityStep = (initialOpacity - finalOpacity) / coords.length;
 
         let index = 1;
@@ -205,7 +205,7 @@
             let hoverPath;
 
             // Create an invisible thicker path on top for easier hover
-            if(leaflet) {
+            if(leaflet && map) {
                 hoverPath = leaflet.polyline(visiblePath.getLatLngs(), {
                     color: 'transparent',
                     weight: 20,
