@@ -36,6 +36,7 @@
     export let selectedMapType;
     export let keywordMap = {};
     export let timelineClicked;
+    export let timelineRunning;
 
     // Compontent variables
     let drawnTradeRoutes = [];
@@ -47,6 +48,8 @@
     let mapContainer;
     let map;
     let currentTileLayer;
+
+    const provenanceEllipseMap = new Map();
 
     let animationSpeed;
     let animationSpeedSlow = 5000;
@@ -116,14 +119,21 @@
 
     const addProvenancesToMap = (leaflet, provenances, map) => {
         provenances.forEach(provenance => {
-            let ellipse = L.ellipse(provenance.coordinateCenter, [provenance.xRadius, provenance.yRadius], 0, {
-                className: 'provenanceEllipse'
-            }).addTo(map);
+            let ellipse = L.ellipse(
+                provenance.coordinateCenter,
+                [provenance.xRadius, provenance.yRadius],
+                0,
+                {
+                    className: 'provenanceEllipse'
+                }
+            ).addTo(map);
+
             ellipse.bindPopup(provenance.name);
 
-        })
-    }
-    
+            // Store it by name
+            provenanceEllipseMap.set(provenance.name, ellipse);
+        });
+    };
 
     // Clear traderoutes when data is updated
     const clearTradeRoutesFromMap = () => {
@@ -237,42 +247,44 @@
                     pane: 'shadowPane'
                 }).addTo(map);
             }
-          
-            // Highlight visible path on hover and show tooltip
-            hoverPath.on('mouseover', () => {
-                showTooltipRoute = true;
 
-                const location = routeData.location;
-                const categoryPath = findCategoryPathFromLocation(filtersObject, location, keywordMap);
+            if(hoverPath) {
+                // Highlight visible path on hover and show tooltip
+                hoverPath.on('mouseover', () => {
+                    showTooltipRoute = true;
 
-                tooltipRouteContent.fellingDate = routeData.fellingDate;
-                tooltipRouteContent.location = routeData.location;
-                tooltipRouteContent.startYear = routeData.startYear;
-                tooltipRouteContent.endYear = routeData.endYear;
-                tooltipRouteContent.length = routeData.length;
-                tooltipRouteContent.TBP = routeData.TBP;
-                tooltipRouteContent.provenance = routeData.provenance;
-                tooltipRouteContent.categoryPath = categoryPath;
-                tooltipRouteContent.keyCode = routeData.keyCode;
+                    const location = routeData.location;
+                    const categoryPath = findCategoryPathFromLocation(filtersObject, location, keywordMap);
 
-                visiblePath.setStyle({ weight: 5, opacity: 1 });
+                    tooltipRouteContent.fellingDate = routeData.fellingDate;
+                    tooltipRouteContent.location = routeData.location;
+                    tooltipRouteContent.startYear = routeData.startYear;
+                    tooltipRouteContent.endYear = routeData.endYear;
+                    tooltipRouteContent.length = routeData.length;
+                    tooltipRouteContent.TBP = routeData.TBP;
+                    tooltipRouteContent.provenance = routeData.provenance;
+                    tooltipRouteContent.categoryPath = categoryPath;
+                    tooltipRouteContent.keyCode = routeData.keyCode;
 
-                drawnTradeRoutes.forEach(route => {
-                    if(route !== visiblePath) {
-                        route.setStyle({ opacity: 0.35 });
-                    }
-                })
-            });
+                    visiblePath.setStyle({ weight: 5, opacity: 1 });
 
-            hoverPath.on('mouseout', () => {
-                showTooltipRoute = false;
-                visiblePath.setStyle({ weight: 2, opacity: 0.7 });
-                drawnTradeRoutes.forEach(route => {
-                    route.setStyle({ opacity: 0.7 });
-                })
-            });
+                    drawnTradeRoutes.forEach(route => {
+                        if(route !== visiblePath) {
+                            route.setStyle({ opacity: 0.35 });
+                        }
+                    })
+                });
 
-            drawnTradeRoutes.push(visiblePath, hoverPath);
+                hoverPath.on('mouseout', () => {
+                    showTooltipRoute = false;
+                    visiblePath.setStyle({ weight: 2, opacity: 0.7 });
+                    drawnTradeRoutes.forEach(route => {
+                        route.setStyle({ opacity: 0.7 });
+                    })
+                });
+
+                drawnTradeRoutes.push(visiblePath, hoverPath);
+            }
         });
     };
 
@@ -379,11 +391,32 @@
         }
     });
 
+    const setProvenaceOpacity = () => {
+        let opacity;
+
+        if(selectedMapType === "dark") {
+            opacity = 0.25;
+        } else if (selectedMapType === "area") {
+            opacity = 0.25;
+        }
+
+        if(timelineRunning) {
+            provenanceEllipseMap.forEach(ellipse => {
+                ellipse.setStyle({ opacity: 0, fillOpacity: 0 });
+            });
+        } else if(!timelineRunning) {
+            provenanceEllipseMap.forEach(ellipse => {
+                ellipse.setStyle({ opacity: .5, fillOpacity: opacity });
+            });
+        }
+    }
+
     const drawTimelineYearData = () => {
-        console.log(timelineDataSelection);
         clearTradeRoutesFromMap();
 
         routeDrawCounts = {};
+
+        setProvenaceOpacity();
 
         if (Array.isArray(timelineDataSelection)) {
             timelineDataSelection.forEach(firstLevel => {
@@ -395,9 +428,16 @@
                             // Nested data, draw each item
                             secondLevel.data.forEach(item => {
                                 drawTradeRoute(item, objectType);
+                                // allprovenances.find(provenance with matching id === item.provenance)
+                                // highligh provenance to set opacity ot 0.75 for 500ms
+                                const provenanceName = item.provenance;
+                                const ellipse = provenanceEllipseMap.get(provenanceName);
+                                if (ellipse) {
+                                    ellipse.setStyle({ opacity: 1, fillOpacity: 0.25 });
+                                }
                             });
                         } else {
-                            // Single layer data (unlikely here, but just in case)
+                            // single layer
                             drawTradeRoute(secondLevel, objectType);
                         }
                     });
@@ -460,6 +500,10 @@
     $: if (timelineDataSelection != undefined && leafletReady && map) {
         animationSpeed = animationSpeedFast;
         drawTimelineYearData();
+    }
+
+    $: if(timelineRunning || !timelineRunning) { 
+        setProvenaceOpacity();
     }
 </script>  
     

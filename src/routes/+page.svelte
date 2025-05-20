@@ -7,6 +7,7 @@
             {selectedMapType}
             {keywordMap}
             {timelineClicked}
+            {timelineRunning}
         />
         <div class="container position-relative z-3">
             <div class="position-absolute w-100 top-0">
@@ -27,6 +28,7 @@
                             {selectedMapType}
                             bind:currentYearTimeline
                             bind:timelineClicked
+                            bind:timelineRunning
                         />
                     </div>
                 </div>
@@ -86,6 +88,7 @@
     // Dynamic retrieved from timeline
     let currentYearTimeline;
     let timelineClicked = false;
+    export let timelineRunning = false;
 
     // Dynamic retrieved from view buttons
     export let currentView = "map";
@@ -259,55 +262,54 @@
     };
 
     const filterDataOnTimeline = () => {
-    timelineDataSelection = [];
+        timelineDataSelection = [];
 
-    if (selectionPath[0] == null && selectedOption === 'All') {
-        // For each top-level group (like "artworks")
-        activeDataSets.forEach(purpose => {
-            if (!Array.isArray(purpose.data)) return;
+        if (selectionPath[0] == null && selectedOption === 'All') {
+            // For each top-level group (like "artworks")
+            activeDataSets.forEach(purpose => {
+                if (!Array.isArray(purpose.data)) return;
 
-            // Build filtered groups array
-            const filteredGroups = [];
+                // Build filtered groups array
+                const filteredGroups = [];
 
-            // For each subgroup (like "halfModels", "sculptures")
-            purpose.data.forEach(group => {
-                if (!Array.isArray(group.data)) return;
+                // For each subgroup (like "halfModels", "sculptures")
+                purpose.data.forEach(group => {
+                    if (!Array.isArray(group.data)) return;
 
-                // Filter the deepest items by year
-                const matchingItems = group.data.filter(item => getYear(item.fellingDate) === currentYearTimeline);
+                    // Filter the deepest items by year
+                    const matchingItems = group.data.filter(item => getYear(item.fellingDate) === currentYearTimeline);
+
+                    if (matchingItems.length > 0) {
+                        filteredGroups.push({
+                            name: group.name,
+                            data: matchingItems
+                        });
+                    }
+                });
+
+                if (filteredGroups.length > 0) {
+                    timelineDataSelection.push({
+                        name: purpose.name,
+                        data: filteredGroups
+                    });
+                }
+            });
+        } else {
+            // Not 'All' selection, simpler structure — top level with direct array of items (no groups)
+            activeDataSets.forEach(dataSet => {
+                if (!Array.isArray(dataSet.data)) return;
+
+                const matchingItems = dataSet.data.filter(item => getYear(item.fellingDate) === currentYearTimeline);
 
                 if (matchingItems.length > 0) {
-                    filteredGroups.push({
-                        name: group.name,
+                    timelineDataSelection.push({
+                        name: dataSet.name,
                         data: matchingItems
                     });
                 }
             });
-
-            if (filteredGroups.length > 0) {
-                timelineDataSelection.push({
-                    name: purpose.name,
-                    data: filteredGroups
-                });
-            }
-        });
-    } else {
-        // Not 'All' selection, simpler structure — top level with direct array of items (no groups)
-        activeDataSets.forEach(dataSet => {
-            if (!Array.isArray(dataSet.data)) return;
-
-            const matchingItems = dataSet.data.filter(item => getYear(item.fellingDate) === currentYearTimeline);
-
-            if (matchingItems.length > 0) {
-                timelineDataSelection.push({
-                    name: dataSet.name,
-                    data: matchingItems
-                });
-            }
-        });
-    }
-};
-
+        }
+    };
 
     onMount(async () => {
         await import('bootstrap/dist/js/bootstrap.bundle.min.js');

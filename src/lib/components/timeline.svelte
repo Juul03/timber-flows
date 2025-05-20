@@ -78,7 +78,7 @@
     let timelineLine;
     let xScaleTimeline;
     let timelineIndex = 0;
-    let timelineRunning = false;
+    export let timelineRunning = false;
     export let timelineClicked = false;
 
     // variables
@@ -163,6 +163,7 @@
         // Move the line
         svg.select(".timeline-line")
             .transition()
+            .duration(stepDuration)
             .attr("x1", xPos)
             .attr("x2", xPos);
 
@@ -184,11 +185,12 @@
         const x = xScaleTimeline(year) + xScaleTimeline.bandwidth() / 2;
 
         svg.select(".timeline-line")
+            .transition()
+            .duration(stepDuration)
             .attr("x1", x)
             .attr("x2", x);
 
         currentYearTimeline = year;
-        console.log("current year", currentYearTimeline);
         timelineIndex++;
 
         setTimeout(animateTimeline, stepDuration);
@@ -198,12 +200,7 @@
     const startTimelineAnimation = () => {
         if (!svg || filledData.length === 0) return;
 
-        xScaleTimeline = d3.scaleBand()
-            .domain(filledData.map(d => d.fellingDate))
-            .range([40, chartContainer.clientWidth])
-            .padding(0);
-
-        const duration = 5000;
+        const duration = 500;
         const totalSteps = filledData.length;
         // stepDuration = duration / totalSteps;
         stepDuration = 500;
@@ -223,6 +220,7 @@
             timelineClicked = false;
         }
     };
+
 
     // Show timeline events
     const openTimelineEvents = () => {
@@ -355,7 +353,7 @@
                 .attr("y1", 30)
                 .attr("y2", 100 - 30)
                 .attr("stroke", "#964B00")
-                .attr("stroke-width", 2)
+                .attr("stroke-width", x.bandwidth())
                 .attr("x1", 40)
                 .attr("x2", 40);
         }
