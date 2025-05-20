@@ -1,0 +1,26 @@
+#tooltip-route {
+    background:whitesmoke;
+}
+
+.dark {
+    .text-dark {
+       color:lightgrey !important; 
+    }
+
+    #tooltip-route {
+        background:black;
+    }
+
+    button.badge {
+        color:black !important;
+
+        &:not(.bg-blur-constructions):not(.bg-blur-artworks) {
+            background: lightgrey !important;
+        }
+
+        &.bg-blur-constructions,
+        &.bg-blur-artworks {
+            color: lightgrey !important;
+        }
+    }
+}

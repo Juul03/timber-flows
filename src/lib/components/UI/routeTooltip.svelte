@@ -26,7 +26,7 @@
 
 <div 
     id="tooltip-route" 
-    class="position-absolute col-3 bg-white rounded p-3"
+    class="position-absolute col-3 rounded p-3 z-3"
     style="left: {adjustedPosition.x}px; top: {adjustedPosition.y}px;"
 >
     <div class="row">

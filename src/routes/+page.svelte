@@ -1,6 +1,6 @@
 <h1 class="text-primary d-none">Timber Flows</h1>
 
-<main>
+<main class="{selectedMapType}">
     <div class="{currentView == "map" ? "" : "d-none"}">
         <Map {activeDataSets}
             {timelineDataSelection}
@@ -24,6 +24,7 @@
                     <div class="col-9">
                         <Timeline 
                             {activeDataSets}
+                            {selectedMapType}
                             bind:currentYearTimeline
                             bind:timelineClicked
                         />

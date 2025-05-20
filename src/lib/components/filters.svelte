@@ -1,6 +1,6 @@
 <div class="offcanvas offcanvas-start show bg-transparent border-0 p-2" tabindex="-1" id="offcanvasFilters" aria-labelledby="offcanvasExampleLabel">
     <div class="row gap-2">
-        <div class="col-12 d-flex justify-content-between align-items-center">
+        <div class="col-12 d-flex justify-content-between flex-wrap align-items-center">
             <p class="fs-5 m-0">Find or select timber purpose</p>
             <button class="btn border-0 bg-transparent d-flex flex-row flex-wrap align-items-center justify-content-center gap-1">
                 <span class="small m-0">Clear filters</span>
@@ -15,7 +15,7 @@
         </div>
         <div class="col-12 d-flex flex-wrap gap-2 align-items-center">
             <button 
-                class="badge rounded-pill text-dark bg-blur border-0 {selectionPath.length === 0 ? 'fw-bold' : 'fw-normal'}"
+                class="badge rounded-pill bg-blur border-0 {selectionPath.length === 0 ? 'fw-bold' : 'fw-normal'}"
                 on:click={() => {
                     selectionPath = [];
                     selectedOption = 'All';
@@ -29,7 +29,7 @@
                     <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
                 </svg>
                 <button 
-                    class={`badge rounded-pill text-dark border-0 ${index === 0 ? `bg-blur-${selectionPath[0].toLowerCase()}` : 'bg-blur'} ${index === selectionPath.length - 1 ? 'fw-bold' : 'fw-normal'}`}
+                    class={`badge rounded-pill border-0 ${index === 0 ? `bg-blur-${selectionPath[0].toLowerCase()}` : 'bg-blur'} ${index === selectionPath.length - 1 ? 'fw-bold' : 'fw-normal'}`}
                     on:click={() => {
                         selectionPath = selectionPath.slice(0, index + 1);
                         selectedOption = `${selectionPath[selectionPath.length - 1]}`;

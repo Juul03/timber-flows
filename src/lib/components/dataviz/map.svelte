@@ -117,10 +117,7 @@
     const addProvenancesToMap = (leaflet, provenances, map) => {
         provenances.forEach(provenance => {
             let ellipse = L.ellipse(provenance.coordinateCenter, [provenance.xRadius, provenance.yRadius], 0, {
-                fillColor: 'dark',
-                fillOpacity: 0.15,
-                color: 'whitesmoke',
-                weight: 0.5
+                className: 'provenanceEllipse'
             }).addTo(map);
             ellipse.bindPopup(provenance.name);
 
@@ -429,6 +426,14 @@
         if (!selected || !selected.mapLink) {
             return;
         }
+
+        // Remove current map class
+        mapTypes.forEach(m => {
+            mapContainer.classList.remove(`map-${m.value}`);
+        });
+
+        // Add the new map type class
+        mapContainer.classList.add(`map-${mapType}`);
 
         // Remove the old tile layer if it exists
         if (currentTileLayer) {

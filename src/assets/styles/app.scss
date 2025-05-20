@@ -4,9 +4,12 @@
   $font-size-base: vars.$font-size-base,
   $primary: vars.$primary,
   $light: vars.$light,
-  $blue: vars.$blue
+  $blue: vars.$blue,
+  $dark: vars.$dark,
 );
 
 @use 'general';
 @use 'components/filters';
+@use 'components/timeline';
 @use 'components/dataviz/map';
+@use 'components/UI/routeTooltip';

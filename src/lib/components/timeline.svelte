@@ -1,7 +1,7 @@
-<div class="row align-items-center">
+<div id="timeline" class="row align-items-center">
     <div class="col-12 pt-2">
         <input 
-            class="bg-blur border-0 rounded-pill px-3 py-1 text-truncate" 
+            class="minYear bg-blur border-0 rounded-pill px-3 py-1 text-truncate fw-bold"
             type="number" 
             name="" 
             id="" 
@@ -15,18 +15,17 @@
             <line id="Line_103" data-name="Line 103" x2="10" transform="translate(1 1)" fill="none" stroke="#000" stroke-linecap="round" stroke-width="2"/>
         </svg>
         <input 
-            class="bg-blur border-0 rounded-pill px-3 py-1 text-truncate" 
-            type="number"
+            class="maxYear bg-blur border-0 rounded-pill px-3 py-1 text-truncate fw-bold" 
+            type="number" 
             name="" 
             id="" 
-            placeholder="Select endyear" 
+            placeholder="Select startyear"
             min={currentYearTimeline}
             max={maxYear}
-            value=""
         >
     </div>
     <div class="col-11">
-        <div id="chart-container"></div>
+        <div id="timeline-container"></div>
     </div>
     <div class="col-1 d-flex justify-content-end gap-1">
         <button class="btn btn-secondary bg-blur d-flex align-items-center justify-content-center" on:click={startTimelineAnimation}>
@@ -65,7 +64,7 @@
     export let activeDataSets = [];
 
     // exported variables from this component
-    export let currentYearTimeline;
+    export let currentYearTimeline = 1400;
 
     // chart variables
     let chartContainer;
@@ -238,18 +237,17 @@
 
     // timeline tooltip
     const showTooltip = (event, year) => {
-        let tooltip = d3.select("#tooltip");
+        let tooltip = d3.select("#tooltip-timeline");
         if (tooltip.empty()) {
-            tooltip = d3.select("body").append("div").attr("id", "tooltip")
+            tooltip = d3.select("body").append("div").attr("id", "tooltip-timeline")
             .style("position", "absolute")
             .style("z-index", "10000")
-            .style("background", "black")
-            .style("color", "white")
             .style("padding", "4px 8px")
             .style("border-radius", "4px")
             .style("pointer-events", "none");
         }
         tooltip
+            .attr("class", selectedMapType)
             .style("left", (event.pageX - 35) + "px")
             // .style("top", (event.pageY + 25) + "px")
             .style("top", (event.pageY - 45) + "px")
@@ -258,26 +256,19 @@
     }
 
     const hideTooltip = () => {
-        d3.select("#tooltip").style("display", "none");
+        d3.select("#tooltip-timeline").style("display", "none");
     }
 
     const highlightBar = (year) => {
         svg.selectAll(".bar")
+            .attr("class", d => d.fellingDate === year ? "bar hover" : "bar")
             .transition().duration(50)
-            .attr("fill", d => d.fellingDate === year ? "white" : "rgba(0, 0, 0, 0.65)");
     }
-
-    const resetBarHighlight = () => {
-        svg.selectAll(".bar")
-            .transition().duration(50)
-            .attr("fill", "rgba(0, 0, 0, 0.65)");
-    }
-
 
     // Function to draw the bar chart
     const drawBarchart = (data) => {
 
-        chartContainer = document.getElementById("chart-container");
+        chartContainer = document.getElementById("timeline-container");
 
         // Chart dimensions and margins
         const width = 1000;
@@ -335,6 +326,7 @@
 
             // Add x-axis group
             svg.append("g")
+                .attr("class", "x-axis")
                 .attr("transform", `translate(0,${height - marginBottom})`)
                 .call(d3.axisBottom(x)
                     .tickValues(x.domain().filter((d, i) => d % fellingDateTicks === 0))
@@ -362,7 +354,7 @@
                 .attr("class", "timeline-line")
                 .attr("y1", 30)
                 .attr("y2", 100 - 30)
-                .attr("stroke", "red")
+                .attr("stroke", "#964B00")
                 .attr("stroke-width", 2)
                 .attr("x1", 40)
                 .attr("x2", 40);
@@ -396,7 +388,7 @@
         bars.enter()
             .append("rect")
             .attr("class", "bar")
-            .attr("fill", "rgba(0, 0, 0, 0.65)")
+            // .attr("fill", "rgba(0, 0, 0, 0.65)")
             .attr("filter", "url(#glassmorphism)")
             .attr("x", d => x(d.fellingDate))
             .attr("y", y(0))
@@ -456,7 +448,6 @@
 
                 currentYearTimeline = closest;
                 timelineIndex = filledData.findIndex(d => d.fellingDate == closest);
-                console.log("index", currentYearTimeline);
             })
             .on("mousemove", (event) => {
                 const [mouseX] = d3.pointer(event);
@@ -476,11 +467,10 @@
             })
             .on("mouseout", () => {
                 hideTooltip();
-                resetBarHighlight();
             });
 
 
-        // Append the SVG to the DOM (to the element with id 'chart-container')
+        // Append the SVG to the DOM (to the element with id 'timeline-container')
         chartContainer.appendChild(svg.node());
     };
 
@@ -492,5 +482,19 @@
 
     $: if(timelineClicked) {
         console.log("timeline clicked child", timelineClicked);
+    }
+
+    export let selectedMapType;
+    let previousMapType;
+    previousMapType = selectedMapType;
+
+    $: if (selectedMapType) {
+        console.log("selected maptype", selectedMapType);
+        
+        if (chartContainer) {
+            chartContainer.classList.remove(previousMapType);
+            chartContainer.classList.add(selectedMapType);
+            previousMapType = selectedMapType;
+        }
     }
 </script>

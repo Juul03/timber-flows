@@ -23,6 +23,8 @@
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
+
+    transition:.5s;
 }
 
 .bg-blur-constructions {
@@ -66,4 +68,32 @@ p {
 
 .offcanvas-backdrop.show {
     display:none !important;
+}
+
+.dark {
+    h1, h2, h3 {
+        color:lightgrey;
+    }
+
+    .bg-blur {
+        /* From https://css.glass */
+        background: rgba(69, 69, 69, 0.45);
+        box-shadow: 0 4px 30px rgba(16, 16, 16, 0.1);
+    }
+
+    p, button span {
+        color:whitesmoke;
+    }
+
+    svg {
+        fill: lightgrey;
+    }
+
+    input {
+        color:lightgrey;
+
+        &::placeholder {
+            color: lightgrey;
+        }
+    }
 }

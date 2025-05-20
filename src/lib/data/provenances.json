@@ -2,7 +2,7 @@
   {
     "name": "Northwest Germany",
     "coordinateCenter": [52.5, 9.5],
-    "xRadius": 200000,
+    "xRadius": 50000,
     "yRadius": 100000
   },
   {
@@ -26,8 +26,8 @@
   {
     "name": "Central Western Germany",
     "coordinateCenter": [50.8, 8.0],
-    "xRadius": 160000,
-    "yRadius": 80000
+    "xRadius": 80000,
+    "yRadius": 160000
   },
   {
     "name": "Eastern France",

@@ -1,3 +1,33 @@
 #map-container {
     height: 550px;
+
+    .provenanceEllipse {
+        fill: black;
+        opacity: .85;
+        stroke: whitesmoke;
+        stroke-opacity:.5;
+        stroke-width: .5px;
+        // border: .5px solid whitesmoke;
+    }
+
+    .leaflet-marker-icon {
+        svg {
+            fill: black;
+        }
+    }
+
+    &.map-dark {
+        .provenanceEllipse {
+            fill: whitesmoke;
+            opacity: .5;
+            stroke: black;
+        }
+
+        .leaflet-marker-icon {
+            svg {
+                fill: #b8b8b8;
+            }
+        }
+    }
+
 }

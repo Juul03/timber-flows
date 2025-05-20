@@ -1,3 +1,76 @@
-.timeline-line {
-    z-index:10000;
+#timeline {
+    input {
+        &.minYear {
+            color:#6f3903;
+        }
+
+        &.maxYear {
+            color: #046004;
+        }
+        
+    }
+
+    #timeline-container {
+        .timeline-line {
+            z-index:10000;
+        }
+
+        .bar {
+            transition: .15s;
+        }
+
+        &.area {
+            .bar {
+                fill: black;
+
+                &.hover {
+                    fill: whitesmoke;
+                }
+            }
+
+            #tooltip {
+                background: black;
+                color:white;
+            }
+        }
+
+        &.dark {
+            .bar {
+                fill: #b8b8b8;
+
+                &.hover {
+                    stroke: whitesmoke;
+                    stroke-width: .5px;
+                    fill: black;
+                }
+
+            }
+        }
+    }
+}
+
+#tooltip-timeline {
+    &.dark {
+        background: whitesmoke;
+        color: black;
+    }
+
+    &.area {
+        background: black;
+        color:white;
+    }
+
+}
+
+.dark {
+    #timeline {
+        input {
+            &.minYear {
+                color:#9c5005;
+            }
+        }
+    }
+    .y-axis, .x-axis {
+        color:#787878;
+    }
 }
