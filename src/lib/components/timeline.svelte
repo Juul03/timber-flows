@@ -78,7 +78,7 @@
     let timelineLine;
     let xScaleTimeline;
     let timelineIndex = 0;
-    let timelineRunning = false;
+    export let timelineRunning = false;
     export let timelineClicked = false;
 
     // variables
