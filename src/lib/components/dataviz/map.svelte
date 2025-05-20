@@ -48,6 +48,7 @@
     let mapContainer;
     let map;
     let currentTileLayer;
+    let markersActive = false;
 
     const provenanceEllipseMap = new Map();
 
@@ -384,7 +385,9 @@
 
             addZoomControl(leaflet, map);
 
-            addMarkersToMap(leaflet, tradeCitiesCoords, map);
+            if(markersActive) {
+                addMarkersToMap(leaflet, tradeCitiesCoords, map);
+            }
             addProvenancesToMap(leaflet, provenancesCoords, map);
 
             drawMapData();
