@@ -5,6 +5,7 @@
             type="search"
             class="form-control bg-blur border-0 rounded-pill pe-5 ps-3 text-truncate" 
             placeholder="Search"
+            bind:value={searchTerm}
             on:input={inputChange}
         >
         <div class="btn position-absolute top-50 end-0 translate-middle-y border-0 bg-transparent">
@@ -18,23 +19,26 @@
 <script>
     export let searchId;
     export let searchDataObject;
-
-    // var exported to parent
     export let filteredObjects;
-
-    filteredObjects = searchDataObject;
+    export let searchTerm = '';
 
     const inputChange = (event) => {
-        const value = event.target.value.toLowerCase();
-
-        if (value === "") {
-            // Reset to all locations
-            filteredObjects = [...searchDataObject];
-        } else {
-            filteredObjects = searchDataObject.filter(location =>
-                location.toLowerCase().includes(value)
-            );
-        }
+        searchTerm = event.target.value.toLowerCase();
     };
 
+    $: if (searchTerm === '') {
+        // If search input is empty, show all locations
+        filteredObjects = [];
+        for (const location of searchDataObject) {
+            filteredObjects.push(location);
+        }
+    } else {
+        // Otherwise, show only matching locations
+        filteredObjects = [];
+        for (const location of searchDataObject) {
+            if (location.toLowerCase().includes(searchTerm)) {
+                filteredObjects.push(location);
+            }
+        }
+    }
 </script>

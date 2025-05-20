@@ -107,6 +107,7 @@
                                 searchId="searchLocations"
                                 searchDataObject={uniqueLocations}
                                 bind:filteredObjects
+                                bind:searchTerm
                             />
                         </li>
                         {#each uniqueLocations as location}
@@ -176,6 +177,9 @@
     export let selectionPath = [];
     export let selectedOption = 'All';
 
+    // export from searchbar
+    export let searchTerm = '';
+
     // Var from this component
     let dropdownOpen = false;
     let selectedLocations = [];
@@ -183,6 +187,7 @@
     let toggleDropdown = () => {
         dropdownOpen = !dropdownOpen;
     }
+    
 
     const handleCheckboxChange = (event) => {
         const location = event.target.value;
@@ -193,6 +198,8 @@
         } else {
             selectedLocations = selectedLocations.filter(l => l !== location);
         }
+
+        searchTerm = '';
     }
 
     const getCurrentOptions = (tree, path) => {

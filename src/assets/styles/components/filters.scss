@@ -1,11 +1,35 @@
 #offcanvasFilters {
     width:25vw !important;
+
     button.badge {
         color:var(--dark);
     }
     .form-select {
-        background-color:unset;
+    position: relative;
+    background-image: unset;
+    background-color:unset;
+    padding-right: 2rem;
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 0.75rem;
+            width: .75rem;
+            height: .75rem;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='lightgrey' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-size: contain;
+            transform: translateY(-50%) rotate(0deg);
+            transition: transform 0.3s ease;
+        }
+
+        &.show::after {
+            transform: translateY(-50%) rotate(180deg);
+        }
     }
+
     .checkbox-list {
         height: 35vh;
         overflow-y: auto;
@@ -34,6 +58,10 @@
 
 .dark {
     #offcanvasFilters {
+        * {
+            color:lightgrey;
+        }
+
         button.badge {
             color: lightgrey;
         }
@@ -46,7 +74,7 @@
 
         button.form-select {
             color:lightgray;
-             --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='lightgrey' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+            --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='lightgrey' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
         }
     }
 }
