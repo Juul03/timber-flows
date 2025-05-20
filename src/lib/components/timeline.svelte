@@ -146,7 +146,7 @@
         }
     }
 
-        const onInputYearChange = () => {
+    const onInputYearChange = () => {
         if (!svg || !filledData || filledData.length === 0) return;
 
         const year = Number(currentYearTimeline);
@@ -163,7 +163,6 @@
         // Move the line
         svg.select(".timeline-line")
             .transition()
-            .duration(300)
             .attr("x1", xPos)
             .attr("x2", xPos);
 
@@ -189,6 +188,7 @@
             .attr("x2", x);
 
         currentYearTimeline = year;
+        console.log("current year", currentYearTimeline);
         timelineIndex++;
 
         setTimeout(animateTimeline, stepDuration);
@@ -206,7 +206,7 @@
         const duration = 5000;
         const totalSteps = filledData.length;
         // stepDuration = duration / totalSteps;
-        stepDuration = 100;
+        stepDuration = 500;
 
         // If it's already at the end, reset to the beginning
         if (timelineIndex >= filledData.length) {

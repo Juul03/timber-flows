@@ -50,7 +50,7 @@
 
     let animationSpeed;
     let animationSpeedSlow = 5000;
-    let animationSpeedFast = 250;
+    let animationSpeedFast = 500;
     
     let showTooltipRoute = false;
     export let tooltipPosition = { x: 0, y: 0 };
@@ -380,6 +380,7 @@
     });
 
     const drawTimelineYearData = () => {
+        console.log(timelineDataSelection);
         clearTradeRoutesFromMap();
 
         routeDrawCounts = {};
