@@ -247,42 +247,44 @@
                     pane: 'shadowPane'
                 }).addTo(map);
             }
-          
-            // Highlight visible path on hover and show tooltip
-            hoverPath.on('mouseover', () => {
-                showTooltipRoute = true;
 
-                const location = routeData.location;
-                const categoryPath = findCategoryPathFromLocation(filtersObject, location, keywordMap);
+            if(hoverPath) {
+                // Highlight visible path on hover and show tooltip
+                hoverPath.on('mouseover', () => {
+                    showTooltipRoute = true;
 
-                tooltipRouteContent.fellingDate = routeData.fellingDate;
-                tooltipRouteContent.location = routeData.location;
-                tooltipRouteContent.startYear = routeData.startYear;
-                tooltipRouteContent.endYear = routeData.endYear;
-                tooltipRouteContent.length = routeData.length;
-                tooltipRouteContent.TBP = routeData.TBP;
-                tooltipRouteContent.provenance = routeData.provenance;
-                tooltipRouteContent.categoryPath = categoryPath;
-                tooltipRouteContent.keyCode = routeData.keyCode;
+                    const location = routeData.location;
+                    const categoryPath = findCategoryPathFromLocation(filtersObject, location, keywordMap);
 
-                visiblePath.setStyle({ weight: 5, opacity: 1 });
+                    tooltipRouteContent.fellingDate = routeData.fellingDate;
+                    tooltipRouteContent.location = routeData.location;
+                    tooltipRouteContent.startYear = routeData.startYear;
+                    tooltipRouteContent.endYear = routeData.endYear;
+                    tooltipRouteContent.length = routeData.length;
+                    tooltipRouteContent.TBP = routeData.TBP;
+                    tooltipRouteContent.provenance = routeData.provenance;
+                    tooltipRouteContent.categoryPath = categoryPath;
+                    tooltipRouteContent.keyCode = routeData.keyCode;
 
-                drawnTradeRoutes.forEach(route => {
-                    if(route !== visiblePath) {
-                        route.setStyle({ opacity: 0.35 });
-                    }
-                })
-            });
+                    visiblePath.setStyle({ weight: 5, opacity: 1 });
 
-            hoverPath.on('mouseout', () => {
-                showTooltipRoute = false;
-                visiblePath.setStyle({ weight: 2, opacity: 0.7 });
-                drawnTradeRoutes.forEach(route => {
-                    route.setStyle({ opacity: 0.7 });
-                })
-            });
+                    drawnTradeRoutes.forEach(route => {
+                        if(route !== visiblePath) {
+                            route.setStyle({ opacity: 0.35 });
+                        }
+                    })
+                });
 
-            drawnTradeRoutes.push(visiblePath, hoverPath);
+                hoverPath.on('mouseout', () => {
+                    showTooltipRoute = false;
+                    visiblePath.setStyle({ weight: 2, opacity: 0.7 });
+                    drawnTradeRoutes.forEach(route => {
+                        route.setStyle({ opacity: 0.7 });
+                    })
+                });
+
+                drawnTradeRoutes.push(visiblePath, hoverPath);
+            }
         });
     };
 
