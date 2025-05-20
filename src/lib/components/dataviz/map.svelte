@@ -380,7 +380,6 @@
     });
 
     const drawTimelineYearData = () => {
-        console.log(timelineDataSelection);
         clearTradeRoutesFromMap();
 
         routeDrawCounts = {};
