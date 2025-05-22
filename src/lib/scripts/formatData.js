@@ -23,6 +23,24 @@ export const formatData = (data) => {
     });
 }
 
+export const formatDataBatavia = (data) => {
+  return data.map(item => {
+    return {
+      keyCode: item.Dendrocode,
+      location: "Amsterdam, Batavia shipwreck",
+      length: item.N,
+      startYear: item['start yr.'],
+      endYear: item['end yr.'],
+      fellingDate: item['Interpret./ felling'],
+      provenance: item.Provenance,
+      pith: item.pith,
+      SW: item.SW,
+      bark: item['bark?'],
+      extraEnd: item['extra end'],
+    }
+  })
+}
+
 export const getUniqueValues = (data, key) => {
     const values = data
         .map(item => item[key])
@@ -35,17 +53,33 @@ export const getUniqueValues = (data, key) => {
 }
 
 // get FellingDates
-export const getFellingDates = (dataSet) => {
-    const rawFellingDates = dataSet.map(item => item.fellingDate).filter(Boolean);
+export const getFellingDates = (dataSet, name) => {
+  const rawFellingDates = dataSet.map(item => item.fellingDate).filter(Boolean);
+  let earliestYears;
 
-    const earliestYears = rawFellingDates.map(data => {
+  if (name === "shipwrecksBatavia") {
+    earliestYears = rawFellingDates
+      .map(data => {
         if (typeof data === "string") {
-            return parseInt(data.substring(0, 4));
+          // Match 4-digit year in the string
+          const match = data.match(/\b\d{4}\b/);
+          return match ? parseInt(match[0], 10) : null;
+        }
+        return null;
+      })
+      .filter(Boolean); // Remove nulls
+  } else {
+    earliestYears = rawFellingDates
+      .map(data => {
+        if (typeof data === "string") {
+          return parseInt(data.substring(0, 4), 10);
         }
         return data;
-    }).filter(Boolean); // Remove nulls
+      })
+      .filter(Boolean); // Remove nulls
+  }
 
-    return earliestYears.sort();
+  return earliestYears.sort();
 };
 
 // get unique locations, when they are the first word of the location key

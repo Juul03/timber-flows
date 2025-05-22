@@ -55,9 +55,9 @@
   },
   {
     "name": "Northern Germany",
-    "coordinateCenter": [53.0, 10.0],
-    "xRadius": 200000,
-    "yRadius": 100000
+    "coordinateCenter": [53.5, 10.0],
+    "xRadius": 120000,
+    "yRadius": 60000
   },
   {
     "name": "Upper Meuse Valley",
@@ -82,5 +82,29 @@
     "coordinateCenter": [48.3, 10.8],
     "xRadius": 250000,
     "yRadius": 125000
+  },
+  {
+    "name": "NW Germany-Lower Saxony",
+    "coordinateCenter": [52.8367036, 7.8450765],
+    "xRadius": 70000,
+    "yRadius": 110000
+  },
+  {
+    "name": "Lithuania",
+    "coordinateCenter": [55.666234, 22.412109],
+    "xRadius": 70000,
+    "yRadius": 110000
+  },
+  {
+    "name": "Lübeck",
+    "coordinateCenter": [53.869720, 10.686389],
+    "xRadius": 60000,
+    "yRadius": 90000
+  },
+  {
+    "name": "East Sweden",
+    "coordinateCenter": [59.3, 17.9],
+    "xRadius": 70000,
+    "yRadius": 110000
   }
 ]

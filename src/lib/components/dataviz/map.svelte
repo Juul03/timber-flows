@@ -37,6 +37,7 @@
     export let keywordMap = {};
     export let timelineClicked;
     export let timelineRunning;
+    export let timelineSpeed = 500;
 
     // Compontent variables
     let drawnTradeRoutes = [];
@@ -54,7 +55,7 @@
 
     let animationSpeed;
     let animationSpeedSlow = 5000;
-    let animationSpeedFast = 500;
+    let animationSpeedFast = timelineSpeed;
     
     let showTooltipRoute = false;
     export let tooltipPosition = { x: 0, y: 0 };
@@ -150,7 +151,7 @@
     const smoothPath = (coords) => {
         // Turf expects [lng, lat], not [lat, lng]
         const line = lineString(coords.map(([lat, lng]) => [lng, lat]));
-        const curved = bezierSpline(line, { sharpness: 0.85 });
+        const curved = bezierSpline(line, { sharpness: 0.75 });
 
         // Convert back to [lat, lng]
         return curved.geometry.coordinates.map(([lng, lat]) => [lat, lng]);
@@ -225,6 +226,7 @@
     };
 
 
+
     // add all trade routes
     const addTradeRouteToMap = (route, offset, color, routeData) => {
         const offsetCoordinates = offsetPath(route.coordinates, offset);
@@ -239,7 +241,7 @@
             let hoverPath;
 
             // Create an invisible thicker path on top for easier hover
-            if(leaflet && map !== undefined) {
+            if(leaflet && (map !== undefined) && (visiblePath !== undefined)) {
                 hoverPath = leaflet.polyline(visiblePath.getLatLngs(), {
                     color: 'transparent',
                     weight: 20,

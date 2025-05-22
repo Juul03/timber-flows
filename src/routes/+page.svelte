@@ -8,6 +8,7 @@
             {keywordMap}
             {timelineClicked}
             {timelineRunning}
+            {timelineSpeed}
         />
         <div class="container position-relative z-3">
             <div class="position-absolute w-100 top-0">
@@ -29,6 +30,7 @@
                             bind:currentYearTimeline
                             bind:timelineClicked
                             bind:timelineRunning
+                            bind:timelineSpeed
                         />
                     </div>
                 </div>
@@ -64,9 +66,10 @@
     import dataWoodPurposes from '$lib/data/woodPurposes.json';
     import dataHalfModels from '$lib/data/artworks/half-models.json';
     import dataConstructions from '$lib/data/constructions/constructions.json';
+    import dataShipwreckBatavia from '$lib/data/constructions/shipwreckBatavia.json';
 
     // Scripts
-    import { formatData, getUniqueValues, getFellingDates, getUniqueLocations } from '$lib/scripts/formatData.js';
+    import { formatData, formatDataBatavia, getUniqueValues, getFellingDates, getUniqueLocations } from '$lib/scripts/formatData.js';
 
     // Components
     import Filters from '$lib/components/filters.svelte';
@@ -89,6 +92,7 @@
     let currentYearTimeline;
     let timelineClicked = false;
     export let timelineRunning = false;
+    export let timelineSpeed = 500;
 
     // Dynamic retrieved from view buttons
     export let currentView = "map";
@@ -101,11 +105,14 @@
 
     // Format data files
     let formattedDataHalfModels = formatData(dataHalfModels);
-    let formattedDataConstructions = formatData(dataConstructions)
+    let formattedDataConstructions = formatData(dataConstructions);
+    let formattedDataShipwrecksBatavia = formatDataBatavia(dataShipwreckBatavia);
+    console.log("batavia", formattedDataShipwrecksBatavia);
 
     // Data variables
     let halfModels = formattedDataHalfModels;
     let constructions = formattedDataConstructions;
+    let shipwrecksBatavia = formattedDataShipwrecksBatavia;
 
     let dataSetsArtworks = [
         {
@@ -126,7 +133,12 @@
         {
             name: "constructions",
             data: constructions,
-        }];
+        },
+        {
+            name: "shipwrecksBatavia",
+            data: shipwrecksBatavia,
+        }
+    ];
 
     let dataSetsAll = [
         {
@@ -177,6 +189,7 @@
     
     // Get all unique locations (for constructions)
     uniqueLocations = getUniqueLocations(constructions);
+    // --> TODO: add locations of shipwrecks
 
     const findAllKeysWithValue = (dataSetsConstructions, dataSetName, location, buildingKeywords) => {
         const filteredData = dataSetsConstructions.map(dataset => {
@@ -228,6 +241,18 @@
         if (selectionPath[0] === "Constructions") {
             if (selectedOption === "Constructions") return dataSetsConstructions;
 
+            if (selectionPath[1] === "Shipwrecks") {
+                if (selectedOption === "Shipwrecks") {
+                    // all shipwreck datasets (for now only batavia)
+                    const set = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
+                    return set ? [set] : [];
+                } else if (selectedOption === "Batavia shipwreck") {
+                    // only batavia shipwreck
+                    const set = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
+                    return set ? [set] : [];
+                }
+            }
+
             // keyword filtering on construction data to ex. "deck beams"
             if (keywordMap[selectedOption]) {
                 if (!dataSetCache[selectedOption]) {
@@ -240,7 +265,6 @@
                 }
                 return dataSetCache[selectedOption];
             }
-            
         }
 
         return dataSetsAll;
