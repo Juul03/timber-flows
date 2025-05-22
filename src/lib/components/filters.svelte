@@ -165,7 +165,6 @@
     const subtype = "Churches";
     const objectType = subtypeMap[subtype];
     const color = colorScale(objectType);
-    console.log("color in subn", color);
 
     import Searchbar from '$lib/components/inputs/searchbar.svelte';
     import MapLayers from '$lib/components/mapLayers.svelte';
@@ -236,7 +235,6 @@
             selectedOption = getCurrentLabel();
         } else {
             selectionPath = [...selectionPath, option];
-            console.log("selectionpath", selectionPath);
             selectedOption = getCurrentLabel();
         }
     }
