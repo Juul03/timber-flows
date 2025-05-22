@@ -23,6 +23,24 @@ export const formatData = (data) => {
     });
 }
 
+export const formatDataBatavia = (data) => {
+  return data.map(item => {
+    return {
+      keyCode: item.Dendrocode,
+      location: "Amsterdam",
+      length: item.N,
+      startYear: item['start yr.'],
+      endYear: item['end yr.'],
+      fellingDate: item['Interpret./ felling'],
+      provenance: item.Provenance,
+      pith: item.pith,
+      SW: item.SW,
+      bark: item['bark?'],
+      extraEnd: item['extra end'],
+    }
+  })
+}
+
 export const getUniqueValues = (data, key) => {
     const values = data
         .map(item => item[key])

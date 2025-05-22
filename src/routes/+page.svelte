@@ -64,9 +64,10 @@
     import dataWoodPurposes from '$lib/data/woodPurposes.json';
     import dataHalfModels from '$lib/data/artworks/half-models.json';
     import dataConstructions from '$lib/data/constructions/constructions.json';
+    import dataShipwreckBatavia from '$lib/data/constructions/shipwreckBatavia.json';
 
     // Scripts
-    import { formatData, getUniqueValues, getFellingDates, getUniqueLocations } from '$lib/scripts/formatData.js';
+    import { formatData, formatDataBatavia, getUniqueValues, getFellingDates, getUniqueLocations } from '$lib/scripts/formatData.js';
 
     // Components
     import Filters from '$lib/components/filters.svelte';
@@ -101,7 +102,9 @@
 
     // Format data files
     let formattedDataHalfModels = formatData(dataHalfModels);
-    let formattedDataConstructions = formatData(dataConstructions)
+    let formattedDataConstructions = formatData(dataConstructions);
+    let formattedDataShipwrecksBatavia = formatDataBatavia(dataShipwreckBatavia);
+    console.log("batavia", formattedDataShipwrecksBatavia);
 
     // Data variables
     let halfModels = formattedDataHalfModels;
