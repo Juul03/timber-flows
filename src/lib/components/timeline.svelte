@@ -91,16 +91,17 @@
         dataSets.forEach(firstLevel => {
             if ('data' in firstLevel && Array.isArray(firstLevel.data)) {
                 firstLevel.data.forEach(secondLevel => {
+                    const objectType = firstLevel.name || "unknown";
                     if ('data' in secondLevel && Array.isArray(secondLevel.data)) {
                         secondLevel.data.forEach(item => {
-                            const fellingYears = getFellingDates([item]);
+                            const fellingYears = getFellingDates([item], objectType);
                             const year = fellingYears[0];
                             if (year) {
                                 counts[year] = (counts[year] || 0) + 1;
                             }
                         });
                     } else {
-                        const fellingYears = getFellingDates([secondLevel]);
+                        const fellingYears = getFellingDates([secondLevel], objectType);
                         const year = fellingYears[0];
                         if (year) {
                             counts[year] = (counts[year] || 0) + 1;

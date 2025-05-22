@@ -150,7 +150,7 @@
     const smoothPath = (coords) => {
         // Turf expects [lng, lat], not [lat, lng]
         const line = lineString(coords.map(([lat, lng]) => [lng, lat]));
-        const curved = bezierSpline(line, { sharpness: 0.85 });
+        const curved = bezierSpline(line, { sharpness: 0.75 });
 
         // Convert back to [lat, lng]
         return curved.geometry.coordinates.map(([lng, lat]) => [lat, lng]);
@@ -331,9 +331,7 @@
             const objectType = firstLevel.name || "unknown";
 
             if (Array.isArray(firstLevel.data)) {
-                console.log("firstlevel", firstLevel.data);
                 firstLevel.data.forEach(secondLevel => {
-                    console.log("secondlevel", secondLevel.data);
                     if (secondLevel && Array.isArray(secondLevel.data)) {
                         // Case 3: Nested .data inside .data
                         secondLevel.data.forEach(item => {
@@ -341,8 +339,6 @@
                         });
                     } else {
                         // Case 2: Single layer
-                        console.log("draw route", secondLevel);
-                        console.log("draw route objecttype", objectType);
                         drawTradeRoute(secondLevel, objectType);
                     }
                 });
