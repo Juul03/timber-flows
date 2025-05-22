@@ -8,6 +8,7 @@
             {keywordMap}
             {timelineClicked}
             {timelineRunning}
+            {timelineSpeed}
         />
         <div class="container position-relative z-3">
             <div class="position-absolute w-100 top-0">
@@ -29,6 +30,7 @@
                             bind:currentYearTimeline
                             bind:timelineClicked
                             bind:timelineRunning
+                            bind:timelineSpeed
                         />
                     </div>
                 </div>
@@ -90,6 +92,7 @@
     let currentYearTimeline;
     let timelineClicked = false;
     export let timelineRunning = false;
+    export let timelineSpeed = 500;
 
     // Dynamic retrieved from view buttons
     export let currentView = "map";

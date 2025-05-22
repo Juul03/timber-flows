@@ -37,6 +37,7 @@
     export let keywordMap = {};
     export let timelineClicked;
     export let timelineRunning;
+    export let timelineSpeed = 500;
 
     // Compontent variables
     let drawnTradeRoutes = [];
@@ -181,7 +182,7 @@
         if(timelineClicked) {
             finalOpacity = 1;
         } else if (!timelineClicked) {
-            finalOpacity = 0.1;
+            finalOpacity = 0;
         }
 
         const opacityStep = (initialOpacity - finalOpacity) / coords.length;
@@ -201,7 +202,7 @@
             }
 
             if (index < coords.length) {
-                if(totalDuration === animationSpeedFast) {
+                if(totalDuration === timelineSpeed) {
                     const easedProgress = Math.pow(progress, 2);
                     const newOpacity = initialOpacity - easedProgress * (initialOpacity - finalOpacity);
                     path.setStyle({ opacity: newOpacity });
@@ -212,7 +213,7 @@
                 animatingTradeRoutes = animatingTradeRoutes.filter(p => p !== path);
                 drawnTradeRoutes.push(path);
 
-                if(totalDuration === animationSpeedFast) {
+                if(totalDuration === timelineSpeed) {
                     path.setStyle({ opacity: finalOpacity });
                 }
                 
@@ -501,7 +502,7 @@
     }
 
     $: if (timelineDataSelection != undefined && leafletReady && map) {
-        animationSpeed = animationSpeedFast;
+        animationSpeed = timelineSpeed;
         drawTimelineYearData();
     }
 
