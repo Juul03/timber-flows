@@ -55,7 +55,7 @@
 
     let animationSpeed;
     let animationSpeedSlow = 5000;
-    let animationSpeedFast = 500;
+    let animationSpeedFast = timelineSpeed;
     
     let showTooltipRoute = false;
     export let tooltipPosition = { x: 0, y: 0 };
@@ -182,7 +182,7 @@
         if(timelineClicked) {
             finalOpacity = 1;
         } else if (!timelineClicked) {
-            finalOpacity = 0;
+            finalOpacity = 0.1;
         }
 
         const opacityStep = (initialOpacity - finalOpacity) / coords.length;
@@ -202,7 +202,7 @@
             }
 
             if (index < coords.length) {
-                if(totalDuration === timelineSpeed) {
+                if(totalDuration === animationSpeedFast) {
                     const easedProgress = Math.pow(progress, 2);
                     const newOpacity = initialOpacity - easedProgress * (initialOpacity - finalOpacity);
                     path.setStyle({ opacity: newOpacity });
@@ -213,7 +213,7 @@
                 animatingTradeRoutes = animatingTradeRoutes.filter(p => p !== path);
                 drawnTradeRoutes.push(path);
 
-                if(totalDuration === timelineSpeed) {
+                if(totalDuration === animationSpeedFast) {
                     path.setStyle({ opacity: finalOpacity });
                 }
                 
@@ -224,6 +224,7 @@
         requestAnimationFrame(step);
         return path;
     };
+
 
 
     // add all trade routes
@@ -240,7 +241,7 @@
             let hoverPath;
 
             // Create an invisible thicker path on top for easier hover
-            if(leaflet && map !== undefined && visiblePath !== undefined) {
+            if(leaflet && (map !== undefined) && (visiblePath !== undefined)) {
                 hoverPath = leaflet.polyline(visiblePath.getLatLngs(), {
                     color: 'transparent',
                     weight: 20,
