@@ -239,7 +239,7 @@
             let hoverPath;
 
             // Create an invisible thicker path on top for easier hover
-            if(leaflet && map !== undefined) {
+            if(leaflet && map !== undefined && visiblePath !== undefined) {
                 hoverPath = leaflet.polyline(visiblePath.getLatLngs(), {
                     color: 'transparent',
                     weight: 20,
