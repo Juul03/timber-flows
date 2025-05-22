@@ -17,6 +17,7 @@ export const filtersObject = {
         },
       },
       Shipwrecks: {
+            "Batavia shipwreck": null,
             "Planks": null,
             "Frames": null,
             Ceiling: null,

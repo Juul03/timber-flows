@@ -186,6 +186,7 @@
     
     // Get all unique locations (for constructions)
     uniqueLocations = getUniqueLocations(constructions);
+    // --> TODO: add locations of shipwrecks
 
     const findAllKeysWithValue = (dataSetsConstructions, dataSetName, location, buildingKeywords) => {
         const filteredData = dataSetsConstructions.map(dataset => {
@@ -237,9 +238,16 @@
         if (selectionPath[0] === "Constructions") {
             if (selectedOption === "Constructions") return dataSetsConstructions;
 
-            if (selectedOption === "Shipwrecks") {
-                const set = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
-                return set ? [set] : [];
+            if (selectionPath[1] === "Shipwrecks") {
+                if (selectedOption === "Shipwrecks") {
+                    // all shipwreck datasets (for now only batavia)
+                    const set = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
+                    return set ? [set] : [];
+                } else if (selectedOption === "Batavia shipwreck") {
+                    // only batavia shipwreck
+                    const set = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
+                    return set ? [set] : [];
+                }
             }
 
             // keyword filtering on construction data to ex. "deck beams"

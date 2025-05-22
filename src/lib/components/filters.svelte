@@ -236,6 +236,7 @@
             selectedOption = getCurrentLabel();
         } else {
             selectionPath = [...selectionPath, option];
+            console.log("selectionpath", selectionPath);
             selectedOption = getCurrentLabel();
         }
     }
