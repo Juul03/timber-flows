@@ -148,13 +148,14 @@
     // Function to calculate the fellingDates frequencies
     const getFellingDateFrequency = (dataSets) => {
         const counts = {};
+        console.log("timeline datasets", dataSets);
 
         dataSets.forEach(firstLevel => {
             if ('data' in firstLevel && Array.isArray(firstLevel.data)) {
                 let objectType = firstLevel.name || "unknown";
                 firstLevel.data.forEach(secondLevel => {
-                    objectType = secondLevel.name || "unknown";
                     if ('data' in secondLevel && Array.isArray(secondLevel.data)) {
+                        objectType = secondLevel.name || "unknown";
                         secondLevel.data.forEach(item => {
                             const fellingYears = getFellingDates([item], objectType);
                             const year = fellingYears[0];
@@ -170,6 +171,7 @@
                         }
                     }
                 });
+                console.log("TYPEEEE", objectType)
             }
         });
 
@@ -333,6 +335,7 @@
 
     // Function to draw the bar chart
     const drawBarchart = (data) => {
+        console.log("chart data", data);
 
         chartContainer = document.getElementById("timeline-container");
 

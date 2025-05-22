@@ -375,11 +375,11 @@
             }
 
             // get long and lat on click
-            const onMapClick = (event) => {
-                alert("You clicked the map at " + event.latlng);
-            }
+            // const onMapClick = (event) => {
+            //     alert("You clicked the map at " + event.latlng);
+            // }
  
-            map.on('click', onMapClick);
+            // map.on('click', onMapClick);
 
             animationSpeed = animationSpeedSlow;
             updateCurrentMap(selectedMapType || 'area');
@@ -502,7 +502,7 @@
     }
 
     $: if (timelineDataSelection != undefined && leafletReady && map) {
-        animationSpeed = timelineSpeed;
+        animationSpeed = animationSpeedFast;
         drawTimelineYearData();
     }
 
