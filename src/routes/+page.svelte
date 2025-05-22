@@ -109,6 +109,7 @@
     // Data variables
     let halfModels = formattedDataHalfModels;
     let constructions = formattedDataConstructions;
+    let shipwrecksBatavia = formattedDataShipwrecksBatavia;
 
     let dataSetsArtworks = [
         {
@@ -129,7 +130,12 @@
         {
             name: "constructions",
             data: constructions,
-        }];
+        },
+        {
+            name: "shipwrecksBatavia",
+            data: shipwrecksBatavia,
+        }
+    ];
 
     let dataSetsAll = [
         {
@@ -231,6 +237,11 @@
         if (selectionPath[0] === "Constructions") {
             if (selectedOption === "Constructions") return dataSetsConstructions;
 
+            if (selectedOption === "Shipwrecks") {
+                const set = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
+                return set ? [set] : [];
+            }
+
             // keyword filtering on construction data to ex. "deck beams"
             if (keywordMap[selectedOption]) {
                 if (!dataSetCache[selectedOption]) {
@@ -243,7 +254,6 @@
                 }
                 return dataSetCache[selectedOption];
             }
-            
         }
 
         return dataSetsAll;

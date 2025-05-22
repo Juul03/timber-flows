@@ -27,7 +27,7 @@ export const formatDataBatavia = (data) => {
   return data.map(item => {
     return {
       keyCode: item.Dendrocode,
-      location: "Amsterdam",
+      location: "Amsterdam, Batavia shipwreck",
       length: item.N,
       startYear: item['start yr.'],
       endYear: item['end yr.'],

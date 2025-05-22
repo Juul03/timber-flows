@@ -331,7 +331,9 @@
             const objectType = firstLevel.name || "unknown";
 
             if (Array.isArray(firstLevel.data)) {
+                console.log("firstlevel", firstLevel.data);
                 firstLevel.data.forEach(secondLevel => {
+                    console.log("secondlevel", secondLevel.data);
                     if (secondLevel && Array.isArray(secondLevel.data)) {
                         // Case 3: Nested .data inside .data
                         secondLevel.data.forEach(item => {
@@ -339,6 +341,8 @@
                         });
                     } else {
                         // Case 2: Single layer
+                        console.log("draw route", secondLevel);
+                        console.log("draw route objecttype", objectType);
                         drawTradeRoute(secondLevel, objectType);
                     }
                 });
@@ -374,11 +378,11 @@
             }
 
             // get long and lat on click
-            // const onMapClick = (event) => {
-            //     alert("You clicked the map at " + event.latlng);
-            // }
+            const onMapClick = (event) => {
+                alert("You clicked the map at " + event.latlng);
+            }
  
-            // map.on('click', onMapClick);
+            map.on('click', onMapClick);
 
             animationSpeed = animationSpeedSlow;
             updateCurrentMap(selectedMapType || 'area');
