@@ -56,8 +56,8 @@
   {
     "name": "Northern Germany",
     "coordinateCenter": [53.5, 10.0],
-    "xRadius": 150000,
-    "yRadius": 80000
+    "xRadius": 120000,
+    "yRadius": 60000
   },
   {
     "name": "Upper Meuse Valley",
@@ -89,9 +89,21 @@
     "xRadius": 70000,
     "yRadius": 110000
   },
-    {
+  {
     "name": "Lithuania",
     "coordinateCenter": [55.666234, 22.412109],
+    "xRadius": 70000,
+    "yRadius": 110000
+  },
+  {
+    "name": "Lübeck",
+    "coordinateCenter": [53.869720, 10.686389],
+    "xRadius": 60000,
+    "yRadius": 90000
+  },
+  {
+    "name": "East Sweden",
+    "coordinateCenter": [59.3, 17.9],
     "xRadius": 70000,
     "yRadius": 110000
   }

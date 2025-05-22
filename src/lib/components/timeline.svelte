@@ -90,8 +90,9 @@
 
         dataSets.forEach(firstLevel => {
             if ('data' in firstLevel && Array.isArray(firstLevel.data)) {
+                let objectType = firstLevel.name || "unknown";
                 firstLevel.data.forEach(secondLevel => {
-                    const objectType = firstLevel.name || "unknown";
+                    objectType = secondLevel.name || "unknown";
                     if ('data' in secondLevel && Array.isArray(secondLevel.data)) {
                         secondLevel.data.forEach(item => {
                             const fellingYears = getFellingDates([item], objectType);
