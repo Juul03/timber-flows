@@ -256,6 +256,9 @@
                     const set = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
                     return set ? [set] : [];
                 }
+            } else if (selectionPath[1] === "Archeology") {
+                const set = dataSetsConstructions.find(set => set.name === "archeology");
+                return set ? [set] : [];
             }
 
             // keyword filtering on construction data to ex. "deck beams"

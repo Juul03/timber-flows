@@ -59,7 +59,7 @@ export const formatDataSjoerd = (data) => {
       length: item.Length,
       sapwood: item.Sapwoord,
       WK: item.WK,
-      startYear: item.DateS,
+      endYear: item.DateS,
       fellingDate: item['Estimated felling date'],
       TBP: item.TBP,
       reference: item.Reference,

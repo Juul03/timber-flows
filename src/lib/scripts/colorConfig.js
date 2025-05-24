@@ -14,6 +14,7 @@ export const subtypeMap = {
     "Corbels in Buildings": "constructions",
     Shipwrecks: "constructions",
     "shipwrecksBatavia": "constructions",
+    archeology: "constructions",
 };
 
 export const colorScale = scaleOrdinal()

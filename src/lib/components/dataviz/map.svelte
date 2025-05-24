@@ -369,7 +369,12 @@
                     })
                 });
 
-                drawnTradeRoutes.push(visiblePath, hoverPath);
+                // drawnTradeRoutes.push(visiblePath, hoverPath);
+                drawnTradeRoutes.push(visiblePath);
+                if (hoverPath) {
+                    drawnTradeRoutes.push(hoverPath);
+                }
+
             }
         });
     };
