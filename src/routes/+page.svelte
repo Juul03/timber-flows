@@ -68,6 +68,7 @@
     import dataConstructions from '$lib/data/constructions/constructions.json';
     import dataShipwreckBatavia from '$lib/data/constructions/shipwreckBatavia.json';
     import dataArcheology from '$lib/data/constructions/archeology.json';
+    import dataPanelPaintings from '$lib/data/artworks/panelPaintings.json';
 
     // Scripts
     import { formatData, formatDataBatavia, formatDataSjoerd, getUniqueValues, getFellingDates, getUniqueLocations } from '$lib/scripts/formatData.js';
@@ -109,12 +110,14 @@
     let formattedDataConstructions = formatData(dataConstructions);
     let formattedDataShipwrecksBatavia = formatDataBatavia(dataShipwreckBatavia);
     let formattedDataArcheology = formatDataSjoerd(dataArcheology);
+    let formattedDataPanelPaintings = formatDataSjoerd(dataPanelPaintings);
 
     // Data variables
     let halfModels = formattedDataHalfModels;
     let constructions = formattedDataConstructions;
     let shipwrecksBatavia = formattedDataShipwrecksBatavia;
     let archeology = formattedDataArcheology;
+    let panelPaintings = formattedDataPanelPaintings;
 
     let dataSetsArtworks = [
         {
@@ -127,7 +130,7 @@
         },
         {
             name: "panelPaintings",
-            data: null,
+            data: panelPaintings,
         }
     ];
 
@@ -239,6 +242,11 @@
 
             if (selectedOption === "Halfmodels") {
                 const set = dataSetsArtworks.find(set => set.name === "halfModels");
+                return set ? [set] : [];
+            }
+
+            if (selectedOption === "Panel paintings") {
+                const set = dataSetsArtworks.find(set => set.name === "panelPaintings");
                 return set ? [set] : [];
             }
         }

@@ -252,7 +252,14 @@
         let finalCoordinates = [...offsetCoordinates];
 
         // Check if exact lat/lng are provided
-        if (routeData.latitude && routeData.longitude && routeData.latitude !== "0" && routeData.longitude !== "0") {
+        if (
+            routeData.latitude 
+            && routeData.longitude 
+            && routeData.latitude !== "0" 
+            && routeData.longitude !== "0"
+            && routeData.longitude !== "-"
+            && routeData.latitude !== "-"
+        ) {
             finalCoordinates[finalCoordinates.length - 1] = [
                 parseFloat(routeData.latitude),
                 parseFloat(routeData.longitude)
@@ -415,7 +422,7 @@
     };
 
     const processActiveDataSets = (activeDataSets) => {
-        // console.log("activedatasets", activeDataSets);
+        console.log("activedatasets", activeDataSets);
         if (!Array.isArray(activeDataSets)) {
             console.warn("Expected activeDataSets to be an array");
             return;
