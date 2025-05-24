@@ -69,6 +69,7 @@
     import dataShipwreckBatavia from '$lib/data/constructions/shipwreckBatavia.json';
     import dataArcheology from '$lib/data/constructions/archeology.json';
     import dataPanelPaintings from '$lib/data/artworks/panelPaintings.json';
+    import dataSculptures from '$lib/data/artworks/panelPaintings.json';
 
     // Scripts
     import { formatData, formatDataBatavia, formatDataSjoerd, getUniqueValues, getFellingDates, getUniqueLocations } from '$lib/scripts/formatData.js';
@@ -111,6 +112,7 @@
     let formattedDataShipwrecksBatavia = formatDataBatavia(dataShipwreckBatavia);
     let formattedDataArcheology = formatDataSjoerd(dataArcheology);
     let formattedDataPanelPaintings = formatDataSjoerd(dataPanelPaintings);
+    let formattedDataSculptures = formatDataSjoerd(dataSculptures);
 
     // Data variables
     let halfModels = formattedDataHalfModels;
@@ -118,6 +120,7 @@
     let shipwrecksBatavia = formattedDataShipwrecksBatavia;
     let archeology = formattedDataArcheology;
     let panelPaintings = formattedDataPanelPaintings;
+    let sculptures = formattedDataSculptures;
 
     let dataSetsArtworks = [
         {
@@ -126,7 +129,7 @@
         },
         {
             name: "sculptures",
-            data: null,
+            data: sculptures,
         },
         {
             name: "panelPaintings",
@@ -243,10 +246,11 @@
             if (selectedOption === "Halfmodels") {
                 const set = dataSetsArtworks.find(set => set.name === "halfModels");
                 return set ? [set] : [];
-            }
-
-            if (selectedOption === "Panel paintings") {
+            } else if (selectedOption === "Panel paintings") {
                 const set = dataSetsArtworks.find(set => set.name === "panelPaintings");
+                return set ? [set] : [];
+            } else if (selectedOption === "Sculptures") {
+                const set = dataSetsArtworks.find(set => set.name === "sculptures");
                 return set ? [set] : [];
             }
         }
