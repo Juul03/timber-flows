@@ -148,7 +148,6 @@
     // Function to calculate the fellingDates frequencies
     const getFellingDateFrequency = (dataSets) => {
         const counts = {};
-        console.log("timeline datasets", dataSets);
 
         dataSets.forEach(firstLevel => {
             if ('data' in firstLevel && Array.isArray(firstLevel.data)) {
@@ -171,7 +170,6 @@
                         }
                     }
                 });
-                console.log("TYPEEEE", objectType)
             }
         });
 
@@ -335,7 +333,6 @@
 
     // Function to draw the bar chart
     const drawBarchart = (data) => {
-        console.log("chart data", data);
 
         chartContainer = document.getElementById("timeline-container");
 
@@ -558,8 +555,6 @@
     previousMapType = selectedMapType;
 
     $: if (selectedMapType) {
-        console.log("selected maptype", selectedMapType);
-        
         if (chartContainer) {
             chartContainer.classList.remove(previousMapType);
             chartContainer.classList.add(selectedMapType);

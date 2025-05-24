@@ -107,7 +107,6 @@
     let formattedDataHalfModels = formatData(dataHalfModels);
     let formattedDataConstructions = formatData(dataConstructions);
     let formattedDataShipwrecksBatavia = formatDataBatavia(dataShipwreckBatavia);
-    console.log("batavia", formattedDataShipwrecksBatavia);
 
     // Data variables
     let halfModels = formattedDataHalfModels;
@@ -188,8 +187,7 @@
     let fellingDatesHalfModels = getFellingDates(halfModels);
     
     // Get all unique locations (for constructions)
-    uniqueLocations = getUniqueLocations(constructions);
-    // --> TODO: add locations of shipwrecks
+    uniqueLocations = getUniqueLocations([constructions, shipwrecksBatavia]);
 
     const findAllKeysWithValue = (dataSetsConstructions, dataSetName, location, buildingKeywords) => {
         const filteredData = dataSetsConstructions.map(dataset => {

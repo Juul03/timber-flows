@@ -83,38 +83,42 @@ export const getFellingDates = (dataSet, name) => {
 };
 
 // get unique locations, when they are the first word of the location key
-export const getUniqueLocations = (data) => {
-    const values = data
-        .map(item => item['location'])
-        .filter(value => value !== "")
-        .map(value => {
-            // Remove commas, convert to lowercase, and take the first word
-            let part = value
-                .replace(/,/g, '') 
-                .toLowerCase()
-                .split(" ")[0];
+export const getUniqueLocations = (datasets) => {
+  // Flatten all data items from all datasets into a single array
+  const allItems = datasets.flat();
 
-            // If the first word is "den", include the next word
-            if (part === 'den') {
-                let nextWord = value.split(' ')[1];
-                part = part + ' ' + nextWord.toLowerCase();
-            }
+  // Extract, clean, and normalize location values
+  const values = allItems
+    .map(item => item['location'])
+    .filter(value => value !== "")
+    .map(value => {
+      let part = value
+        .replace(/,/g, '') 
+        .toLowerCase()
+        .split(" ")[0];
 
-            return part;
-        });
+      // If the first word is "den", include the next word
+      if (part === 'den') {
+        const nextWord = value.split(' ')[1];
+        part = part + ' ' + (nextWord ? nextWord.toLowerCase() : '');
+      }
 
-    // Get unique values
-    const uniqueSet = new Set(values);
-    const uniqueArray = Array.from(uniqueSet);
+      return part;
+    });
 
-    // Capitalize first letter of each unique location
-    const normalizedArray = uniqueArray.map(word => word.charAt(0).toUpperCase() + word.slice(1));
+  // Get unique values
+  const uniqueSet = new Set(values);
+  const uniqueArray = Array.from(uniqueSet);
 
-    // Sort the array alphabetically
-    const sortedArray = normalizedArray.sort();
+  // Capitalize first letter of each unique location
+  const normalizedArray = uniqueArray.map(word => 
+    word.charAt(0).toUpperCase() + word.slice(1)
+  );
 
-    console.log("locations", sortedArray);
-    return sortedArray;
+  // Sort the array alphabetically
+  const sortedArray = normalizedArray.sort();
+
+  return sortedArray;
 };
 
 export function findCategoryPath(tree, targetLabel, path = []) {
