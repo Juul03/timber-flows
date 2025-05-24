@@ -58,6 +58,7 @@
     let animationSpeed;
     let animationSpeedSlow = 5000;
     let animationSpeedFast = timelineSpeed;
+    let zeroState = true;
     
     let showTooltipRoute = false;
     export let tooltipPosition = { x: 0, y: 0 };
@@ -198,7 +199,7 @@
         const initialOpacity = 1;
         let finalOpacity;
 
-        if(timelineClicked) {
+        if(timelineClicked || zeroState) {
             finalOpacity = 1;
         } else if (!timelineClicked) {
             finalOpacity = 0.1;
@@ -284,11 +285,11 @@
             if (matched) {
                 finalCoordinates[finalCoordinates.length - 1] = matched.coordinates;
             } else {
-                console.log("No matching location found in endpoints");
+                console.log("No matching location found in endpoints", routeData.location);
             }
 
         } else {
-            console.log("No coordinates or valid location provided, using original route", routeData);
+            console.log("No coordinates or valid location provided, using original route", routeData.location);
         }
 
         const smoothedCoordinates = smoothPath(finalCoordinates);
@@ -457,6 +458,86 @@
             position: 'bottomright'
         }).addTo(map);
     }
+
+   const extractYear = (fellingDate) => {
+    if (!fellingDate) return null;
+
+    // If it's a number (already a valid year), just return it
+    if (typeof fellingDate === 'number') {
+        return fellingDate;
+    }
+
+    // If it's a string (e.g., "1500-1550" or "1500"), extract first part
+    if (typeof fellingDate === 'string') {
+        const yearStr = fellingDate.split('-')[0].trim();
+        const year = parseInt(yearStr, 10);
+        return isNaN(year) ? null : year;
+    }
+
+    // Fallback for unexpected types
+    return null;
+};
+
+
+
+    const groupDataByYear = (activeDataSets) => {
+    const yearMap = new Map();
+
+    activeDataSets.forEach(firstLevel => {
+        const objectType = firstLevel.name || "unknown";
+
+        if (Array.isArray(firstLevel.data)) {
+            firstLevel.data.forEach(secondLevel => {
+                if (secondLevel && Array.isArray(secondLevel.data)) {
+                    secondLevel.data.forEach(item => {
+                        const year = extractYear(item.fellingDate);
+                        if (year && year >= 1400 && year <= 1850) {
+                            if (!yearMap.has(year)) yearMap.set(year, []);
+                            yearMap.get(year).push({ item, objectType });
+                        }
+                    });
+                } else {
+                    const year = extractYear(secondLevel.fellingDate);
+                    if (year && year >= 1400 && year <= 1850) {
+                        if (!yearMap.has(year)) yearMap.set(year, []);
+                        yearMap.get(year).push({ item: secondLevel, objectType });
+                    }
+                }
+            });
+        } else {
+            console.warn("Unrecognized structure in item:", firstLevel);
+        }
+    });
+
+    return yearMap;
+};
+
+
+    const drawMapDataByYear = async (activeDataSets) => {
+        if (!map || !leafletReady || !activeDataSets) return;
+
+        cancelAnimatingTradeRoutes();
+        clearTradeRoutesFromMap();
+        routeDrawCounts = {};
+
+        const yearMap = groupDataByYear(activeDataSets);
+
+        // Sort years ascending
+        const years = Array.from(yearMap.keys()).sort((a,b) => a - b);
+
+        for (const year of years) {
+            const entries = yearMap.get(year);
+            entries.forEach(({ item, objectType }) => {
+                drawTradeRoute(item, objectType);
+            });
+
+            console.log(`Drawn year: ${year} (${entries.length} routes)`);
+
+            // Wait before drawing next year (adjust delay as needed)
+            await new Promise(resolve => setTimeout(resolve, 200)); 
+        }
+    };
+
     
     onMount(async () => {
         if (browser) {
@@ -494,7 +575,9 @@
             addProvenancesToMap(leaflet, provenancesCoords, map);
             addLocationsToMap(leaflet, endpointsLocations, map);
 
-            drawMapData();
+            if(zeroState) {
+                drawMapDataByYear(activeDataSets);
+            }
         }
     });
 
@@ -601,7 +684,9 @@
 
     $: if (leafletReady && map && activeDataSets) {
         animationSpeed = animationSpeedSlow;
-        drawMapData();
+        if(!zeroState) {
+            drawMapData();
+        }
     }
 
     $: if (timelineDataSelection != undefined && leafletReady && map) {

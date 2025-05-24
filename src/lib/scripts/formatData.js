@@ -241,6 +241,7 @@ export function findCategoryPathFromObjectType(tree, objectType) {
   const objectTypeMap = {
     A: 'Archeology',
     P: 'Panel paintings',
+    S: 'Sculptures',
   };
 
   const targetLabel = objectTypeMap[objectType];

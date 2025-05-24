@@ -69,7 +69,7 @@
     import dataShipwreckBatavia from '$lib/data/constructions/shipwreckBatavia.json';
     import dataArcheology from '$lib/data/constructions/archeology.json';
     import dataPanelPaintings from '$lib/data/artworks/panelPaintings.json';
-    import dataSculptures from '$lib/data/artworks/panelPaintings.json';
+    import dataSculptures from '$lib/data/artworks/sculptures.json';
 
     // Scripts
     import { formatData, formatDataBatavia, formatDataSjoerd, getUniqueValues, getFellingDates, getUniqueLocations } from '$lib/scripts/formatData.js';
@@ -200,7 +200,7 @@
     let fellingDatesHalfModels = getFellingDates(halfModels);
     
     // Get all unique locations (for constructions)
-    uniqueLocations = getUniqueLocations([constructions, shipwrecksBatavia, archeology]);
+    uniqueLocations = getUniqueLocations([constructions, shipwrecksBatavia, archeology, sculptures, panelPaintings]);
 
     const findAllKeysWithValue = (dataSetsConstructions, dataSetName, location, buildingKeywords) => {
         const filteredData = dataSetsConstructions.map(dataset => {

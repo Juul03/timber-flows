@@ -1,62 +1,61 @@
 [
-  {
-    "location": "Alkmaar",
-    "coordinates": [52.6323813, 4.7533754]
-  },
-  {
-    "location": "Amsterdam",
-    "coordinates": [52.377956, 4.89707]
-  },
-  {
-    "location": "Beets",
-    "coordinates": [52.5887299, 4.978728]
-  },
-  {
-    "location": "Delft",
-    "coordinates": [52.0067, 4.3556]
-  },
-  {
-    "location": "Den Dungen",
-    "coordinates": [51.665, 5.37222]
-  },
-  {
-    "location": "Dordrecht",
-    "coordinates": [51.813297, 4.690093]
-  },
-  {
-    "location": "Enkhuizen",
-    "coordinates": [52.7, 5.3]
-  },
-  {
-    "location": "Groningen",
-    "coordinates": [53.2189, 6.5667]
-  },
-  {
-    "location": "Leiden",
-    "coordinates": [52.160114, 4.49701]
-  },
-  {
-    "location": "Nijland",
-    "coordinates": [53.0505, 5.5533]
-  },
-  {
-    "location": "Oostvoornse",
-    "coordinates": [51.91194, 4.10083]
-  },
-  {
-    "location": "Roermond",
-    "coordinates": [51.2, 5.983]
-  },
-  {
-    "location": "Rotterdam",
-    "coordinates": [51.926517, 4.462456]
-  },
-  {
-    "location": "Venlo",
-    "coordinates": [51.367, 6.167]
-  },
-  {
-    "location": "Vijlen",
-    "coordinates": [50.78972, 5.96306]
-  }
+  { "location": "Aalsmeer", "coordinates": [52.2698, 4.7736] },
+  { "location": "Alkmaar", "coordinates": [52.6324, 4.7534] },
+  { "location": "Amersfoort", "coordinates": [52.1561, 5.3878] },
+  { "location": "Amsterdam", "coordinates": [52.377956, 4.89707] },
+  { "location": "Arnhem", "coordinates": [51.9851, 5.8987] },
+  { "location": "Ballum", "coordinates": [53.4319, 5.7154] },
+  { "location": "Beets", "coordinates": [52.5887, 4.9787] },
+  { "location": "Berlicum", "coordinates": [51.6883, 5.3578] },
+  { "location": "Borger", "coordinates": [52.8614, 6.8246] },
+  { "location": "Bovenkarspel", "coordinates": [52.6877, 5.1232] },
+  { "location": "Breda", "coordinates": [51.5719, 4.7683] },
+  { "location": "Breukelen", "coordinates": [52.1400, 5.0227] },
+  { "location": "Brielle", "coordinates": [51.8726, 4.1411] },
+  { "location": "Bunnik", "coordinates": [52.0413, 5.1924] },
+  { "location": "Coevorden", "coordinates": [52.6658, 6.7510] },
+  { "location": "Delft", "coordinates": [52.0067, 4.3556] },
+  { "location": "Den Dungen", "coordinates": [51.6650, 5.3722] },
+  { "location": "Den Haag", "coordinates": [52.0705, 4.3007] },
+  { "location": "Deventer", "coordinates": [52.2559, 6.1612] },
+  { "location": "Diest", "coordinates": [51.0151, 5.0549] },
+  { "location": "Dordrecht", "coordinates": [51.8133, 4.6901] },
+  { "location": "Enkhuizen", "coordinates": [52.7000, 5.3000] },
+  { "location": "Gent", "coordinates": [51.0543, 3.7174] },
+  { "location": "Gouda", "coordinates": [52.0132, 4.7101] },
+  { "location": "Gouderak", "coordinates": [51.9631, 4.7856] },
+  { "location": "Groningen", "coordinates": [53.2189, 6.5667] },
+  { "location": "Grootebroek", "coordinates": [52.6825, 5.0737] },
+  { "location": "Harderwijk", "coordinates": [52.3405, 5.6217] },
+  { "location": "Hendrik-Ido-Ambacht", "coordinates": [51.8425, 4.6197] },
+  { "location": "Heusden", "coordinates": [51.7125, 5.0996] },
+  { "location": "Hoogkarspel", "coordinates": [52.7062, 5.1381] },
+  { "location": "Hoorn", "coordinates": [52.6452, 5.0597] },
+  { "location": "Hulst", "coordinates": [51.3263, 4.1385] },
+  { "location": "Kampen", "coordinates": [52.5553, 5.9115] },
+  { "location": "Lambertschaag", "coordinates": [52.6989, 5.1702] },
+  { "location": "Leerdam", "coordinates": [51.8937, 5.0617] },
+  { "location": "Leiden", "coordinates": [52.1601, 4.4970] },
+  { "location": "Lent", "coordinates": [51.8458, 5.8804] },
+  { "location": "Markerwadden", "coordinates": [52.5333, 5.7500] },
+  { "location": "Mechelen", "coordinates": [51.0256, 4.4770] },
+  { "location": "Meerkerk", "coordinates": [51.9171, 4.9333] },
+  { "location": "Montferland", "coordinates": [51.8640, 6.2171] },
+  { "location": "Nibbixwoud", "coordinates": [52.6928, 5.0125] },
+  { "location": "Nijland", "coordinates": [53.0505, 5.5533] },
+  { "location": "Oostvoornse", "coordinates": [51.9119, 4.1008] },
+  { "location": "Oud-Beijerland", "coordinates": [51.7890, 4.3472] },
+  { "location": "Rijsbergen", "coordinates": [51.4845, 4.5996] },
+  { "location": "Roermond", "coordinates": [51.1987, 5.9885] },
+  { "location": "S-Hertogenbosch", "coordinates": [51.6978, 5.3037] },
+  { "location": "Schardam", "coordinates": [52.5577, 5.0956] },
+  { "location": "Schiedam", "coordinates": [51.9197, 4.3991] },
+  { "location": "Sluis", "coordinates": [51.3365, 3.4536] },
+  { "location": "Texel", "coordinates": [53.0756, 4.8283] },
+  { "location": "Utrecht", "coordinates": [52.0907, 5.1214] },
+  { "location": "Venlo", "coordinates": [51.3670, 6.1670] },
+  { "location": "Vijlen", "coordinates": [50.7897, 5.9631] },
+  { "location": "Wetsingerzijl", "coordinates": [53.2956, 6.5059] },
+  { "location": "Winterswijk", "coordinates": [51.9628, 6.6082] },
+  { "location": "Zwolle", "coordinates": [52.5168, 6.0830] }
 ]
