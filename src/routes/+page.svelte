@@ -104,7 +104,7 @@
     export let uniqueLocations;
 
     // Format data files
-    let formattedDataHalfModels = formatData(dataHalfModels);
+    let formattedDataHalfModels = formatData(dataHalfModels, true);
     let formattedDataConstructions = formatData(dataConstructions);
     let formattedDataShipwrecksBatavia = formatDataBatavia(dataShipwreckBatavia);
 

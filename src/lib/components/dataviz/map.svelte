@@ -25,6 +25,7 @@
     import tradeCitiesCoords from '$lib/data/tradeCities';
     import provenancesCoords from '$lib/data/provenances';
     import tradeRoutesCoords from '$lib/data/tradeRoutes';
+    import endpointsLocations from '$lib/data/endpointsLocations.json';
     
 
     // components
@@ -52,6 +53,7 @@
     let markersActive = false;
 
     const provenanceEllipseMap = new Map();
+    const locationEllipseMap = new Map();
 
     let animationSpeed;
     let animationSpeedSlow = 5000;
@@ -134,6 +136,23 @@
 
             // Store it by name
             provenanceEllipseMap.set(provenance.name, ellipse);
+        });
+    };
+
+    const addLocationsToMap = (leaflet, locations, map) => {
+        locations.forEach(location => {
+            let ellipse = L.ellipse(
+                location.coordinates,
+                [1500, 1500],0,
+                {
+                    className: 'locationEllipse'
+                }
+            ).addTo(map);
+
+            ellipse.bindPopup(location.location);
+
+            // Store it by name
+            locationEllipseMap.set(location.location, ellipse);
         });
     };
 
@@ -225,12 +244,45 @@
         return path;
     };
 
-
-
     // add all trade routes
     const addTradeRouteToMap = (route, offset, color, routeData) => {
         const offsetCoordinates = offsetPath(route.coordinates, offset);
-        const smoothedCoordinates = smoothPath(offsetCoordinates);
+        let finalCoordinates = [...offsetCoordinates];
+
+        // Check if exact lat/lng are provided
+        if (routeData.latitude && routeData.longitude) {
+            finalCoordinates[finalCoordinates.length - 1] = [
+                parseFloat(routeData.latitude),
+                parseFloat(routeData.longitude)
+            ];
+
+        } else if (routeData.location && routeData.location.trim() !== "") {
+            // Fully clean the location (remove commas and trim)
+            const cleanLocation = routeData.location.replace(/,/g, '').trim().toLowerCase();
+
+            // Extract first word (or "den" + next if applicable)
+            const parts = cleanLocation.split(' ');
+            let key = parts[0];
+            if (key === "den" && parts.length > 1) {
+                key = `den ${parts[1]}`;
+            }
+
+            // Try to match to endpoint locations
+            const matched = endpointsLocations.find(loc =>
+                loc.location.toLowerCase() === key
+            );
+
+            if (matched) {
+                finalCoordinates[finalCoordinates.length - 1] = matched.coordinates;
+            } else {
+                console.log("No matching location found in endpoints");
+            }
+
+        } else {
+            console.log("No coordinates or valid location provided, using original route");
+        }
+
+        const smoothedCoordinates = smoothPath(finalCoordinates);
 
         animatePath(smoothedCoordinates, {
             color: color,
@@ -241,14 +293,43 @@
             let hoverPath;
 
             // Create an invisible thicker path on top for easier hover
-            if(leaflet && (map !== undefined) && (visiblePath !== undefined)) {
-                hoverPath = leaflet.polyline(visiblePath.getLatLngs(), {
-                    color: 'transparent',
-                    weight: 20,
-                    opacity: 0,
-                    className: 'hover-path',
-                    pane: 'shadowPane'
-                }).addTo(map);
+            if (
+                leaflet &&
+                map &&
+                visiblePath &&
+                typeof visiblePath.getLatLngs === 'function'
+            ) {
+                const latLngs = visiblePath.getLatLngs();
+
+                // Validate that all latLngs are arrays of two valid numbers
+                const areValidLatLngs = Array.isArray(latLngs) &&
+                latLngs.length > 0 &&
+                latLngs.every(coord =>
+                    (Array.isArray(coord) &&
+                        coord.length === 2 &&
+                        typeof coord[0] === 'number' &&
+                        typeof coord[1] === 'number' &&
+                        !isNaN(coord[0]) &&
+                        !isNaN(coord[1])
+                    ) ||
+                    (typeof coord?.lat === 'number' &&
+                    typeof coord?.lng === 'number' &&
+                    !isNaN(coord.lat) &&
+                    !isNaN(coord.lng))
+                );
+
+
+                if (areValidLatLngs) {
+                    hoverPath = leaflet.polyline(latLngs, {
+                        color: 'transparent',
+                        weight: 20,
+                        opacity: 0,
+                        className: 'hover-path',
+                        pane: 'shadowPane'
+                    }).addTo(map);
+                } else {
+                    // console.warn('Invalid coordinates found in visiblePath.getLatLngs()', latLngs);
+                }
             }
 
             if(hoverPath) {
@@ -390,7 +471,9 @@
             if(markersActive) {
                 addMarkersToMap(leaflet, tradeCitiesCoords, map);
             }
+
             addProvenancesToMap(leaflet, provenancesCoords, map);
+            addLocationsToMap(leaflet, endpointsLocations, map);
 
             drawMapData();
         }

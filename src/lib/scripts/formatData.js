@@ -1,27 +1,35 @@
-export const formatData = (data) => {
+export const formatData = (data, isHalfModel = false) => {
     return data.map(item => {
-        return {
-        keyCode: item.Keycode,
-        location: item.Location,
-        individualOrCluster: item['Individual/Cluster'],
-        length: item.Length,
-        startYear: item.StartYear,
-        endYear: item.EndYear,
-        sapwood: item.Sapwood,
-        WK: item.WK,
-        fellingDate: item['Felling date'],
-        TBP: item.TBP,
-        Gl: item.Gl,
-        SL: item.SL,
-        reference: item.Reference,
-        provenance: item.Provenance,
-        minValueMM: item['Min.Value mm'],
-        maxValueMM: item['Max.Value mm'],
-        meanValueMM: item['Mean Value mm'],
-        stdDevMm: item['Std.Dev. Mm'],
+        const formattedItem = {
+            keyCode: item.Keycode,
+            location: item.Location,
+            individualOrCluster: item['Individual/Cluster'],
+            length: item.Length,
+            startYear: item.StartYear,
+            endYear: item.EndYear,
+            sapwood: item.Sapwood,
+            WK: item.WK,
+            fellingDate: item['Felling date'],
+            TBP: item.TBP,
+            Gl: item.Gl,
+            SL: item.SL,
+            reference: item.Reference,
+            provenance: item.Provenance,
+            minValueMM: item['Min.Value mm'],
+            maxValueMM: item['Max.Value mm'],
+            meanValueMM: item['Mean Value mm'],
+            stdDevMm: item['Std.Dev. Mm'],
         };
+
+        // Only add coordinates of Rotterdam if it's a halfmodel
+        if (isHalfModel) {
+            formattedItem.latitude = "51.926517";
+            formattedItem.longitude = "4.462456";
+        }
+
+        return formattedItem;
     });
-}
+};
 
 export const formatDataBatavia = (data) => {
   return data.map(item => {
@@ -84,38 +92,35 @@ export const getFellingDates = (dataSet, name) => {
 
 // get unique locations, when they are the first word of the location key
 export const getUniqueLocations = (datasets) => {
-  // Flatten all data items from all datasets into a single array
   const allItems = datasets.flat();
 
-  // Extract, clean, and normalize location values
   const values = allItems
     .map(item => item['location'])
-    .filter(value => value !== "")
-    .map(value => {
-      let part = value
-        .replace(/,/g, '') 
-        .toLowerCase()
-        .split(" ")[0];
+    .filter(value => value && value.trim() !== "")
+    .map(rawValue => {
+      // Remove commas and trim whitespace first
+      const cleanValue = rawValue.replace(/,/g, '').trim().toLowerCase();
 
-      // If the first word is "den", include the next word
+      // Extract the first word
+      let part = cleanValue.split(" ")[0];
+
+      // Special case: if "den", include the next word
       if (part === 'den') {
-        const nextWord = value.split(' ')[1];
-        part = part + ' ' + (nextWord ? nextWord.toLowerCase() : '');
+        const parts = cleanValue.split(" ");
+        const nextWord = parts[1] || '';
+        part = `den ${nextWord}`;
       }
 
       return part;
     });
 
-  // Get unique values
   const uniqueSet = new Set(values);
   const uniqueArray = Array.from(uniqueSet);
 
-  // Capitalize first letter of each unique location
-  const normalizedArray = uniqueArray.map(word => 
+  const normalizedArray = uniqueArray.map(word =>
     word.charAt(0).toUpperCase() + word.slice(1)
   );
 
-  // Sort the array alphabetically
   const sortedArray = normalizedArray.sort();
 
   return sortedArray;

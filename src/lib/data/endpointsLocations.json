@@ -1,0 +1,62 @@
+[
+  {
+    "location": "Alkmaar",
+    "coordinates": [52.6323813, 4.7533754]
+  },
+  {
+    "location": "Amsterdam",
+    "coordinates": [52.377956, 4.89707]
+  },
+  {
+    "location": "Beets",
+    "coordinates": [52.5887299, 4.978728]
+  },
+  {
+    "location": "Delft",
+    "coordinates": [52.0067, 4.3556]
+  },
+  {
+    "location": "Den Dungen",
+    "coordinates": [51.665, 5.37222]
+  },
+  {
+    "location": "Dordrecht",
+    "coordinates": [51.813297, 4.690093]
+  },
+  {
+    "location": "Enkhuizen",
+    "coordinates": [52.7, 5.3]
+  },
+  {
+    "location": "Groningen",
+    "coordinates": [53.2189, 6.5667]
+  },
+  {
+    "location": "Leiden",
+    "coordinates": [52.160114, 4.49701]
+  },
+  {
+    "location": "Nijland",
+    "coordinates": [53.0505, 5.5533]
+  },
+  {
+    "location": "Oostvoornse",
+    "coordinates": [51.91194, 4.10083]
+  },
+  {
+    "location": "Roermond",
+    "coordinates": [51.2, 5.983]
+  },
+  {
+    "location": "Rotterdam",
+    "coordinates": [51.926517, 4.462456]
+  },
+  {
+    "location": "Venlo",
+    "coordinates": [51.367, 6.167]
+  },
+  {
+    "location": "Vijlen",
+    "coordinates": [50.78972, 5.96306]
+  }
+]
