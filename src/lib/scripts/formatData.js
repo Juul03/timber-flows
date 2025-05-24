@@ -1,27 +1,35 @@
-export const formatData = (data) => {
+export const formatData = (data, isHalfModel = false) => {
     return data.map(item => {
-        return {
-        keyCode: item.Keycode,
-        location: item.Location,
-        individualOrCluster: item['Individual/Cluster'],
-        length: item.Length,
-        startYear: item.StartYear,
-        endYear: item.EndYear,
-        sapwood: item.Sapwood,
-        WK: item.WK,
-        fellingDate: item['Felling date'],
-        TBP: item.TBP,
-        Gl: item.Gl,
-        SL: item.SL,
-        reference: item.Reference,
-        provenance: item.Provenance,
-        minValueMM: item['Min.Value mm'],
-        maxValueMM: item['Max.Value mm'],
-        meanValueMM: item['Mean Value mm'],
-        stdDevMm: item['Std.Dev. Mm'],
+        const formattedItem = {
+            keyCode: item.Keycode,
+            location: item.Location,
+            individualOrCluster: item['Individual/Cluster'],
+            length: item.Length,
+            startYear: item.StartYear,
+            endYear: item.EndYear,
+            sapwood: item.Sapwood,
+            WK: item.WK,
+            fellingDate: item['Felling date'],
+            TBP: item.TBP,
+            Gl: item.Gl,
+            SL: item.SL,
+            reference: item.Reference,
+            provenance: item.Provenance,
+            minValueMM: item['Min.Value mm'],
+            maxValueMM: item['Max.Value mm'],
+            meanValueMM: item['Mean Value mm'],
+            stdDevMm: item['Std.Dev. Mm'],
         };
+
+        // Only add coordinates of Rotterdam if it's a halfmodel
+        if (isHalfModel) {
+            formattedItem.latitude = "51.926517";
+            formattedItem.longitude = "4.462456";
+        }
+
+        return formattedItem;
     });
-}
+};
 
 export const formatDataBatavia = (data) => {
   return data.map(item => {

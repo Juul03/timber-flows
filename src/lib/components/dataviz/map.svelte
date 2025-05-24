@@ -225,12 +225,53 @@
         return path;
     };
 
-
+    import endpointsLocations from '$lib/data/endpointsLocations.json';
 
     // add all trade routes
     const addTradeRouteToMap = (route, offset, color, routeData) => {
         const offsetCoordinates = offsetPath(route.coordinates, offset);
-        const smoothedCoordinates = smoothPath(offsetCoordinates);
+        let finalCoordinates = [...offsetCoordinates];
+
+        // Check if exact lat/lng are provided
+        if (routeData.latitude && routeData.longitude) {
+            console.log("Exact coordinates available");
+            finalCoordinates[finalCoordinates.length - 1] = [parseFloat(routeData.latitude), parseFloat(routeData.longitude)];
+
+        } else if (routeData.location && routeData.location.trim() !== "") {
+            console.log("Location text available");
+
+            // Extract first word from location (cleaned)
+            const firstWord = routeData.location
+                .replace(/,/g, '')
+                .toLowerCase()
+                .split(' ')[0];
+
+            // Special case: if "den", include second word
+            let key = firstWord;
+            if (firstWord === "den") {
+                const parts = routeData.location.toLowerCase().split(" ");
+                if (parts.length > 1) {
+                    key = `den ${parts[1]}`;
+                }
+            }
+
+            // Find matching location in endpoints
+            const matched = endpointsLocations.find(loc =>
+                loc.location.toLowerCase() === key
+            );
+
+            if (matched) {
+                console.log(`Matched location: ${matched.location}`);
+                finalCoordinates[finalCoordinates.length - 1] = matched.coordinates;
+            } else {
+                console.log("No matching location found in endpoints");
+            }
+
+        } else {
+            console.log("No coordinates or valid location provided, using original route");
+        }
+
+        const smoothedCoordinates = smoothPath(finalCoordinates);
 
         animatePath(smoothedCoordinates, {
             color: color,
@@ -241,7 +282,7 @@
             let hoverPath;
 
             // Create an invisible thicker path on top for easier hover
-            if(leaflet && (map !== undefined) && (visiblePath !== undefined)) {
+            if(leaflet && (map !== undefined) && (visiblePath !== undefined) && (visiblePath.getLatLngs() !== undefined)) {
                 hoverPath = leaflet.polyline(visiblePath.getLatLngs(), {
                     color: 'transparent',
                     weight: 20,
