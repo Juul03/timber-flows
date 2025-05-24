@@ -16,7 +16,7 @@
     "coordinates": [52.0067, 4.3556]
   },
   {
-    "location": "Den Dungen,",
+    "location": "Den Dungen",
     "coordinates": [51.665, 5.37222]
   },
   {
@@ -46,6 +46,10 @@
   {
     "location": "Roermond",
     "coordinates": [51.2, 5.983]
+  },
+  {
+    "location": "Rotterdam",
+    "coordinates": [51.926517, 4.462456]
   },
   {
     "location": "Venlo",

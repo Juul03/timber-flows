@@ -92,38 +92,35 @@ export const getFellingDates = (dataSet, name) => {
 
 // get unique locations, when they are the first word of the location key
 export const getUniqueLocations = (datasets) => {
-  // Flatten all data items from all datasets into a single array
   const allItems = datasets.flat();
 
-  // Extract, clean, and normalize location values
   const values = allItems
     .map(item => item['location'])
-    .filter(value => value !== "")
-    .map(value => {
-      let part = value
-        .replace(/,/g, '') 
-        .toLowerCase()
-        .split(" ")[0];
+    .filter(value => value && value.trim() !== "")
+    .map(rawValue => {
+      // Remove commas and trim whitespace first
+      const cleanValue = rawValue.replace(/,/g, '').trim().toLowerCase();
 
-      // If the first word is "den", include the next word
+      // Extract the first word
+      let part = cleanValue.split(" ")[0];
+
+      // Special case: if "den", include the next word
       if (part === 'den') {
-        const nextWord = value.split(' ')[1];
-        part = part + ' ' + (nextWord ? nextWord.toLowerCase() : '');
+        const parts = cleanValue.split(" ");
+        const nextWord = parts[1] || '';
+        part = `den ${nextWord}`;
       }
 
       return part;
     });
 
-  // Get unique values
   const uniqueSet = new Set(values);
   const uniqueArray = Array.from(uniqueSet);
 
-  // Capitalize first letter of each unique location
-  const normalizedArray = uniqueArray.map(word => 
+  const normalizedArray = uniqueArray.map(word =>
     word.charAt(0).toUpperCase() + word.slice(1)
   );
 
-  // Sort the array alphabetically
   const sortedArray = normalizedArray.sort();
 
   return sortedArray;

@@ -251,34 +251,28 @@
 
         // Check if exact lat/lng are provided
         if (routeData.latitude && routeData.longitude) {
-            console.log("Exact coordinates available");
-            finalCoordinates[finalCoordinates.length - 1] = [parseFloat(routeData.latitude), parseFloat(routeData.longitude)];
+            finalCoordinates[finalCoordinates.length - 1] = [
+                parseFloat(routeData.latitude),
+                parseFloat(routeData.longitude)
+            ];
 
         } else if (routeData.location && routeData.location.trim() !== "") {
-            console.log("Location text available");
+            // Fully clean the location (remove commas and trim)
+            const cleanLocation = routeData.location.replace(/,/g, '').trim().toLowerCase();
 
-            // Extract first word from location (cleaned)
-            const firstWord = routeData.location
-                .replace(/,/g, '')
-                .toLowerCase()
-                .split(' ')[0];
-
-            // Special case: if "den", include second word
-            let key = firstWord;
-            if (firstWord === "den") {
-                const parts = routeData.location.toLowerCase().split(" ");
-                if (parts.length > 1) {
-                    key = `den ${parts[1]}`;
-                }
+            // Extract first word (or "den" + next if applicable)
+            const parts = cleanLocation.split(' ');
+            let key = parts[0];
+            if (key === "den" && parts.length > 1) {
+                key = `den ${parts[1]}`;
             }
 
-            // Find matching location in endpoints
+            // Try to match to endpoint locations
             const matched = endpointsLocations.find(loc =>
                 loc.location.toLowerCase() === key
             );
 
             if (matched) {
-                console.log(`Matched location: ${matched.location}`);
                 finalCoordinates[finalCoordinates.length - 1] = matched.coordinates;
             } else {
                 console.log("No matching location found in endpoints");
