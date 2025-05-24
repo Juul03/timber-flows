@@ -381,8 +381,11 @@
 
     // Draw route on map
     const drawTradeRoute = (data, objectType) => {
-        const provenance = data.provenance;
-        const matchedRoute = tradeRoutesCoords.find(route => route.name === provenance);
+        const provenance = data.provenance || "";
+        const provenanceLower = provenance.toLowerCase().trim();
+        const matchedRoute = tradeRoutesCoords.find(
+            route => route.name?.toLowerCase().trim() === provenanceLower
+        );
 
         if (matchedRoute) {
             const count = routeDrawCounts[provenance] || 0;
@@ -394,7 +397,7 @@
 
             addTradeRouteToMap(matchedRoute, offset, color, data);
         } else {
-            // console.warn("No matching route for provenance:", provenance);
+            console.warn("No matching route for provenance:", provenance);
         }
     };
     
@@ -464,11 +467,11 @@
             }
 
             // get long and lat on click
-            // const onMapClick = (event) => {
-            //     alert("You clicked the map at " + event.latlng);
-            // }
+            const onMapClick = (event) => {
+                alert("You clicked the map at " + event.latlng);
+            }
  
-            // map.on('click', onMapClick);
+            map.on('click', onMapClick);
 
             animationSpeed = animationSpeedSlow;
             updateCurrentMap(selectedMapType || 'area');

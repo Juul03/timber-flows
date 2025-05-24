@@ -51,6 +51,11 @@ export const formatDataBatavia = (data) => {
 
 export const formatDataSjoerd = (data) => {
   return data.map(item => {
+    let provenance = item.Provenance;
+    if (provenance === "NW Germany") {
+      provenance = "Northwest Germany";
+    }
+
     return {
       keyCode: item.SampleCode,
       location: item.Site,
@@ -63,7 +68,7 @@ export const formatDataSjoerd = (data) => {
       fellingDate: item['Estimated felling date'],
       TBP: item.TBP,
       reference: item.Reference,
-      provenance: item.Provenance,
+      provenance: provenance,
     }
   })
 }
