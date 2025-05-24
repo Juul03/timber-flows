@@ -293,14 +293,43 @@
             let hoverPath;
 
             // Create an invisible thicker path on top for easier hover
-            if(leaflet && (map !== undefined) && (visiblePath !== undefined) && (visiblePath.getLatLngs() !== undefined)) {
-                hoverPath = leaflet.polyline(visiblePath.getLatLngs(), {
-                    color: 'transparent',
-                    weight: 20,
-                    opacity: 0,
-                    className: 'hover-path',
-                    pane: 'shadowPane'
-                }).addTo(map);
+            if (
+                leaflet &&
+                map &&
+                visiblePath &&
+                typeof visiblePath.getLatLngs === 'function'
+            ) {
+                const latLngs = visiblePath.getLatLngs();
+
+                // Validate that all latLngs are arrays of two valid numbers
+                const areValidLatLngs = Array.isArray(latLngs) &&
+                latLngs.length > 0 &&
+                latLngs.every(coord =>
+                    (Array.isArray(coord) &&
+                        coord.length === 2 &&
+                        typeof coord[0] === 'number' &&
+                        typeof coord[1] === 'number' &&
+                        !isNaN(coord[0]) &&
+                        !isNaN(coord[1])
+                    ) ||
+                    (typeof coord?.lat === 'number' &&
+                    typeof coord?.lng === 'number' &&
+                    !isNaN(coord.lat) &&
+                    !isNaN(coord.lng))
+                );
+
+
+                if (areValidLatLngs) {
+                    hoverPath = leaflet.polyline(latLngs, {
+                        color: 'transparent',
+                        weight: 20,
+                        opacity: 0,
+                        className: 'hover-path',
+                        pane: 'shadowPane'
+                    }).addTo(map);
+                } else {
+                    // console.warn('Invalid coordinates found in visiblePath.getLatLngs()', latLngs);
+                }
             }
 
             if(hoverPath) {
