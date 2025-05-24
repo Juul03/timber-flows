@@ -25,6 +25,7 @@
     import tradeCitiesCoords from '$lib/data/tradeCities';
     import provenancesCoords from '$lib/data/provenances';
     import tradeRoutesCoords from '$lib/data/tradeRoutes';
+    import endpointsLocations from '$lib/data/endpointsLocations.json';
     
 
     // components
@@ -52,6 +53,7 @@
     let markersActive = false;
 
     const provenanceEllipseMap = new Map();
+    const locationEllipseMap = new Map();
 
     let animationSpeed;
     let animationSpeedSlow = 5000;
@@ -134,6 +136,23 @@
 
             // Store it by name
             provenanceEllipseMap.set(provenance.name, ellipse);
+        });
+    };
+
+    const addLocationsToMap = (leaflet, locations, map) => {
+        locations.forEach(location => {
+            let ellipse = L.ellipse(
+                location.coordinates,
+                [1500, 1500],0,
+                {
+                    className: 'locationEllipse'
+                }
+            ).addTo(map);
+
+            ellipse.bindPopup(location.location);
+
+            // Store it by name
+            locationEllipseMap.set(location.location, ellipse);
         });
     };
 
@@ -224,8 +243,6 @@
         requestAnimationFrame(step);
         return path;
     };
-
-    import endpointsLocations from '$lib/data/endpointsLocations.json';
 
     // add all trade routes
     const addTradeRouteToMap = (route, offset, color, routeData) => {
@@ -431,7 +448,9 @@
             if(markersActive) {
                 addMarkersToMap(leaflet, tradeCitiesCoords, map);
             }
+
             addProvenancesToMap(leaflet, provenancesCoords, map);
+            addLocationsToMap(leaflet, endpointsLocations, map);
 
             drawMapData();
         }

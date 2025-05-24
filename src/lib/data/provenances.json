@@ -27,7 +27,7 @@
     "name": "Central Western Germany",
     "coordinateCenter": [50.8, 8.0],
     "xRadius": 80000,
-    "yRadius": 160000
+    "yRadius": 100000
   },
   {
     "name": "Eastern France",
@@ -68,14 +68,14 @@
   {
     "name": "West Germany (Moezel)",
     "coordinateCenter": [49.8, 6.9],
-    "xRadius": 100000,
-    "yRadius": 50000
+    "xRadius": 40000,
+    "yRadius": 80000
   },
   {
     "name": "Western Germany",
     "coordinateCenter": [50.9, 7.1],
-    "xRadius": 180000,
-    "yRadius": 90000
+    "xRadius": 60000,
+    "yRadius": 100000
   },
   {
     "name": "South Germany",
