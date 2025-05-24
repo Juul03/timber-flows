@@ -174,7 +174,7 @@
 
     // Imported var from parent
     export let dataWoodPurposes = [];
-    export let uniqueLocations
+    export let uniqueLocations;
 
     // Imported var from searchbar
     export let filteredObjects;

@@ -67,9 +67,10 @@
     import dataHalfModels from '$lib/data/artworks/half-models.json';
     import dataConstructions from '$lib/data/constructions/constructions.json';
     import dataShipwreckBatavia from '$lib/data/constructions/shipwreckBatavia.json';
+    import dataArcheology from '$lib/data/constructions/archeology.json';
 
     // Scripts
-    import { formatData, formatDataBatavia, getUniqueValues, getFellingDates, getUniqueLocations } from '$lib/scripts/formatData.js';
+    import { formatData, formatDataBatavia, formatDataSjoerd, getUniqueValues, getFellingDates, getUniqueLocations } from '$lib/scripts/formatData.js';
 
     // Components
     import Filters from '$lib/components/filters.svelte';
@@ -107,11 +108,13 @@
     let formattedDataHalfModels = formatData(dataHalfModels, true);
     let formattedDataConstructions = formatData(dataConstructions);
     let formattedDataShipwrecksBatavia = formatDataBatavia(dataShipwreckBatavia);
+    let formattedDataArcheology = formatDataSjoerd(dataArcheology);
 
     // Data variables
     let halfModels = formattedDataHalfModels;
     let constructions = formattedDataConstructions;
     let shipwrecksBatavia = formattedDataShipwrecksBatavia;
+    let archeology = formattedDataArcheology;
 
     let dataSetsArtworks = [
         {
@@ -136,6 +139,10 @@
         {
             name: "shipwrecksBatavia",
             data: shipwrecksBatavia,
+        },
+        {
+            name: "archeology",
+            data: archeology,
         }
     ];
 
@@ -187,7 +194,7 @@
     let fellingDatesHalfModels = getFellingDates(halfModels);
     
     // Get all unique locations (for constructions)
-    uniqueLocations = getUniqueLocations([constructions, shipwrecksBatavia]);
+    uniqueLocations = getUniqueLocations([constructions, shipwrecksBatavia, archeology]);
 
     const findAllKeysWithValue = (dataSetsConstructions, dataSetName, location, buildingKeywords) => {
         const filteredData = dataSetsConstructions.map(dataset => {

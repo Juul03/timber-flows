@@ -49,6 +49,25 @@ export const formatDataBatavia = (data) => {
   })
 }
 
+export const formatDataSjoerd = (data) => {
+  return data.map(item => {
+    return {
+      keyCode: item.SampleCode,
+      location: item.Site,
+      latitude: item.Latitude?.toString().replace(',', '.'),
+      longitude: item.Longitude?.toString().replace(',', '.'),
+      length: item.Length,
+      sapwood: item.Sapwoord,
+      WK: item.WK,
+      startYear: item.DateS,
+      fellingDate: item['Estimated felling date'],
+      TBP: item.TBP,
+      reference: item.Reference,
+      provenance: item.Provenance,
+    }
+  })
+}
+
 export const getUniqueValues = (data, key) => {
     const values = data
         .map(item => item[key])

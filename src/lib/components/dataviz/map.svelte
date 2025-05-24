@@ -246,11 +246,13 @@
 
     // add all trade routes
     const addTradeRouteToMap = (route, offset, color, routeData) => {
+        if (!routeData) return;
+
         const offsetCoordinates = offsetPath(route.coordinates, offset);
         let finalCoordinates = [...offsetCoordinates];
 
         // Check if exact lat/lng are provided
-        if (routeData.latitude && routeData.longitude) {
+        if (routeData.latitude && routeData.longitude && routeData.latitude !== "0" && routeData.longitude !== "0") {
             finalCoordinates[finalCoordinates.length - 1] = [
                 parseFloat(routeData.latitude),
                 parseFloat(routeData.longitude)
@@ -279,7 +281,7 @@
             }
 
         } else {
-            console.log("No coordinates or valid location provided, using original route");
+            console.log("No coordinates or valid location provided, using original route", routeData);
         }
 
         const smoothedCoordinates = smoothPath(finalCoordinates);
