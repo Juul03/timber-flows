@@ -161,7 +161,7 @@
     // Construction subsets
     export let keywordMap = {
         "Buildings": ['huis', 'kerk', 'kapel', 'souterrain'],
-        "Shipwrecks": ['schip', 'schepen'],
+        "Shipwrecks": ['schip', 'schepen', 'ship', 'shipwreck', 'shipwrecks'],
         "Deck beams": ['dekbalk'],
         "Truss legs": ['spant'],
         "Corbels": ['korbelen', 'korbeel'],

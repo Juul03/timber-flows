@@ -18,7 +18,7 @@
     import bezierSpline from '@turf/bezier-spline';
 
     import { colorScale, subtypeMap } from '$lib/scripts/colorConfig';
-    import { findCategoryPathFromLocation } from '$lib/scripts/formatData.js';
+    import { getCategoryPathCombined } from '$lib/scripts/formatData.js';
 
     import { filtersObject } from '$lib/data/filtersWoodPurpose.js';
 
@@ -339,8 +339,8 @@
                 hoverPath.on('mouseover', () => {
                     showTooltipRoute = true;
 
-                    const location = routeData.location;
-                    const categoryPath = findCategoryPathFromLocation(filtersObject, location, keywordMap);
+                    let location = routeData.location;
+                    const categoryPath = getCategoryPathCombined(filtersObject, routeData, keywordMap);
 
                     tooltipRouteContent.fellingDate = routeData.fellingDate;
                     tooltipRouteContent.location = routeData.location;
@@ -382,6 +382,8 @@
     // Draw route on map
     const drawTradeRoute = (data, objectType) => {
         const provenance = data.provenance || "";
+        if(provenance === "") return; 
+
         const provenanceLower = provenance.toLowerCase().trim();
         const matchedRoute = tradeRoutesCoords.find(
             route => route.name?.toLowerCase().trim() === provenanceLower
@@ -467,11 +469,11 @@
             }
 
             // get long and lat on click
-            const onMapClick = (event) => {
-                alert("You clicked the map at " + event.latlng);
-            }
+            // const onMapClick = (event) => {
+            //     alert("You clicked the map at " + event.latlng);
+            // }
  
-            map.on('click', onMapClick);
+            // map.on('click', onMapClick);
 
             animationSpeed = animationSpeedSlow;
             updateCurrentMap(selectedMapType || 'area');

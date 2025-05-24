@@ -6,5 +6,9 @@
     { 
         "name": "Klaipeda", 
         "coordinates": [55.710673, 21.074915] 
+    },
+    {
+        "name": "Gdansk",
+        "coordinates": [54.372158, 18.638306]
     }
 ]

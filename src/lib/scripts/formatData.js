@@ -58,6 +58,7 @@ export const formatDataSjoerd = (data) => {
 
     return {
       keyCode: item.SampleCode,
+      objectType: item.Category,
       location: item.Site,
       latitude: item.Latitude?.toString().replace(',', '.'),
       longitude: item.Longitude?.toString().replace(',', '.'),
@@ -170,6 +171,19 @@ export function findCategoryPath(tree, targetLabel, path = []) {
   return null; // Not found
 }
 
+export function getCategoryPathCombined(tree, routeData, keywordMap) {
+  if (routeData.objectType) {
+    const pathFromObjectType = findCategoryPathFromObjectType(tree, routeData.objectType);
+    if (pathFromObjectType) return pathFromObjectType;
+  }
+
+  if (routeData.location) {
+    return findCategoryPathFromLocation(tree, routeData.location, keywordMap);
+  }
+
+  return ['Uncategorized'];
+}
+
 export function findCategoryPathFromLocation(tree, location, keywordMap) {
   const lowerLoc = location.toLowerCase();
 
@@ -222,4 +236,17 @@ export function findCategoryPathFromLocation(tree, location, keywordMap) {
 
   return bestPath || ['Uncategorized'];
 }
+
+export function findCategoryPathFromObjectType(tree, objectType) {
+  const objectTypeMap = {
+    A: 'Archeology',
+    P: 'Panel Paintings',
+  };
+
+  const targetLabel = objectTypeMap[objectType];
+  if (!targetLabel) return null;
+
+  return findCategoryPath(tree, targetLabel);
+}
+
 
