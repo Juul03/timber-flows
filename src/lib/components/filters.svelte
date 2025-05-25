@@ -232,13 +232,19 @@
 
     const handleSelect = (option) => {
         if (option === null) {
-            selectionPath = [];
-            selectedOption = getCurrentLabel();
+            // Go up one level in the filter path
+            if (selectionPath.length > 0) {
+                selectionPath = selectionPath.slice(0, -1);
+                selectedOption = getCurrentLabel();
+            } else {
+                // At root, just reset to 'All'
+                selectedOption = 'All';
+            }
         } else {
             selectionPath = [...selectionPath, option];
             selectedOption = getCurrentLabel();
         }
-    }
+    };
 
     const findDataPointsAmount = (option) => {
         const data = datapointsLength.find(data => data.name === option);
