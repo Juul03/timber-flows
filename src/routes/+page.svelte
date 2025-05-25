@@ -17,6 +17,9 @@
                 <Filters 
                     {dataWoodPurposes}
                     {uniqueLocations}
+                    {totalDatapoints}
+                    {totalDatapointsConstructions}
+                    {totalDatapointsArtworks}
                     bind:selectedWoodPurpose 
                     bind:selectedType 
                     bind:selectedSubType
@@ -70,7 +73,7 @@
     import dataBuildings from '$lib/data/constructions/buildings.json';
 
     // Scripts
-    import { formatData, formatDataBatavia, formatDataSjoerd, getUniqueValues, getFellingDates, getUniqueLocations } from '$lib/scripts/formatData.js';
+    import { formatData, formatDataBatavia, formatDataSjoerd, getUniqueValues, getFellingDates, getUniqueLocations, countDataPoints, countFlatDataPoints } from '$lib/scripts/formatData.js';
 
     // Components
     import Filters from '$lib/components/filters.svelte';
@@ -106,6 +109,9 @@
 
     // exported var 
     export let uniqueLocations;
+    export let totalDatapoints;
+    export let totalDatapointsArtworks;
+    export let totalDatapointsConstructions;
 
     // Format data files
     let formattedDataHalfModels = formatData(dataHalfModels, true);
@@ -169,6 +175,12 @@
             data: dataSetsConstructions,
         }
     ];
+
+    totalDatapoints = countDataPoints(dataSetsAll);
+    totalDatapointsArtworks = countFlatDataPoints(dataSetsArtworks);
+    totalDatapointsConstructions = countFlatDataPoints(dataSetsConstructions);
+    let totalDatapointsHalfmodels = halfModels.length;
+    console.log("halfmodels", totalDatapointsHalfmodels);
 
     // Datasets filtered
     // Construction subsets

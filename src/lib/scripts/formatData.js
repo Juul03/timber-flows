@@ -254,4 +254,40 @@ export function findCategoryPathFromObjectType(tree, objectType) {
   return findCategoryPath(tree, targetLabel);
 }
 
+export function countDataPoints(dataSets) {
+    let count = 0;
+
+    dataSets.forEach(category => {
+        if (Array.isArray(category.data)) {
+            category.data.forEach(subset => {
+                if (Array.isArray(subset.data)) {
+                    // subset.data is an array of datapoints
+                    count += subset.data.length;
+                } else {
+                    console.warn("Unexpected data structure:", subset);
+                }
+            });
+        } else {
+            console.warn("Unexpected data structure:", category);
+        }
+    });
+
+    return count;
+}
+
+export function countFlatDataPoints(dataSets) {
+  let count = 0;
+
+  dataSets.forEach(set => {
+    if (Array.isArray(set.data)) {
+      count += set.data.length;  // Directly count the datapoints here
+    } else {
+      console.warn("Unexpected data structure:", set);
+    }
+  });
+
+  return count;
+}
+
+
 

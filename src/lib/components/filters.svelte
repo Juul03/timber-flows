@@ -54,7 +54,7 @@
         </div>        
         <div class="col-12">
             <p class="m-0 text-end small">
-                157 results
+                {totalDatapoints} results
             </p>
             <div id="woodPurposeFilter" class="bg-blur rounded p-3">
                 <div class="form-check">
@@ -70,7 +70,7 @@
                     <label class="form-check-label d-flex justify-content-between w-100 {selectedOption === getCurrentLabel() ? 'fw-bold' : 'fw-normal'}" for="all">
                         {getCurrentLabel()}
                         <span class="small text-light">
-                            157
+                            {findDataPointsAmount(selectedOption)}
                         </span>
                     </label>
                 </div>
@@ -91,7 +91,7 @@
                         >
                             {option}
                             <span class="small text-light">
-                                120
+                                {findDataPointsAmount(option)}
                             </span>
                         </label>
                     </div>
@@ -175,6 +175,24 @@
     // Imported var from parent
     export let dataWoodPurposes = [];
     export let uniqueLocations;
+    export let totalDatapoints;
+    export let totalDatapointsArtworks;
+    export let totalDatapointsConstructions;
+
+    let datapoints = [
+        {
+            name: "All",
+            datapoints: totalDatapoints
+        },
+        {
+            name: "Artworks",
+            datapoints:totalDatapointsArtworks
+        },
+        {
+            name: "Constructions",
+            datapoints: totalDatapointsConstructions
+        },
+    ];
 
     // Imported var from searchbar
     export let filteredObjects;
@@ -200,7 +218,6 @@
         dropdownOpen = !dropdownOpen;
     }
     
-
     const handleCheckboxChange = (event) => {
         const location = event.target.value;
         if (event.target.checked) {
@@ -238,6 +255,11 @@
             selectedOption = getCurrentLabel();
         }
     }
+
+    const findDataPointsAmount = (option) => {
+        const data = datapoints.find(data => data.name === option);
+        return data ? data.datapoints : 0;
+    };
 
     $: sortedLocations = [...uniqueLocations]
         .sort((a, b) => {
