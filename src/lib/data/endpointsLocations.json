@@ -1,6 +1,7 @@
 [
   { "location": "Aalsmeer", "coordinates": [52.2698, 4.7736] },
   { "location": "Alkmaar", "coordinates": [52.6324, 4.7534] },
+  { "location": "Alphen aan den Rijn", "coordinates": [52.12911674645919, 4.659842473167269]},
   { "location": "Amersfoort", "coordinates": [52.1561, 5.3878] },
   { "location": "Amsterdam", "coordinates": [52.377956, 4.89707] },
   { "location": "Arnhem", "coordinates": [51.9851, 5.8987] },
@@ -14,6 +15,7 @@
   { "location": "Brielle", "coordinates": [51.8726, 4.1411] },
   { "location": "Bunnik", "coordinates": [52.0413, 5.1924] },
   { "location": "Coevorden", "coordinates": [52.6658, 6.7510] },
+  { "location": "Delfste", "coordinates": [51.979991967481034, 4.385972135873531]},
   { "location": "Delft", "coordinates": [52.0067, 4.3556] },
   { "location": "Den Dungen", "coordinates": [51.6650, 5.3722] },
   { "location": "Den Haag", "coordinates": [52.0705, 4.3007] },
@@ -51,6 +53,7 @@
   { "location": "Schardam", "coordinates": [52.5577, 5.0956] },
   { "location": "Schiedam", "coordinates": [51.9197, 4.3991] },
   { "location": "Sluis", "coordinates": [51.3365, 3.4536] },
+  { "location": "Stolwijk", "coordinates": [51.97352641343218, 4.772598491494763]},
   { "location": "Texel", "coordinates": [53.0756, 4.8283] },
   { "location": "Utrecht", "coordinates": [52.0907, 5.1214] },
   { "location": "Venlo", "coordinates": [51.3670, 6.1670] },

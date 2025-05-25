@@ -276,6 +276,14 @@
             if (key === "den" && parts.length > 1) {
                 key = `den ${parts[1]}`;
             }
+            if (key === "alphen") {
+                const remaining = parts.slice(1).join(' ');
+                if (remaining.startsWith('aan den rijn')) {
+                    key = "alphen aan den rijn";
+                } else {
+                    key = "alphen aan den rijn";
+                }
+            }
 
             // Try to match to endpoint locations
             const matched = endpointsLocations.find(loc =>
@@ -526,12 +534,15 @@
         for (const year of years) {
             const entries = yearMap.get(year);
             entries.forEach(({ item, objectType }) => {
-                drawTradeRoute(item, objectType);
+                if(zeroState) {
+                    drawTradeRoute(item, objectType);
+                }
             });
 
             // Wait before drawing the next year
             await new Promise(resolve => setTimeout(resolve, 75));
         }
+        zeroState = false;
     };
         
     onMount(async () => {
@@ -624,6 +635,12 @@
                         } else {
                             // single layer
                             drawTradeRoute(secondLevel, objectType);
+
+                            const provenanceName = secondLevel.provenance;
+                            const ellipse = provenanceEllipseMap.get(provenanceName);
+                            if (ellipse) {
+                                ellipse.setStyle({ opacity: 1, fillOpacity: 0.25});
+                            }
                         }
                     });
                 }

@@ -136,6 +136,10 @@ export const getUniqueLocations = (datasets) => {
         part = `den ${nextWord}`;
       }
 
+      if (part === 'alphen') {
+        part = 'Alphen aan den Rijn'
+      }
+
       return part;
     });
 
