@@ -9,6 +9,8 @@
             {timelineClicked}
             {timelineRunning}
             {timelineSpeed}
+            {selectionPath}
+            bind:zeroState
         />
         <div class="container position-relative z-3">
             <div class="position-absolute w-100 top-0">
@@ -52,11 +54,6 @@
     </div>
 </main>
 
-
-
-
-<!-- <p>Selected purpose: {selectedWoodPurpose} {selectedType} {selectedSubType}</p> -->
-
 <script>
     import '../assets/styles/app.scss';
 
@@ -99,6 +96,9 @@
 
     // Dynamic retrieved from view buttons
     export let currentView = "map";
+
+    // Dynamic retrieved from map
+    export let zeroState = true;
 
     // Var to store data based on timeline selection
     export let timelineDataSelection;
