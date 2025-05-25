@@ -54,7 +54,7 @@
         </div>        
         <div class="col-12">
             <p class="m-0 text-end small">
-                157 results
+                {totalDatapoints} results
             </p>
             <div id="woodPurposeFilter" class="bg-blur rounded p-3">
                 <div class="form-check">
@@ -70,7 +70,7 @@
                     <label class="form-check-label d-flex justify-content-between w-100 {selectedOption === getCurrentLabel() ? 'fw-bold' : 'fw-normal'}" for="all">
                         {getCurrentLabel()}
                         <span class="small text-light">
-                            157
+                            {findDataPointsAmount(selectedOption)}
                         </span>
                     </label>
                 </div>
@@ -91,7 +91,7 @@
                         >
                             {option}
                             <span class="small text-light">
-                                120
+                                {findDataPointsAmount(option)}
                             </span>
                         </label>
                     </div>
@@ -175,6 +175,8 @@
     // Imported var from parent
     export let dataWoodPurposes = [];
     export let uniqueLocations;
+    export let totalDatapoints;
+    export let datapointsLength;
 
     // Imported var from searchbar
     export let filteredObjects;
@@ -200,7 +202,6 @@
         dropdownOpen = !dropdownOpen;
     }
     
-
     const handleCheckboxChange = (event) => {
         const location = event.target.value;
         if (event.target.checked) {
@@ -231,13 +232,24 @@
 
     const handleSelect = (option) => {
         if (option === null) {
-            selectionPath = [];
-            selectedOption = getCurrentLabel();
+            // Go up one level in the filter path
+            if (selectionPath.length > 0) {
+                selectionPath = selectionPath.slice(0, -1);
+                selectedOption = getCurrentLabel();
+            } else {
+                // At root, just reset to 'All'
+                selectedOption = 'All';
+            }
         } else {
             selectionPath = [...selectionPath, option];
             selectedOption = getCurrentLabel();
         }
-    }
+    };
+
+    const findDataPointsAmount = (option) => {
+        const data = datapointsLength.find(data => data.name === option);
+        return data ? data.datapoints : 0;
+    };
 
     $: sortedLocations = [...uniqueLocations]
         .sort((a, b) => {

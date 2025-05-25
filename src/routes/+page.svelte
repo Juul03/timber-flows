@@ -17,6 +17,8 @@
                 <Filters 
                     {dataWoodPurposes}
                     {uniqueLocations}
+                    {totalDatapoints}
+                    {datapointsLength}
                     bind:selectedWoodPurpose 
                     bind:selectedType 
                     bind:selectedSubType
@@ -70,7 +72,7 @@
     import dataBuildings from '$lib/data/constructions/buildings.json';
 
     // Scripts
-    import { formatData, formatDataBatavia, formatDataSjoerd, getUniqueValues, getFellingDates, getUniqueLocations } from '$lib/scripts/formatData.js';
+    import { formatData, formatDataBatavia, formatDataSjoerd, getUniqueValues, getFellingDates, getUniqueLocations, countDataPoints, countFlatDataPoints } from '$lib/scripts/formatData.js';
 
     // Components
     import Filters from '$lib/components/filters.svelte';
@@ -106,6 +108,7 @@
 
     // exported var 
     export let uniqueLocations;
+    export let totalDatapoints;
 
     // Format data files
     let formattedDataHalfModels = formatData(dataHalfModels, true);
@@ -170,6 +173,10 @@
         }
     ];
 
+    totalDatapoints = countDataPoints(dataSetsAll);
+    const totalConstructions = dataSetsConstructions.reduce((sum, ds) => sum + ds.data.length, 0);
+    const totalArtworks = dataSetsArtworks.reduce((sum, ds) => sum + ds.data.length, 0);
+
     // Datasets filtered
     // Construction subsets
     export let keywordMap = {
@@ -181,6 +188,7 @@
         "Churches": ['kerk', 'kapel'],
         "Houses": ['huis', 'woning']
     };
+
     const dataSetCache = {
         "Buildings": null,
         "Shipwrecks": null,
@@ -190,6 +198,77 @@
         "Churches": null,
         "Houses": null
     };
+
+    export let datapointsLength = [
+        {
+            name: "All",
+            datapoints: totalDatapoints
+        },
+        {
+            name: "Halfmodels",
+            datapoints: halfModels.length
+        },
+        {
+            name: "Sculptures",
+            datapoints: sculptures.length
+        },
+        {
+            name: "Panel paintings",
+            datapoints:panelPaintings.length
+        },
+        {
+            name: "Artworks",
+            datapoints:totalArtworks
+        },
+        {
+            name: "Buildings",
+            datapoints: buildings.length + 8 + 13 + 6 + 25 + 15
+        },
+        {
+            name: "Archeology",
+            datapoints:archeology.length
+        },
+        {
+            name: "Shipwrecks",
+            datapoints:shipwrecksBatavia.length + 6
+        },
+        {
+            name: "Batavia shipwreck",
+            datapoints: shipwrecksBatavia.length
+        },
+        {
+            name: "Non-specified building",
+            datapoints: buildings.length
+        },
+        {
+            name: "Non-specified shipwrecks",
+            datapoints:6
+        },
+        {
+            name: "Deck beams",
+            datapoints: 8
+        },
+        {
+            name: "Truss legs",
+            datapoints: 13
+        },
+        {
+            name: "Corbels",
+            datapoints: 6
+        },
+        {
+            name: "Churches",
+            datapoints: 25
+        },
+        {
+            name: "Houses",
+            datapoints: 15
+        },
+        {
+            name: "Constructions",
+            datapoints: totalConstructions
+        },
+    ];
 
     // Active data based on selected filters
     let activeDataSets = [];
@@ -266,10 +345,37 @@
             if (selectedOption === "Constructions") return dataSetsConstructions;
 
             if (selectionPath[1] === "Shipwrecks") {
-                if (selectedOption === "Shipwrecks" || selectedOption === "Batavia shipwreck") {
+                const shipwrecksSet = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
+
+                if(selectedOption === "Shipwrecks" && keywordMap[selectedOption]) {
+                    if (!dataSetCache[selectedOption]) {
+                        const filtered = findAllKeysWithValue(dataSetsConstructions, selectedOption, location, keywordMap[selectedOption]);
+                        dataSetCache[selectedOption] = filtered;
+                    }
+                    const filteredData = dataSetCache[selectedOption] || [];
+
+                    // Combine buildingsSet data with filteredData, avoiding duplicates if needed
+                    const combinedData = [];
+
+                    if (shipwrecksSet) combinedData.push(shipwrecksSet);
+                    combinedData.push(...filteredData);
+
+                    return combinedData;
+                } else if(selectedOption === "Batavia shipwreck") {
                     const set = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
                     return set ? [set] : [];
+                } else if (selectedOption === "Non-specified shipwrecks") {
+                    if(!dataSetCache['Shipwrecks']) {
+                        const filtered = findAllKeysWithValue(dataSetsConstructions, selectedOption, location, keywordMap['Shipwrecks']);
+                        dataSetCache['Shipwrecks'] = filtered;
+                    }
+                    const filteredData = dataSetCache['Shipwrecks'] || [];
+                    return filteredData;
                 }
+                // if (selectedOption === "Shipwrecks" || selectedOption === "Batavia shipwreck") {
+                //     const set = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
+                //     return set ? [set] : [];
+                // }
             } else if (selectionPath[1] === "Archeology") {
                 const set = dataSetsConstructions.find(set => set.name === "archeology");
                 return set ? [set] : [];

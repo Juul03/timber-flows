@@ -2,6 +2,7 @@ export const filtersObject = {
     Constructions: {
       Archeology: null,
       Buildings: {
+        "Non-specified building": null,
         "Deck beams": null,
         "Truss legs": null,
         "Corbels": null,
@@ -17,6 +18,7 @@ export const filtersObject = {
         },
       },
       Shipwrecks: {
+            "Non-specified shipwrecks": null,
             "Batavia shipwreck": null,
             "Planks": null,
             "Frames": null,

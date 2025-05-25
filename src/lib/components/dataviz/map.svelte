@@ -293,11 +293,11 @@
             if (matched) {
                 finalCoordinates[finalCoordinates.length - 1] = matched.coordinates;
             } else {
-                console.log("No matching location found in endpoints", routeData.location);
+                // console.log("No matching location found in endpoints", routeData.location);
             }
 
         } else {
-            console.log("No coordinates or valid location provided, using original route", routeData.location);
+            // console.log("No coordinates or valid location provided, using original route", routeData.location);
         }
 
         const smoothedCoordinates = smoothPath(finalCoordinates);
@@ -431,7 +431,6 @@
     };
 
     const processActiveDataSets = (activeDataSets) => {
-        console.log("activedatasets", activeDataSets);
         if (!Array.isArray(activeDataSets)) {
             console.warn("Expected activeDataSets to be an array");
             return;
