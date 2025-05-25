@@ -176,23 +176,7 @@
     export let dataWoodPurposes = [];
     export let uniqueLocations;
     export let totalDatapoints;
-    export let totalDatapointsArtworks;
-    export let totalDatapointsConstructions;
-
-    let datapoints = [
-        {
-            name: "All",
-            datapoints: totalDatapoints
-        },
-        {
-            name: "Artworks",
-            datapoints:totalDatapointsArtworks
-        },
-        {
-            name: "Constructions",
-            datapoints: totalDatapointsConstructions
-        },
-    ];
+    export let datapointsLength;
 
     // Imported var from searchbar
     export let filteredObjects;
@@ -257,7 +241,7 @@
     }
 
     const findDataPointsAmount = (option) => {
-        const data = datapoints.find(data => data.name === option);
+        const data = datapointsLength.find(data => data.name === option);
         return data ? data.datapoints : 0;
     };
 

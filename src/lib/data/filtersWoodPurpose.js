@@ -2,6 +2,7 @@ export const filtersObject = {
     Constructions: {
       Archeology: null,
       Buildings: {
+        "Non-specified building": null,
         "Deck beams": null,
         "Truss legs": null,
         "Corbels": null,
