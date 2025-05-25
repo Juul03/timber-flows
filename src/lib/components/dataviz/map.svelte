@@ -18,7 +18,7 @@
     import bezierSpline from '@turf/bezier-spline';
 
     import { colorScale, subtypeMap } from '$lib/scripts/colorConfig';
-    import { findCategoryPathFromLocation } from '$lib/scripts/formatData.js';
+    import { getCategoryPathCombined } from '$lib/scripts/formatData.js';
 
     import { filtersObject } from '$lib/data/filtersWoodPurpose.js';
 
@@ -56,8 +56,9 @@
     const locationEllipseMap = new Map();
 
     let animationSpeed;
-    let animationSpeedSlow = 5000;
+    let animationSpeedSlow = 6000;
     let animationSpeedFast = timelineSpeed;
+    export let zeroState = true;
     
     let showTooltipRoute = false;
     export let tooltipPosition = { x: 0, y: 0 };
@@ -198,7 +199,7 @@
         const initialOpacity = 1;
         let finalOpacity;
 
-        if(timelineClicked) {
+        if(timelineClicked || zeroState) {
             finalOpacity = 1;
         } else if (!timelineClicked) {
             finalOpacity = 0.1;
@@ -246,11 +247,20 @@
 
     // add all trade routes
     const addTradeRouteToMap = (route, offset, color, routeData) => {
+        if (!routeData) return;
+
         const offsetCoordinates = offsetPath(route.coordinates, offset);
         let finalCoordinates = [...offsetCoordinates];
 
         // Check if exact lat/lng are provided
-        if (routeData.latitude && routeData.longitude) {
+        if (
+            routeData.latitude 
+            && routeData.longitude 
+            && routeData.latitude !== "0" 
+            && routeData.longitude !== "0"
+            && routeData.longitude !== "-"
+            && routeData.latitude !== "-"
+        ) {
             finalCoordinates[finalCoordinates.length - 1] = [
                 parseFloat(routeData.latitude),
                 parseFloat(routeData.longitude)
@@ -266,6 +276,14 @@
             if (key === "den" && parts.length > 1) {
                 key = `den ${parts[1]}`;
             }
+            if (key === "alphen") {
+                const remaining = parts.slice(1).join(' ');
+                if (remaining.startsWith('aan den rijn')) {
+                    key = "alphen aan den rijn";
+                } else {
+                    key = "alphen aan den rijn";
+                }
+            }
 
             // Try to match to endpoint locations
             const matched = endpointsLocations.find(loc =>
@@ -275,11 +293,11 @@
             if (matched) {
                 finalCoordinates[finalCoordinates.length - 1] = matched.coordinates;
             } else {
-                console.log("No matching location found in endpoints");
+                console.log("No matching location found in endpoints", routeData.location);
             }
 
         } else {
-            console.log("No coordinates or valid location provided, using original route");
+            console.log("No coordinates or valid location provided, using original route", routeData.location);
         }
 
         const smoothedCoordinates = smoothPath(finalCoordinates);
@@ -337,8 +355,8 @@
                 hoverPath.on('mouseover', () => {
                     showTooltipRoute = true;
 
-                    const location = routeData.location;
-                    const categoryPath = findCategoryPathFromLocation(filtersObject, location, keywordMap);
+                    let location = routeData.location;
+                    const categoryPath = getCategoryPathCombined(filtersObject, routeData, keywordMap);
 
                     tooltipRouteContent.fellingDate = routeData.fellingDate;
                     tooltipRouteContent.location = routeData.location;
@@ -367,15 +385,25 @@
                     })
                 });
 
-                drawnTradeRoutes.push(visiblePath, hoverPath);
+                // drawnTradeRoutes.push(visiblePath, hoverPath);
+                drawnTradeRoutes.push(visiblePath);
+                if (hoverPath) {
+                    drawnTradeRoutes.push(hoverPath);
+                }
+
             }
         });
     };
 
     // Draw route on map
     const drawTradeRoute = (data, objectType) => {
-        const provenance = data.provenance;
-        const matchedRoute = tradeRoutesCoords.find(route => route.name === provenance);
+        const provenance = data.provenance || "";
+        if(provenance === "") return; 
+
+        const provenanceLower = provenance.toLowerCase().trim();
+        const matchedRoute = tradeRoutesCoords.find(
+            route => route.name?.toLowerCase().trim() === provenanceLower
+        );
 
         if (matchedRoute) {
             const count = routeDrawCounts[provenance] || 0;
@@ -387,7 +415,7 @@
 
             addTradeRouteToMap(matchedRoute, offset, color, data);
         } else {
-            // console.warn("No matching route for provenance:", provenance);
+            console.warn("No matching route for provenance:", provenance);
         }
     };
     
@@ -403,7 +431,7 @@
     };
 
     const processActiveDataSets = (activeDataSets) => {
-        // console.log("activedatasets", activeDataSets);
+        console.log("activedatasets", activeDataSets);
         if (!Array.isArray(activeDataSets)) {
             console.warn("Expected activeDataSets to be an array");
             return;
@@ -438,7 +466,85 @@
             position: 'bottomright'
         }).addTo(map);
     }
-    
+
+    const extractYear = (fellingDate) => {
+        if (!fellingDate) return null;
+
+        // If it's a number (already a valid year), just return it
+        if (typeof fellingDate === 'number') {
+            return fellingDate;
+        }
+
+        // If it's a string (e.g., "1500-1550" or "1500"), extract first part
+        if (typeof fellingDate === 'string') {
+            const yearStr = fellingDate.split('-')[0].trim();
+            const year = parseInt(yearStr, 10);
+            return isNaN(year) ? null : year;
+        }
+
+        // Fallback for unexpected types
+        return null;
+    };
+
+    const groupDataByYear = (activeDataSets) => {
+        const yearMap = new Map();
+
+        activeDataSets.forEach(firstLevel => {
+            const objectType = firstLevel.name || "unknown";
+
+            if (Array.isArray(firstLevel.data)) {
+                firstLevel.data.forEach(secondLevel => {
+                    if (secondLevel && Array.isArray(secondLevel.data)) {
+                        secondLevel.data.forEach(item => {
+                            const year = extractYear(item.fellingDate);
+                            if (year && year >= 1400 && year <= 1850) {
+                                if (!yearMap.has(year)) yearMap.set(year, []);
+                                yearMap.get(year).push({ item, objectType });
+                            }
+                        });
+                    } else {
+                        const year = extractYear(secondLevel.fellingDate);
+                        if (year && year >= 1400 && year <= 1850) {
+                            if (!yearMap.has(year)) yearMap.set(year, []);
+                            yearMap.get(year).push({ item: secondLevel, objectType });
+                        }
+                    }
+                });
+            } else {
+                console.warn("Unrecognized structure in item:", firstLevel);
+            }
+        });
+
+        return yearMap;
+    };
+
+
+    const drawMapDataByYear = async (activeDataSets) => {
+        if (!map || !leafletReady || !activeDataSets) return;
+
+        cancelAnimatingTradeRoutes();
+        clearTradeRoutesFromMap();
+        routeDrawCounts = {};
+
+        const yearMap = groupDataByYear(activeDataSets);
+
+        // Sort years ascending
+        const years = Array.from(yearMap.keys()).sort((a, b) => a - b);
+
+        for (const year of years) {
+            const entries = yearMap.get(year);
+            entries.forEach(({ item, objectType }) => {
+                if(zeroState) {
+                    drawTradeRoute(item, objectType);
+                }
+            });
+
+            // Wait before drawing the next year
+            await new Promise(resolve => setTimeout(resolve, 75));
+        }
+        zeroState = false;
+    };
+        
     onMount(async () => {
         if (browser) {
             leaflet = await import('leaflet');
@@ -460,7 +566,7 @@
             // const onMapClick = (event) => {
             //     alert("You clicked the map at " + event.latlng);
             // }
- 
+
             // map.on('click', onMapClick);
 
             animationSpeed = animationSpeedSlow;
@@ -475,7 +581,9 @@
             addProvenancesToMap(leaflet, provenancesCoords, map);
             addLocationsToMap(leaflet, endpointsLocations, map);
 
-            drawMapData();
+            if(zeroState) {
+                drawMapDataByYear(activeDataSets);
+            }
         }
     });
 
@@ -527,6 +635,12 @@
                         } else {
                             // single layer
                             drawTradeRoute(secondLevel, objectType);
+
+                            const provenanceName = secondLevel.provenance;
+                            const ellipse = provenanceEllipseMap.get(provenanceName);
+                            if (ellipse) {
+                                ellipse.setStyle({ opacity: 1, fillOpacity: 0.25});
+                            }
                         }
                     });
                 }
@@ -580,10 +694,24 @@
         updateCurrentMap(selectedMapType);
     }
 
-    $: if (leafletReady && map && activeDataSets) {
+   let previousActiveDataSets = null;
+   export let selectionPath;
+
+    $: if (
+        leafletReady && map &&
+        activeDataSets &&
+        activeDataSets !== previousActiveDataSets &&
+        Array.isArray(selectionPath) &&
+        selectionPath.length > 0
+    ) {
+        zeroState = false;
+        previousActiveDataSets = activeDataSets;
+
         animationSpeed = animationSpeedSlow;
+
         drawMapData();
     }
+
 
     $: if (timelineDataSelection != undefined && leafletReady && map) {
         animationSpeed = animationSpeedFast;

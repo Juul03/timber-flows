@@ -339,9 +339,9 @@
         // Chart dimensions and margins
         const width = 1000;
         const height = 100;
-        const marginTop = 30;
+        const marginTop = 15;
         const marginRight = 0;
-        const marginBottom = 30;
+        const marginBottom = 20;
         const marginLeft = 40;
 
         const containerWidth = (chartContainer.clientWidth || width) - marginLeft;
@@ -375,7 +375,6 @@
             .domain(filledData.map(d => d.fellingDate))
             .range([marginLeft, containerWidth - marginRight])
             .padding(0);
-
 
         // Y scale: Frequency values (based on the count)
         const y = d3.scaleLinear()
@@ -418,12 +417,12 @@
         if (timelineLine.empty()) {
             svg.append("line")
                 .attr("class", "timeline-line")
-                .attr("y1", 30)
-                .attr("y2", 100 - 30)
+                .attr("y1", marginTop)
+                .attr("y2", height - marginTop)
                 .attr("stroke", "#964B00")
                 .attr("stroke-width", x.bandwidth())
-                .attr("x1", 40)
-                .attr("x2", 40);
+                .attr("x1", marginLeft)
+                .attr("x2", marginLeft);
         }
 
         // update y-axis
@@ -434,7 +433,9 @@
 
         // Update bars
         const bars = svg.selectAll(".bar")
-            .data(filledData, d => d.fellingDate); 
+            .data(filledData, d => d.fellingDate);
+        
+        console.log("data", data);
 
         // Exit
         bars.exit()

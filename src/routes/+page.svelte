@@ -9,6 +9,8 @@
             {timelineClicked}
             {timelineRunning}
             {timelineSpeed}
+            {selectionPath}
+            bind:zeroState
         />
         <div class="container position-relative z-3">
             <div class="position-absolute w-100 top-0">
@@ -52,11 +54,6 @@
     </div>
 </main>
 
-
-
-
-<!-- <p>Selected purpose: {selectedWoodPurpose} {selectedType} {selectedSubType}</p> -->
-
 <script>
     import '../assets/styles/app.scss';
 
@@ -67,9 +64,13 @@
     import dataHalfModels from '$lib/data/artworks/half-models.json';
     import dataConstructions from '$lib/data/constructions/constructions.json';
     import dataShipwreckBatavia from '$lib/data/constructions/shipwreckBatavia.json';
+    import dataArcheology from '$lib/data/constructions/archeology.json';
+    import dataPanelPaintings from '$lib/data/artworks/panelPaintings.json';
+    import dataSculptures from '$lib/data/artworks/sculptures.json';
+    import dataBuildings from '$lib/data/constructions/buildings.json';
 
     // Scripts
-    import { formatData, formatDataBatavia, getUniqueValues, getFellingDates, getUniqueLocations } from '$lib/scripts/formatData.js';
+    import { formatData, formatDataBatavia, formatDataSjoerd, getUniqueValues, getFellingDates, getUniqueLocations } from '$lib/scripts/formatData.js';
 
     // Components
     import Filters from '$lib/components/filters.svelte';
@@ -97,6 +98,9 @@
     // Dynamic retrieved from view buttons
     export let currentView = "map";
 
+    // Dynamic retrieved from map
+    export let zeroState = true;
+
     // Var to store data based on timeline selection
     export let timelineDataSelection;
 
@@ -107,11 +111,19 @@
     let formattedDataHalfModels = formatData(dataHalfModels, true);
     let formattedDataConstructions = formatData(dataConstructions);
     let formattedDataShipwrecksBatavia = formatDataBatavia(dataShipwreckBatavia);
+    let formattedDataArcheology = formatDataSjoerd(dataArcheology);
+    let formattedDataPanelPaintings = formatDataSjoerd(dataPanelPaintings);
+    let formattedDataSculptures = formatDataSjoerd(dataSculptures);
+    let formattedDataBuildings = formatDataSjoerd(dataBuildings);
 
     // Data variables
     let halfModels = formattedDataHalfModels;
     let constructions = formattedDataConstructions;
     let shipwrecksBatavia = formattedDataShipwrecksBatavia;
+    let archeology = formattedDataArcheology;
+    let panelPaintings = formattedDataPanelPaintings;
+    let sculptures = formattedDataSculptures;
+    let buildings = formattedDataBuildings;
 
     let dataSetsArtworks = [
         {
@@ -120,11 +132,11 @@
         },
         {
             name: "sculptures",
-            data: null,
+            data: sculptures,
         },
         {
             name: "panelPaintings",
-            data: null,
+            data: panelPaintings,
         }
     ];
 
@@ -136,6 +148,14 @@
         {
             name: "shipwrecksBatavia",
             data: shipwrecksBatavia,
+        },
+        {
+            name: "archeology",
+            data: archeology,
+        },
+        {
+            name: "buildings",
+            data: buildings,
         }
     ];
 
@@ -154,7 +174,7 @@
     // Construction subsets
     export let keywordMap = {
         "Buildings": ['huis', 'kerk', 'kapel', 'souterrain'],
-        "Shipwrecks": ['schip', 'schepen'],
+        "Shipwrecks": ['schip', 'schepen', 'ship', 'shipwreck', 'shipwrecks'],
         "Deck beams": ['dekbalk'],
         "Truss legs": ['spant'],
         "Corbels": ['korbelen', 'korbeel'],
@@ -187,7 +207,7 @@
     let fellingDatesHalfModels = getFellingDates(halfModels);
     
     // Get all unique locations (for constructions)
-    uniqueLocations = getUniqueLocations([constructions, shipwrecksBatavia]);
+    uniqueLocations = getUniqueLocations([constructions, shipwrecksBatavia, archeology, buildings, sculptures, panelPaintings]);
 
     const findAllKeysWithValue = (dataSetsConstructions, dataSetName, location, buildingKeywords) => {
         const filteredData = dataSetsConstructions.map(dataset => {
@@ -233,6 +253,12 @@
             if (selectedOption === "Halfmodels") {
                 const set = dataSetsArtworks.find(set => set.name === "halfModels");
                 return set ? [set] : [];
+            } else if (selectedOption === "Panel paintings") {
+                const set = dataSetsArtworks.find(set => set.name === "panelPaintings");
+                return set ? [set] : [];
+            } else if (selectedOption === "Sculptures") {
+                const set = dataSetsArtworks.find(set => set.name === "sculptures");
+                return set ? [set] : [];
             }
         }
 
@@ -240,30 +266,52 @@
             if (selectedOption === "Constructions") return dataSetsConstructions;
 
             if (selectionPath[1] === "Shipwrecks") {
-                if (selectedOption === "Shipwrecks") {
-                    // all shipwreck datasets (for now only batavia)
-                    const set = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
-                    return set ? [set] : [];
-                } else if (selectedOption === "Batavia shipwreck") {
-                    // only batavia shipwreck
+                if (selectedOption === "Shipwrecks" || selectedOption === "Batavia shipwreck") {
                     const set = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
                     return set ? [set] : [];
                 }
-            }
+            } else if (selectionPath[1] === "Archeology") {
+                const set = dataSetsConstructions.find(set => set.name === "archeology");
+                return set ? [set] : [];
+            } else if (selectionPath[1] === "Buildings") {
+                const buildingsSet = dataSetsConstructions.find(set => set.name === "buildings");
 
-            // keyword filtering on construction data to ex. "deck beams"
-            if (keywordMap[selectedOption]) {
-                if (!dataSetCache[selectedOption]) {
-                    const filtered = findAllKeysWithValue(dataSetsConstructions, selectedOption, location, keywordMap[selectedOption]);
-                    dataSetCache[selectedOption] = filtered;
+                if (selectedOption === "Buildings" && keywordMap[selectedOption]) {
+                    if (!dataSetCache[selectedOption]) {
+                        const filtered = findAllKeysWithValue(dataSetsConstructions, selectedOption, location, keywordMap[selectedOption]);
+                        dataSetCache[selectedOption] = filtered;
+                    }
+                    const filteredData = dataSetCache[selectedOption] || [];
+
+                    // Combine buildingsSet data with filteredData, avoiding duplicates if needed
+                    const combinedData = [];
+
+                    if (buildingsSet) combinedData.push(buildingsSet);
+                    combinedData.push(...filteredData);
+
+                    return combinedData;
                 }
-                const more = findMore();
-                if (more) {
-                    return more;
+
+                // filter churches en houses, deck beams etc.
+                if (selectedOption !== "Buildings") {
+                    if (keywordMap[selectedOption]) {
+                        if (!dataSetCache[selectedOption]) {
+                            const filtered = findAllKeysWithValue(dataSetsConstructions, selectedOption, location, keywordMap[selectedOption]);
+                            dataSetCache[selectedOption] = filtered;
+                        }
+                        const more = findMore();
+                        if (more) {
+                            return more;
+                        }
+                        return dataSetCache[selectedOption];
+                    }
                 }
-                return dataSetCache[selectedOption];
+
+                // fallback: just return buildingsSet if no keywordMap or selectedOption doesn't match
+                return buildingsSet ? [buildingsSet] : [];
             }
         }
+
 
         return dataSetsAll;
     };

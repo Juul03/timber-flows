@@ -14,6 +14,10 @@ export const subtypeMap = {
     "Corbels in Buildings": "constructions",
     Shipwrecks: "constructions",
     "shipwrecksBatavia": "constructions",
+    archeology: "constructions",
+    panelPaintings: "artworks",
+    sculptures: "artworks",
+    buildings: "constructions",
 };
 
 export const colorScale = scaleOrdinal()

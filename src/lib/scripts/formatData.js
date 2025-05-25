@@ -49,6 +49,31 @@ export const formatDataBatavia = (data) => {
   })
 }
 
+export const formatDataSjoerd = (data) => {
+  return data.map(item => {
+    let provenance = item.Provenance;
+    if (provenance === "NW Germany") {
+      provenance = "Northwest Germany";
+    }
+
+    return {
+      keyCode: item.SampleCode,
+      objectType: item.Category,
+      location: item.Site,
+      latitude: item.Latitude?.toString().replace(',', '.'),
+      longitude: item.Longitude?.toString().replace(',', '.'),
+      length: item.Length,
+      sapwood: item.Sapwoord,
+      WK: item.WK,
+      endYear: item.DateS,
+      fellingDate: item['Estimated felling date'],
+      TBP: item.TBP,
+      reference: item.Reference,
+      provenance: provenance,
+    }
+  })
+}
+
 export const getUniqueValues = (data, key) => {
     const values = data
         .map(item => item[key])
@@ -111,6 +136,10 @@ export const getUniqueLocations = (datasets) => {
         part = `den ${nextWord}`;
       }
 
+      if (part === 'alphen') {
+        part = 'Alphen aan den Rijn'
+      }
+
       return part;
     });
 
@@ -144,6 +173,19 @@ export function findCategoryPath(tree, targetLabel, path = []) {
   }
 
   return null; // Not found
+}
+
+export function getCategoryPathCombined(tree, routeData, keywordMap) {
+  if (routeData.objectType) {
+    const pathFromObjectType = findCategoryPathFromObjectType(tree, routeData.objectType);
+    if (pathFromObjectType) return pathFromObjectType;
+  }
+
+  if (routeData.location) {
+    return findCategoryPathFromLocation(tree, routeData.location, keywordMap);
+  }
+
+  return ['Uncategorized'];
 }
 
 export function findCategoryPathFromLocation(tree, location, keywordMap) {
@@ -198,4 +240,18 @@ export function findCategoryPathFromLocation(tree, location, keywordMap) {
 
   return bestPath || ['Uncategorized'];
 }
+
+export function findCategoryPathFromObjectType(tree, objectType) {
+  const objectTypeMap = {
+    A: 'Archeology',
+    P: 'Panel paintings',
+    S: 'Sculptures',
+  };
+
+  const targetLabel = objectTypeMap[objectType];
+  if (!targetLabel) return null;
+
+  return findCategoryPath(tree, targetLabel);
+}
+
 
