@@ -345,7 +345,6 @@
         const marginLeft = 40;
 
         const containerWidth = (chartContainer.clientWidth || width) - marginLeft;
-        console.log("contianer width", containerWidth);
 
         const minYearAtLeast = 1450;
         const maxYearAtLeast = 1750;
@@ -355,19 +354,13 @@
         const allFrequencies = data.map(d => d.frequency);
         let maxFrequency = d3.max(allFrequencies);
 
-        console.log("year", minYear, maxYear)
         if(minYear === undefined || maxYear === undefined) {
             const allYears = data.map(d => +d.fellingDate).filter(y => !isNaN(y));
-            console.log("allYears", allYears);
             const minAllYears = d3.min(allYears);
-            console.log("minyear", minAllYears);
             const maxAllYears = d3.max(allYears);
-            console.log("maxyear", maxAllYears);
             minYear = getMinYear(minYearAtLeast, minAllYears);
             maxYear = getMaxYear(maxYearAtLeast, maxAllYears);
         }
-
-        console.log("data", data);
 
         // Fill in missing years
         filledData = fillMissingYears(data, minYear, maxYear);
