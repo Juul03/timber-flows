@@ -340,11 +340,12 @@
         const width = 1000;
         const height = 100;
         const marginTop = 15;
-        const marginRight = 0;
-        const marginBottom = 20;
+        const marginRight = 15;
+        const marginBottom = 30;
         const marginLeft = 40;
 
         const containerWidth = (chartContainer.clientWidth || width) - marginLeft;
+        console.log("contianer width", containerWidth);
 
         const minYearAtLeast = 1450;
         const maxYearAtLeast = 1750;
@@ -354,13 +355,19 @@
         const allFrequencies = data.map(d => d.frequency);
         let maxFrequency = d3.max(allFrequencies);
 
+        console.log("year", minYear, maxYear)
         if(minYear === undefined || maxYear === undefined) {
-            const allYears = data.map(d => d.fellingDate);
+            const allYears = data.map(d => +d.fellingDate).filter(y => !isNaN(y));
+            console.log("allYears", allYears);
             const minAllYears = d3.min(allYears);
+            console.log("minyear", minAllYears);
             const maxAllYears = d3.max(allYears);
+            console.log("maxyear", maxAllYears);
             minYear = getMinYear(minYearAtLeast, minAllYears);
             maxYear = getMaxYear(maxYearAtLeast, maxAllYears);
         }
+
+        console.log("data", data);
 
         // Fill in missing years
         filledData = fillMissingYears(data, minYear, maxYear);
@@ -375,6 +382,7 @@
             .domain(filledData.map(d => d.fellingDate))
             .range([marginLeft, containerWidth - marginRight])
             .padding(0);
+
 
         // Y scale: Frequency values (based on the count)
         const y = d3.scaleLinear()
@@ -417,12 +425,12 @@
         if (timelineLine.empty()) {
             svg.append("line")
                 .attr("class", "timeline-line")
-                .attr("y1", marginTop)
-                .attr("y2", height - marginTop)
+                .attr("y1", 30)
+                .attr("y2", 100 - 30)
                 .attr("stroke", "#964B00")
                 .attr("stroke-width", x.bandwidth())
-                .attr("x1", marginLeft)
-                .attr("x2", marginLeft);
+                .attr("x1", 40)
+                .attr("x2", 40);
         }
 
         // update y-axis
@@ -433,9 +441,7 @@
 
         // Update bars
         const bars = svg.selectAll(".bar")
-            .data(filledData, d => d.fellingDate);
-        
-        console.log("data", data);
+            .data(filledData, d => d.fellingDate); 
 
         // Exit
         bars.exit()

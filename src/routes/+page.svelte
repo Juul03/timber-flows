@@ -205,7 +205,7 @@
             datapoints: totalDatapoints
         },
         {
-            name: "Half models",
+            name: "Halfmodels",
             datapoints: halfModels.length
         },
         {
@@ -239,6 +239,10 @@
         {
             name: "Non-specified building",
             datapoints: buildings.length
+        },
+        {
+            name: "Non-specified shipwrecks",
+            datapoints:6
         },
         {
             name: "Deck beams",
@@ -360,6 +364,13 @@
                 } else if(selectedOption === "Batavia shipwreck") {
                     const set = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
                     return set ? [set] : [];
+                } else if (selectedOption === "Non-specified shipwrecks") {
+                    if(!dataSetCache['Shipwrecks']) {
+                        const filtered = findAllKeysWithValue(dataSetsConstructions, selectedOption, location, keywordMap['Shipwrecks']);
+                        dataSetCache['Shipwrecks'] = filtered;
+                    }
+                    const filteredData = dataSetCache['Shipwrecks'] || [];
+                    return filteredData;
                 }
                 // if (selectedOption === "Shipwrecks" || selectedOption === "Batavia shipwreck") {
                 //     const set = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
