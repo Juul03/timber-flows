@@ -23,7 +23,8 @@
             .bar {
                 fill: black;
 
-                &.hover {
+                &.hover,
+                &.active {
                     fill: whitesmoke;
                 }
             }
