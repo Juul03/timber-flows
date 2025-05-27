@@ -45,6 +45,7 @@
 
     // Compontent variables
     let previousActiveDataSets = null;
+    let skipNextDrawMapData = false;
     let drawnTradeRoutes = [];
     let animatingTradeRoutes = [];
     let routeDrawCounts = {};
@@ -557,6 +558,7 @@
             await new Promise(resolve => setTimeout(resolve, 75));
         }
         zeroState = false;
+        skipNextDrawMapData = true;
     };
         
     onMount(async () => {
@@ -718,19 +720,33 @@
         updateCurrentMap(selectedMapType);
     }
 
+    let previousSelectionPath = [];
+    console.log("selection path start", selectionPath);
+    console.log("previousSelectionPath start", previousSelectionPath);
+
+    $: if(selectionPath) {
+        console.log("activeDataSets changed:", activeDataSets);
+        console.log("Selection path changed:", selectionPath);
+    }
+
     $: if (
         leafletReady && map &&
         activeDataSets &&
-        activeDataSets !== previousActiveDataSets &&
-        Array.isArray(selectionPath) &&
-        selectionPath.length > 0
+        !zeroState &&
+        (
+            activeDataSets !== previousActiveDataSets ||
+            !deepEqual(selectionPath, previousSelectionPath)
+        )
     ) {
-        zeroState = false;
-        previousActiveDataSets = activeDataSets;
+        if (skipNextDrawMapData) {
+            skipNextDrawMapData = false;
+        } else {
+            previousActiveDataSets = activeDataSets;
+            previousSelectionPath = structuredClone(selectionPath);
 
-        animationSpeed = animationSpeedSlow;
-
-        drawMapData();
+            animationSpeed = animationSpeedSlow;
+            drawMapData();
+        }
     }
 
 
