@@ -7,6 +7,13 @@
     height:1rem;
 }
 
+.btn-link {
+    text-decoration: none;
+    .svg-icon-small {
+        fill: #6f3903;
+    }
+}
+
 .svg-icon-small {
     width:.8rem;
     height:.8rem;

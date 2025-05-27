@@ -36,7 +36,7 @@
         border-radius:unset;
     }
     #woodPurposeFilter {
-        min-height: 150px;
+        min-height: 175px;
     }
     #selectLocation {
         .checkbox-list {
@@ -76,5 +76,21 @@
             color:lightgray;
             --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='lightgrey' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
         }
+    }
+}
+
+.custom-offcanvas {
+  position: fixed;
+  transform: translate(+5%, -5%) !important;
+  width: 90vw;
+  height: 90vh;
+  z-index: 1055;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.btn.btn-link {
+    &:hover {
+        text-decoration: underline;
+        text-underline-offset: 0.2rem;
     }
 }
