@@ -138,8 +138,11 @@
                                         on:change={handleCheckboxChange}
                                         checked={selectedLocations.includes(location)}
                                     >
-                                    <label class="w-100 form-check-label" for="{location}">
+                                    <label class="w-100 form-check-label d-flex justify-content-between" for="{location}">
                                         {location}
+                                        <span class="small text-light">
+                                            {countDatapointsForLocation(location)}
+                                        </span>
                                     </label>
                                 </div>
                             </li>
@@ -176,6 +179,7 @@
     export let uniqueLocations;
     export let totalDatapoints;
     export let datapointsLength;
+    export let activeDataSets;
 
     // Imported var from searchbar
     export let filteredObjects;
@@ -195,7 +199,7 @@
 
     // Var from this component
     let dropdownOpen = false;
-    let selectedLocations = [];
+    export let selectedLocations = [];
 
     let toggleDropdown = () => {
         dropdownOpen = !dropdownOpen;
@@ -256,6 +260,37 @@
         const data = datapointsLength.find(data => data.name === option);
         return data ? data.datapoints : 0;
     };
+
+    function countDatapointsForLocation(location) {
+        let count = 0;
+        if (!activeDataSets) return count;
+
+        activeDataSets.forEach(firstLevel => {
+            if (Array.isArray(firstLevel.data)) {
+                firstLevel.data.forEach(secondLevel => {
+                    if (secondLevel && Array.isArray(secondLevel.data)) {
+                        // Nested data
+                        secondLevel.data.forEach(item => {
+                            if (
+                                item.location &&
+                                item.location.toLowerCase().includes(location.toLowerCase())
+                            ) {
+                                count++;
+                            }
+                        });
+                    } else if (secondLevel && secondLevel.location) {
+                        // Single layer
+                        if (
+                            secondLevel.location.toLowerCase().includes(location.toLowerCase())
+                        ) {
+                            count++;
+                        }
+                    }
+                });
+            }
+        });
+        return count;
+    }
 
     $: sortedLocations = [...uniqueLocations]
         .sort((a, b) => {

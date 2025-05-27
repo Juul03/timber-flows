@@ -39,11 +39,18 @@
     export let timelineClicked;
     export let timelineRunning;
     export let timelineSpeed = 500;
+    export let selectedLocations = [];
+    export let previousSelectedLocations = [];
+    export let selectionPath;
 
     // Compontent variables
+    let previousActiveDataSets = null;
+    let previousSelectionPath = [];
+    let skipNextDrawMapData = false;
     let drawnTradeRoutes = [];
     let animatingTradeRoutes = [];
     let routeDrawCounts = {};
+
     let leafletReady = false;
     let leaflet;
     
@@ -436,7 +443,7 @@
             return;
         }
 
-        // Case 2 & 3: Structured with 'name' and 'data'
+        // Structured with 'name' and 'data'
         activeDataSets.forEach(firstLevel => {
             const objectType = firstLevel.name || "unknown";
 
@@ -445,10 +452,20 @@
                     if (secondLevel && Array.isArray(secondLevel.data)) {
                         // Case 3: Nested .data inside .data
                         secondLevel.data.forEach(item => {
+                            if(selectedLocations && selectedLocations.length > 0) {
+                                if(!selectedLocations.some(loc => item.location?.toLowerCase().includes(loc.toLowerCase()))) {
+                                    return;
+                                }
+                            }
                             drawTradeRoute(item, objectType);
                         });
                     } else {
                         // Case 2: Single layer
+                        if(selectedLocations && selectedLocations.length > 0) {
+                            if(!selectedLocations.some(loc => secondLevel.location?.toLowerCase().includes(loc.toLowerCase()))) {
+                                return;
+                            }
+                        }
                         drawTradeRoute(secondLevel, objectType);
                     }
                 });
@@ -542,6 +559,7 @@
             await new Promise(resolve => setTimeout(resolve, 75));
         }
         zeroState = false;
+        skipNextDrawMapData = true;
     };
         
     onMount(async () => {
@@ -689,26 +707,38 @@
 
     }
 
+    // Utility function for deep comparison
+    const deepEqual = (a, b) => {
+        return JSON.stringify(a) === JSON.stringify(b);
+    }
+
+    $: if (!deepEqual(selectedLocations, previousSelectedLocations)) {
+        drawMapData();
+        previousSelectedLocations = structuredClone(selectedLocations);
+    }
+
     $: if(selectedMapType && leaflet && map) {
         updateCurrentMap(selectedMapType);
     }
 
-   let previousActiveDataSets = null;
-   export let selectionPath;
-
     $: if (
         leafletReady && map &&
         activeDataSets &&
-        activeDataSets !== previousActiveDataSets &&
-        Array.isArray(selectionPath) &&
-        selectionPath.length > 0
+        !zeroState &&
+        (
+            activeDataSets !== previousActiveDataSets ||
+            !deepEqual(selectionPath, previousSelectionPath)
+        )
     ) {
-        zeroState = false;
-        previousActiveDataSets = activeDataSets;
+        if (skipNextDrawMapData) {
+            skipNextDrawMapData = false;
+        } else {
+            previousActiveDataSets = activeDataSets;
+            previousSelectionPath = structuredClone(selectionPath);
 
-        animationSpeed = animationSpeedSlow;
-
-        drawMapData();
+            animationSpeed = animationSpeedSlow;
+            drawMapData();
+        }
     }
 
 

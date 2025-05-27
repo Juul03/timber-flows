@@ -318,17 +318,27 @@
             // .style("top", (event.pageY + 25) + "px")
             .style("top", (event.pageY - 45) + "px")
             .style("display", "block")
-            .text(`Year: ${year}`);
+            .text(`Year: ${year} | Items: ${filledData.find(d => d.fellingDate == year).frequency}`);
     }
 
     const hideTooltip = () => {
         d3.select("#tooltip-timeline").style("display", "none");
     }
 
-    const highlightBar = (year) => {
+    const highlightBar = (hoveredYear) => {
         svg.selectAll(".bar")
-            .attr("class", d => d.fellingDate === year ? "bar hover" : "bar")
-            .transition().duration(50)
+            .attr("class", d => {
+                if (d.fellingDate == hoveredYear && d.fellingDate == currentYearTimeline) {
+                    return "bar active hover";
+                } else if (d.fellingDate == hoveredYear) {
+                    return "bar hover";
+                } else if (d.fellingDate == currentYearTimeline) {
+                    return "bar active";
+                } else {
+                    return "bar";
+                }
+            })
+            .transition().duration(50);
     }
 
     // Function to draw the bar chart
@@ -409,7 +419,7 @@
                     .attr("y", 10)
                     .attr("fill", "currentColor")
                     .attr("text-anchor", "start")
-                    // .text("Frequency")
+                    .text("Items")
                 )
         }
 
@@ -418,8 +428,8 @@
         if (timelineLine.empty()) {
             svg.append("line")
                 .attr("class", "timeline-line")
-                .attr("y1", 30)
-                .attr("y2", 100 - 30)
+                .attr("y1", marginTop)
+                .attr("y2", height - marginBottom)
                 .attr("stroke", "#964B00")
                 .attr("stroke-width", x.bandwidth())
                 .attr("x1", 40)
@@ -429,7 +439,7 @@
         // update y-axis
         const yAxis = svg.select(".y-axis")
             .transition()
-            .call(d3.axisLeft(y).ticks(maxFrequency).tickFormat(d3.format("~s"))) 
+            .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format("~s"))) 
 
 
         // Update bars
@@ -453,8 +463,7 @@
         // Enter - Add bars for each fellingDate (if not there already)
         bars.enter()
             .append("rect")
-            .attr("class", "bar")
-            // .attr("fill", "rgba(0, 0, 0, 0.65)")
+            .attr("class", d => d.fellingData == currentYearTimeline ? "bar active" : "bar")
             .attr("filter", "url(#glassmorphism)")
             .attr("x", d => x(d.fellingDate))
             .attr("y", y(0))
@@ -464,26 +473,26 @@
             .attr("y", d => y(d.frequency))
             .attr("height", d => y(0) - y(d.frequency));
         
-        bars.on("mouseover", (event, d, nodes) => {
-            d3.select(nodes[0]).attr("fill", "blue");
-        })
-        .on("mouseout", (event, d, nodes) => {
-            d3.select(nodes[0]).attr("fill", "rgba(0, 0, 0, 0.65)");
-        });
+        // bars.on("mouseover", (event, d, nodes) => {
+        //     d3.select(nodes[0]).attr("fill", "blue");
+        // })
+        // .on("mouseout", (event, d, nodes) => {
+        //     d3.select(nodes[0]).attr("fill", "rgba(0, 0, 0, 0.65)");
+        // });
 
 
         svg.append("defs")
-        .append("filter")
-        .attr("id", "glassmorphism")
-        .html(`
-            <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
-            <feColorMatrix in="blur" type="matrix"
-                values="1 0 0 0 0
-                        0 1 0 0 0
-                        0 0 1 0 0
-                        0 0 0 0.3 0" result="blurry"/>
-            <feBlend in="SourceGraphic" in2="blurry" mode="normal"/>
-        `);
+            .append("filter")
+            .attr("id", "glassmorphism")
+            .html(`
+                <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+                <feColorMatrix in="blur" type="matrix"
+                    values="1 0 0 0 0
+                            0 1 0 0 0
+                            0 0 1 0 0
+                            0 0 0 0.3 0" result="blurry"/>
+                <feBlend in="SourceGraphic" in2="blurry" mode="normal"/>
+            `);
 
         // Add overlay for click detection
        svg.append("rect")
