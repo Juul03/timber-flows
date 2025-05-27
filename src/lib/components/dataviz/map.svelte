@@ -45,6 +45,7 @@
 
     // Compontent variables
     let previousActiveDataSets = null;
+    let previousSelectionPath = [];
     let skipNextDrawMapData = false;
     let drawnTradeRoutes = [];
     let animatingTradeRoutes = [];
@@ -718,15 +719,6 @@
 
     $: if(selectedMapType && leaflet && map) {
         updateCurrentMap(selectedMapType);
-    }
-
-    let previousSelectionPath = [];
-    console.log("selection path start", selectionPath);
-    console.log("previousSelectionPath start", previousSelectionPath);
-
-    $: if(selectionPath) {
-        console.log("activeDataSets changed:", activeDataSets);
-        console.log("Selection path changed:", selectionPath);
     }
 
     $: if (
