@@ -21,6 +21,7 @@
                     {uniqueLocations}
                     {totalDatapoints}
                     {datapointsLength}
+                    {activeDataSets}
                     bind:selectedWoodPurpose 
                     bind:selectedType 
                     bind:selectedSubType
