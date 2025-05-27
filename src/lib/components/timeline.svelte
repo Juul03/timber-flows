@@ -19,7 +19,7 @@
             type="number" 
             name="" 
             id="" 
-            placeholder="Select startyear"
+            placeholder="Select endyear"
             min={currentYearTimeline}
             max={maxYear}
         >

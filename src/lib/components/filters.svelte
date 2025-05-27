@@ -2,7 +2,7 @@
     <div class="row gap-2">
         <div class="col-12 d-flex justify-content-between flex-wrap align-items-center">
             <p class="fs-5 m-0">Find or select timber purpose</p>
-            <button class="btn border-0 bg-transparent d-flex flex-row flex-wrap align-items-center justify-content-center gap-1">
+            <button class="btn border-0 bg-transparent d-flex flex-row flex-wrap align-items-center justify-content-center gap-1" on:click={ () => clearFilters() }>
                 <span class="small m-0">Clear filters</span>
                 <svg class="svg-icon-small fs-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
                     <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
@@ -173,7 +173,6 @@
     import { filtersObject } from '$lib/data/filtersWoodPurpose.js';
 
     // Imported var from parent
-    export let dataWoodPurposes = [];
     export let uniqueLocations;
     export let totalDatapoints;
     export let datapointsLength;
@@ -200,6 +199,13 @@
 
     let toggleDropdown = () => {
         dropdownOpen = !dropdownOpen;
+    }
+
+    let clearFilters = () => {
+        selectionPath = [];
+        selectedOption = 'All';
+        selectedLocations = [];
+        // TODO:clear main searchbar
     }
     
     const handleCheckboxChange = (event) => {
