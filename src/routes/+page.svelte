@@ -293,7 +293,7 @@
     let fellingDatesHalfModels = getFellingDates(halfModels);
     
     // Get all unique locations (for constructions)
-    uniqueLocations = getUniqueLocations([constructions, shipwrecksBatavia, archeology, buildings, sculptures, panelPaintings]);
+    uniqueLocations = getUniqueLocations([constructions, shipwrecksBatavia, archeology, buildings, sculptures, panelPaintings, halfModels]);
 
     const findAllKeysWithValue = (dataSetsConstructions, dataSetName, location, buildingKeywords) => {
         const filteredData = dataSetsConstructions.map(dataset => {

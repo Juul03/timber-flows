@@ -25,6 +25,7 @@ export const formatData = (data, isHalfModel = false) => {
         if (isHalfModel) {
             formattedItem.latitude = "51.926517";
             formattedItem.longitude = "4.462456";
+            formattedItem.location = `Rotterdam, ${item.Location}`
         }
 
         return formattedItem;
