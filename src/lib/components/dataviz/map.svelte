@@ -48,8 +48,6 @@
     let drawnTradeRoutes = [];
     let animatingTradeRoutes = [];
     let routeDrawCounts = {};
-    let locationFilterActive = false;
-    // let drawnRoutesByLocation = new Map();
 
     let leafletReady = false;
     let leaflet;
@@ -443,10 +441,7 @@
             return;
         }
 
-        if (selectedLocations) {
-            console.log("selected locations:", selectedLocations)
-        }
-        // Case 2 & 3: Structured with 'name' and 'data'
+        // Structured with 'name' and 'data'
         activeDataSets.forEach(firstLevel => {
             const objectType = firstLevel.name || "unknown";
 
@@ -455,10 +450,20 @@
                     if (secondLevel && Array.isArray(secondLevel.data)) {
                         // Case 3: Nested .data inside .data
                         secondLevel.data.forEach(item => {
+                            if(selectedLocations && selectedLocations.length > 0) {
+                                if(!selectedLocations.some(loc => item.location?.toLowerCase().includes(loc.toLowerCase()))) {
+                                    return;
+                                }
+                            }
                             drawTradeRoute(item, objectType);
                         });
                     } else {
                         // Case 2: Single layer
+                        if(selectedLocations && selectedLocations.length > 0) {
+                            if(!selectedLocations.some(loc => secondLevel.location?.toLowerCase().includes(loc.toLowerCase()))) {
+                                return;
+                            }
+                        }
                         drawTradeRoute(secondLevel, objectType);
                     }
                 });
@@ -699,55 +704,13 @@
 
     }
 
-    const filterDataOnSelectedLocation = () => {
-        if(!locationFilterActive || locationFilterActive) {
-            cancelAnimatingTradeRoutes();
-            clearTradeRoutesFromMap();
-            routeDrawCounts = {};
-        }
-
-        activeDataSets.forEach(firstLevel => {
-            const objectType = firstLevel.name || "unknown";
-
-            if (Array.isArray(firstLevel.data)) {
-                firstLevel.data.forEach(secondLevel => {
-                    if (secondLevel && Array.isArray(secondLevel.data)) {
-                        // ✅ Filter items with matching location
-                        const itemsWithMatchingLocation = secondLevel.data.filter(item =>
-                            selectedLocations.some(loc =>
-                                item.location?.toLowerCase().includes(loc.toLowerCase())
-                            )
-                        );
-
-                        itemsWithMatchingLocation.forEach(item => {
-                            console.log(item.location);
-                            drawTradeRoute(item, objectType);
-                        });
-
-                    } else {
-                        // Case 2: Single layer
-                        // Optional: Add similar location check if needed
-                        if (selectedLocations.some(loc => secondLevel.location?.includes(loc))) {
-                            console.log(secondLevel.location);
-                            drawTradeRoute(secondLevel, objectType);
-                        }
-                    }
-                });
-            } else {
-                console.warn("Unrecognized structure in item:", firstLevel);
-            }
-        });
-
-        locationFilterActive = true;
-    };
-
     // Utility function for deep comparison
     const deepEqual = (a, b) => {
         return JSON.stringify(a) === JSON.stringify(b);
     }
 
     $: if (!deepEqual(selectedLocations, previousSelectedLocations)) {
-        filterDataOnSelectedLocation();
+        drawMapData();
         previousSelectedLocations = structuredClone(selectedLocations);
     }
 
