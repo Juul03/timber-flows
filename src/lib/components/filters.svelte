@@ -195,7 +195,7 @@
 
     // Var from this component
     let dropdownOpen = false;
-    let selectedLocations = [];
+    export let selectedLocations = [];
 
     let toggleDropdown = () => {
         dropdownOpen = !dropdownOpen;

@@ -10,6 +10,8 @@
             {timelineRunning}
             {timelineSpeed}
             {selectionPath}
+            {selectedLocations}
+            {previousSelectedLocations}
             bind:zeroState
         />
         <div class="container position-relative z-3">
@@ -25,6 +27,7 @@
                     bind:selectionPath
                     bind:selectedOption
                     bind:selectedMapType
+                    bind:selectedLocations
                 />
                 <div class="row justify-content-end">
                     <div class="col-9">
@@ -88,6 +91,9 @@
 
     let selectionPath = [];
     let selectedOption = 'All';
+
+    export let selectedLocations = [];
+    export let previousSelectedLocations = [];
 
     export let selectedMapType = 'area';
 
@@ -271,7 +277,7 @@
     ];
 
     // Active data based on selected filters
-    let activeDataSets = [];
+    let activeDataSets = dataSetsAll;
 
     // Get all unique provenances
     let uniqueProvenancesHalfModels = getUniqueValues(halfModels, 'provenance');
