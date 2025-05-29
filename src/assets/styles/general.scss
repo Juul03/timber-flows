@@ -7,6 +7,10 @@
     height:1rem;
 }
 
+.svg-primary {
+    fill: #6f3903;
+}
+
 .btn-link {
     text-decoration: none;
     .svg-icon-small {
@@ -107,4 +111,8 @@ p {
 
 .h-90 {
     height: 90% !important;
+}
+
+body {
+    overflow-x:hidden;
 }
