@@ -3,16 +3,16 @@ export const filtersObject = {
       Archeology: null,
       Buildings: {
         "Non-specified building": null,
-        "Deck beams": null,
+        "Superimposed tiebeam": null,
         "Truss legs": null,
         "Corbels": null,
         Churches: {
-            "Deck beams": null,
+            "Superimposed tiebeam": null,
             "Truss legs": null,
             "Corbels": null,
         },
         Houses: {
-            "Deck beams": null,
+            "Superimposed tiebeam": null,
             "Truss legs": null,
             "Corbels": null,
         },

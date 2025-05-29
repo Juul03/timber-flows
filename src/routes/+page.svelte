@@ -189,7 +189,7 @@
     export let keywordMap = {
         "Buildings": ['huis', 'kerk', 'kapel', 'souterrain'],
         "Shipwrecks": ['schip', 'schepen', 'ship', 'shipwreck', 'shipwrecks'],
-        "Deck beams": ['dekbalk'],
+        "Superimposed tiebeam": ['dekbalk'],
         "Truss legs": ['spant'],
         "Corbels": ['korbelen', 'korbeel'],
         "Churches": ['kerk', 'kapel'],
@@ -199,7 +199,7 @@
     const dataSetCache = {
         "Buildings": null,
         "Shipwrecks": null,
-        "Deck beams": null,
+        "Superimposed tiebeam": null,
         "Truss legs": null,
         "Corbels": null,
         "Churches": null,
@@ -252,7 +252,7 @@
             datapoints:6
         },
         {
-            name: "Deck beams",
+            name: "Superimposed tiebeam",
             datapoints: 8
         },
         {
@@ -405,7 +405,7 @@
                     return combinedData;
                 }
 
-                // filter churches en houses, deck beams etc.
+                // filter churches en houses, superimposed tiebeam etc.
                 if (selectedOption !== "Buildings") {
                     if (keywordMap[selectedOption]) {
                         if (!dataSetCache[selectedOption]) {

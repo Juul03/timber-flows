@@ -177,8 +177,7 @@
             tabindex="-1"
             id="offcanvasFullscreenFilters"
             aria-labelledby="offcanvasFullscreenFiltersLabel"
-            style="width: 90vw; height: 90vh;"
-        >
+     >
             <button 
                 class="btn btn-link fw-bold position-absolute top-0 end-0 mt-2 me-2 z-2"
                 style="z-index: 1051;"
@@ -190,53 +189,77 @@
                     <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
                 </svg>
             </button>
-            <div class="row gap-2">
-                <div class="col-12 d-flex justify-content-between">
+            <div class="row h-100">
+                <div class="col-12">
                     <h3>Filters</h3>
                 </div>
                 {#each filterCategories as category}
-                    <div class="col bg-blur rounded p-3">
-                        <h4 style={`color: ${colorScale(category.toLowerCase())} !important`}>
+                    <div class="col h-90 rounded">
+                        <h4 class="position-sticky top-0 z-3 bg-blur pt-3 pb-2 px-3 mb-0 rounded-top" style={`color: ${colorScale(category.toLowerCase())} !important`}>
                             {category}
                         </h4>
-                        {#each getOptionsArray(filtersObject, [category]) as [option, children]}
-                            <div class="form-check" style="margin-left: 0px;">
-                                <input
-                                    class="form-check-input" 
-                                    type="radio" 
-                                    name={category} 
-                                    id={option} 
-                                    value={option}
-                                    on:click={() => handleSelect(option)}
-                                />
-                                <label
-                                    class="form-check-label d-flex justify-content-between w-100 {selectedOption === option ? 'fw-bold' : 'fw-normal'}" 
-                                    for={option}>
-                                    {option}
-                                </label>
-                            </div>
-                            {#if children && typeof children === 'object'}
-                                {#each Object.entries(children) as [subOption, subChildren]}
-                                    <div class="form-check" style="margin-left: 16px;">
-                                        <input
-                                            class="form-check-input" 
-                                            type="radio" 
-                                            name={category} 
-                                            id={subOption} 
-                                            value={subOption}
-                                            on:click={() => handleSelect(subOption)}
-                                        />
-                                        <label
-                                            class="form-check-label d-flex justify-content-between w-100 {selectedOption === option ? 'fw-bold' : 'fw-normal'}" 
-                                            for={option}
-                                            >
-                                            {subOption}
-                                        </label>
-                                    </div>
-                                    <!-- Repeat for deeper levels if needed -->
-                                {/each}
-                            {/if}
-                        {/each}
+                        <div class="bg-blur rounded-bottom p-3 h-90 overflow-auto">
+                            {#each getOptionsArray(filtersObject, [category]) as [option, children]}
+                                <div class="form-check ms-0">
+                                    <input
+                                        class="form-check-input" 
+                                        type="radio" 
+                                        name={category} 
+                                        id={option} 
+                                        value={option}
+                                        checked={selectedOption === option}
+                                        on:click={() => handleSelectFilterFull(option)}
+                                    />
+                                    <label
+                                        class="form-check-label d-flex justify-content-between w-100 {selectedOption === option ? 'fw-bold' : 'fw-normal'}"
+                                        for={option}>
+                                        {option}
+                                    </label>
+                                </div>
+                                {#if children && typeof children === 'object'}
+                                    {#each Object.entries(children) as [subOption, subChildren]}
+                                        <div class="form-check ms-2">
+                                            <input
+                                                class="form-check-input" 
+                                                type="radio" 
+                                                name={category} 
+                                                id={subOption} 
+                                                value={subOption}
+                                                checked={selectedOption === subOption}
+                                                on:click={() => handleSelectFilterFull(subOption)}
+                                            />
+                                            <label
+                                                class="form-check-label d-flex justify-content-between w-100 {selectedOption === subOption ? 'fw-bold' : 'fw-normal'}" 
+                                                for={subOption}
+                                                >
+                                                {subOption}
+                                            </label>
+                                        </div>
+                                        {#if subChildren && typeof subChildren === 'object'}
+                                            {#each Object.entries(subChildren) as [subSubOption, _]}
+                                                <div class="form-check ms-4">
+                                                    <input
+                                                        class="form-check-input" 
+                                                        type="radio" 
+                                                        name={category} 
+                                                        id={subSubOption} 
+                                                        value={subSubOption}
+                                                        checked={selectedOption === subSubOption}
+                                                        on:click={() => handleSelectFilterFull(subSubOption)}
+                                                    />
+                                                    <label
+                                                        class="form-check-label d-flex justify-content-between w-100 {selectedOption === subSubOption ? 'fw-bold' : 'fw-normal'}" 
+                                                        for={subSubOption}
+                                                    >
+                                                        {subSubOption}
+                                                    </label>
+                                                </div>
+                                            {/each}
+                                        {/if}
+                                    {/each}
+                                {/if}
+                            {/each}
+                        </div>
                     </div>
                 {/each}
             </div>
@@ -356,12 +379,38 @@
         }
     };
 
+    const findPathToOption = (tree, target, path = []) => {
+        for (const key in tree) {
+            if (key === target) {
+                return [...path, key];
+            }
+            if (tree[key] && typeof tree[key] === "object") {
+                const result = findPathToOption(tree[key], target, [...path, key]);
+                if (result) return result;
+            }
+        }
+        return null;
+    }
+
+    const handleSelectFilterFull = (option) => {
+        if (!option) {
+            selectedOption = 'All';
+            selectionPath = [];
+            return;
+        }
+        const path = findPathToOption(filtersObject, option);
+        if (path) {
+            selectedOption = option;
+            selectionPath = path;
+        }
+    }
+
     const findDataPointsAmount = (option) => {
         const data = datapointsLength.find(data => data.name === option);
         return data ? data.datapoints : 0;
     };
 
-    function countDatapointsForLocation(location) {
+    const countDatapointsForLocation = (location) => {
         let count = 0;
         if (!activeDataSets) return count;
 
