@@ -407,6 +407,8 @@
                 const set = dataSetsArtworks.find(set => set.name === "sculptures");
                 return set ? [set] : [];
             }
+
+            return [];
         }
 
         if (selectionPath[0] === "Constructions") {
@@ -484,9 +486,15 @@
                 // fallback: just return buildingsSet if no keywordMap or selectedOption doesn't match
                 return buildingsSet ? [buildingsSet] : [];
             }
+            return [];
         }
 
-        return dataSetsAll;
+        if(selectedOption === "All" || selectedOption === null) {
+            return dataSetsAll;
+
+        }
+
+        return [];
     };
 
     const getYear = (fellingDate) => {

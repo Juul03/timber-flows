@@ -211,6 +211,7 @@
 
     const onInputYearChange = () => {
         if (!svg || !filledData || filledData.length === 0) return;
+        timelineClicked = true;
 
         const year = Number(currentYearTimeline);
         const x = xScaleTimeline(year) + xScaleTimeline.bandwidth() / 2;
@@ -364,7 +365,7 @@
         const allFrequencies = data.map(d => d.frequency);
         let maxFrequency = d3.max(allFrequencies);
         let ticksAmount = 5;
-        
+
         if(maxFrequency < ticksAmount) {
             ticksAmount = maxFrequency;
         }
