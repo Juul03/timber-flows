@@ -330,13 +330,15 @@
     const highlightBar = (hoveredYear) => {
         svg.selectAll(".bar")
             .attr("class", d => {
-                let baseClass = "bar";
-
-                if (d.fellingDate == currentYearTimeline) baseClass += " active";
-                if (d.fellingDate == hoveredYear) baseClass += " hover";
-                if (d.frequency > frequencyLimit) baseClass += " outlier";
-
-                return baseClass;
+                if (d.fellingDate == hoveredYear && d.fellingDate == currentYearTimeline) {
+                    return "bar active hover";
+                } else if (d.fellingDate == hoveredYear) {
+                    return "bar hover";
+                } else if (d.fellingDate == currentYearTimeline) {
+                    return "bar active";
+                } else {
+                    return "bar";
+                }
             })
             .transition().duration(50);
     }
@@ -401,12 +403,8 @@
 
         // Y scale: Frequency values (based on the count)
         const y = d3.scaleLinear()
-            .domain([0, yMax])
+            .domain([0, frequencyLimit])
             .range([height - marginBottom, marginTop]);
-
-        // const yFull = d3.scaleLinear()
-        //     .domain([0, maxFrequency])
-        //     .range([height - marginBottom, marginTop]);
 
         if (!svg) {
             svg = d3.select(chartContainer)
@@ -472,32 +470,25 @@
         // UPDATE
         bars.transition().duration(500)
             .attr("x", d => x(d.fellingDate))
-            .attr("y", d => y(Math.min(d.frequency, frequencyLimit)))
-            .attr("height", d => y(0) - y(Math.min(d.frequency, frequencyLimit)))
+            .attr("y", d => y(d.frequency))
+            .attr("height", d => y(0) - y(d.frequency))
             .attr("width", x.bandwidth())
-            .attr("fill", d => d.frequency > frequencyLimit ? "red" : "rgba(0, 0, 0, 0.65)")
-            .attr("class", d => {
-                const base = d.fellingDate == currentYearTimeline ? "bar active" : "bar";
-                return d.frequency > frequencyLimit ? base + " outlier" : base;
-            });
+            .attr("fill", "rgba(0, 0, 0, 0.65)")
+            .attr("class", d => d.fellingData == currentYearTimeline ? "bar active" : "bar");
 
         // ENTER
         bars.enter()
             .append("rect")
-            .attr("class", d => {
-                const base = d.fellingDate == currentYearTimeline ? "bar active" : "bar";
-                return d.frequency > frequencyLimit ? base + " outlier" : base;
-            })
-            .attr("fill", d => d.frequency > frequencyLimit ? "red" : "rgba(0, 0, 0, 0.65)")
+            .attr("class", d => d.fellingData == currentYearTimeline ? "bar active" : "bar")
+            .attr("fill", "rgba(0, 0, 0, 0.65)")
             .attr("filter", "url(#glassmorphism)")
             .attr("x", d => x(d.fellingDate))
             .attr("y", y(0))
             .attr("width", x.bandwidth())
             .attr("height", 0)
             .transition().duration(500)
-            .attr("y", d => y(Math.min(d.frequency, frequencyLimit)))
-            .attr("height", d => y(0) - y(Math.min(d.frequency, frequencyLimit)));
-
+            .attr("y", d => y(d.frequency)) // actual top of bar
+            .attr("height", d => y(0) - y(d.frequency)) // full height
 
         // Bind data only for outliers
         const barLabels = svg.selectAll(".bar-label")
@@ -508,9 +499,10 @@
 
         // UPDATE: update existing labels
         barLabels
-            .attr("x", d => x(d.fellingDate) + x.bandwidth() / 2)
+            .attr("x", d => x(d.fellingDate) - 12 + x.bandwidth() / 2)
             .attr("y", d => y(frequencyLimit) - 5)
-            .text(d => d.frequency);
+            .text(d => `${d.frequency}↑`)
+
 
         // ENTER: add new labels
         barLabels.enter()
@@ -520,8 +512,8 @@
             .attr("y", d => y(frequencyLimit) - 5)
             .attr("text-anchor", "middle")
             .attr("font-size", "10px")
-            .attr("fill", "rgb(163, 11, 11)")
-            .text(d => d.frequency);
+            .attr("fill", "black")
+            .text(d => `${d.frequency}↑`)
 
         svg.append("defs")
             .append("filter")
@@ -581,7 +573,11 @@
                         .attr("y", d => y(d.frequency))
                         .attr("height", d => y(0) - y(d.frequency));
                     
-                    fullYAxisActive = true;    
+                    barLabels.transition()
+                        .duration(300)
+                        .attr("fill", "rgb(0,0,0,0");
+
+                    fullYAxisActive = true;
                 } else {
                     fullYAxisActive = false;
 
@@ -596,8 +592,14 @@
                     svg.selectAll(".bar")
                         .transition()
                         .duration(300)
-                        .attr("y", d => y(Math.min(d.frequency, frequencyLimit)))
-                        .attr("height", d => y(0) - y(Math.min(d.frequency, frequencyLimit)));
+                        .attr("y", d => y(d.frequency)) // actual top of bar
+                        .attr("height", d => y(0) - y(d.frequency)) 
+                        // .attr("y", d => y(Math.min(d.frequency, frequencyLimit)))
+                        // .attr("height", d => y(0) - y(Math.min(d.frequency, frequencyLimit)));
+
+                    barLabels.transition()
+                        .duration(300)
+                        .attr("fill", "rgb(0,0,0,1");
                 }
             })
             .on("mousemove", (event) => {
@@ -610,9 +612,6 @@
                 });
 
                 const d = filledData.find(d => d.fellingDate === closest);
-
-                // TODO: not working, fix later
-                // y.domain([0, maxFrequency]);
 
                 showTooltip(event, closest);
                 highlightBar(closest);
