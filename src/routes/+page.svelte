@@ -500,34 +500,46 @@
     const getYear = (fellingDate) => {
         if (!fellingDate) return null;
 
-        if (typeof fellingDate === "string") {
-            const match = fellingDate.match(/\d{4}/);
-            return match ? parseInt(match[0]) : null;
-        }
-
-        if (typeof fellingDate === "number") {
+        if (typeof fellingDate === 'number') {
             return fellingDate;
         }
 
+        if (typeof fellingDate === 'string') {
+            // Try to find a year inside parentheses first
+            const parenMatch = fellingDate.match(/\((\d{4})\)/);
+            if (parenMatch) {
+                return parseInt(parenMatch[1], 10);
+            }
+
+            // If no parentheses, check if it is a range "1500-1550"
+            if (fellingDate.includes('-')) {
+                const yearStr = fellingDate.split('-')[0].trim();
+                const year = parseInt(yearStr, 10);
+                return isNaN(year) ? null : year;
+            }
+
+            // Otherwise try parsing the whole string as year (e.g. "1500")
+            const year = parseInt(fellingDate.trim(), 10);
+            return isNaN(year) ? null : year;
+        }
+
+        // Fallback
         return null;
     };
+
 
     const filterDataOnTimeline = () => {
         timelineDataSelection = [];
 
         if (selectionPath[0] == null && selectedOption === 'All') {
-            // For each top-level group (like "artworks")
             activeDataSets.forEach(purpose => {
                 if (!Array.isArray(purpose.data)) return;
 
-                // Build filtered groups array
                 const filteredGroups = [];
 
-                // For each subgroup (like "halfModels", "sculptures")
                 purpose.data.forEach(group => {
                     if (!Array.isArray(group.data)) return;
 
-                    // Filter the deepest items by year
                     const matchingItems = group.data.filter(item => getYear(item.fellingDate) === currentYearTimeline);
 
                     if (matchingItems.length > 0) {
@@ -546,7 +558,6 @@
                 }
             });
         } else {
-            // Not 'All' selection, simpler structure — top level with direct array of items (no groups)
             activeDataSets.forEach(dataSet => {
                 if (!Array.isArray(dataSet.data)) return;
 
@@ -561,6 +572,7 @@
             });
         }
     };
+
 
     onMount(async () => {
         await import('bootstrap/dist/js/bootstrap.bundle.min.js');

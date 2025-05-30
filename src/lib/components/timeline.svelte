@@ -86,6 +86,7 @@
     let maxYear;
     let svg;
     let filledData;
+    let frequencyLimit;
 
     // timeline variables
     let timelineLine;
@@ -329,18 +330,17 @@
     const highlightBar = (hoveredYear) => {
         svg.selectAll(".bar")
             .attr("class", d => {
-                if (d.fellingDate == hoveredYear && d.fellingDate == currentYearTimeline) {
-                    return "bar active hover";
-                } else if (d.fellingDate == hoveredYear) {
-                    return "bar hover";
-                } else if (d.fellingDate == currentYearTimeline) {
-                    return "bar active";
-                } else {
-                    return "bar";
-                }
+                let baseClass = "bar";
+
+                if (d.fellingDate == currentYearTimeline) baseClass += " active";
+                if (d.fellingDate == hoveredYear) baseClass += " hover";
+                if (d.frequency > frequencyLimit) baseClass += " outlier";
+
+                return baseClass;
             })
             .transition().duration(50);
     }
+
 
     // Function to draw the bar chart
     const drawBarchart = (data) => {
@@ -363,12 +363,18 @@
         const fellingDateTicks = 25;
 
         const allFrequencies = data.map(d => d.frequency);
+        frequencyLimit = 14;
         let maxFrequency = d3.max(allFrequencies);
+        const yMax = maxFrequency > frequencyLimit ? frequencyLimit : Math.max(maxFrequency, 1);
+
         let ticksAmount = 5;
 
-        if(maxFrequency < ticksAmount) {
-            ticksAmount = maxFrequency;
+        if (yMax < ticksAmount) {
+            ticksAmount = yMax;
         }
+
+        console.log("ticksamount", ticksAmount);
+        console.log("ymax", yMax);
 
         if(minYear === undefined || maxYear === undefined) {
             const allYears = data.map(d => +d.fellingDate).filter(y => !isNaN(y));
@@ -395,8 +401,12 @@
 
         // Y scale: Frequency values (based on the count)
         const y = d3.scaleLinear()
-            .domain([0, d3.max(filledData, (d) => d.frequency)])
+            .domain([0, yMax])
             .range([height - marginBottom, marginTop]);
+
+        // const yFull = d3.scaleLinear()
+        //     .domain([0, maxFrequency])
+        //     .range([height - marginBottom, marginTop]);
 
         if (!svg) {
             svg = d3.select(chartContainer)
@@ -418,7 +428,7 @@
             svg.append("g")
                 .attr("class", "y-axis")
                 .attr("transform", `translate(${marginLeft},0)`)
-                .call(d3.axisLeft(y).ticks(maxFrequency).tickFormat(d3.format("~s"))) 
+                .call(d3.axisLeft(y).ticks(ticksAmount).tickFormat(d3.format("~s")))
                 .call(g => g.select(".domain").remove())
                 .call(g => g.append("text")
                     .attr("x", -marginLeft)
@@ -452,40 +462,66 @@
         const bars = svg.selectAll(".bar")
             .data(filledData, d => d.fellingDate); 
 
-        // Exit
+        // EXIT
         bars.exit()
             .transition().duration(500)
             .attr("y", y(0))
             .attr("height", 0)
             .remove();
 
-        // Update
+        // UPDATE
         bars.transition().duration(500)
             .attr("x", d => x(d.fellingDate))
-            .attr("y", d => y(d.frequency))
-            .attr("height", d => y(0) - y(d.frequency))
-            .attr("width", x.bandwidth());
+            .attr("y", d => y(Math.min(d.frequency, frequencyLimit)))
+            .attr("height", d => y(0) - y(Math.min(d.frequency, frequencyLimit)))
+            .attr("width", x.bandwidth())
+            .attr("fill", d => d.frequency > frequencyLimit ? "red" : "rgba(0, 0, 0, 0.65)")
+            .attr("class", d => {
+                const base = d.fellingDate == currentYearTimeline ? "bar active" : "bar";
+                return d.frequency > frequencyLimit ? base + " outlier" : base;
+            });
 
-        // Enter - Add bars for each fellingDate (if not there already)
+        // ENTER
         bars.enter()
             .append("rect")
-            .attr("class", d => d.fellingData == currentYearTimeline ? "bar active" : "bar")
+            .attr("class", d => {
+                const base = d.fellingDate == currentYearTimeline ? "bar active" : "bar";
+                return d.frequency > frequencyLimit ? base + " outlier" : base;
+            })
+            .attr("fill", d => d.frequency > frequencyLimit ? "red" : "rgba(0, 0, 0, 0.65)")
             .attr("filter", "url(#glassmorphism)")
             .attr("x", d => x(d.fellingDate))
             .attr("y", y(0))
             .attr("width", x.bandwidth())
             .attr("height", 0)
             .transition().duration(500)
-            .attr("y", d => y(d.frequency))
-            .attr("height", d => y(0) - y(d.frequency));
-        
-        // bars.on("mouseover", (event, d, nodes) => {
-        //     d3.select(nodes[0]).attr("fill", "blue");
-        // })
-        // .on("mouseout", (event, d, nodes) => {
-        //     d3.select(nodes[0]).attr("fill", "rgba(0, 0, 0, 0.65)");
-        // });
+            .attr("y", d => y(Math.min(d.frequency, frequencyLimit)))
+            .attr("height", d => y(0) - y(Math.min(d.frequency, frequencyLimit)));
 
+
+        // Bind data only for outliers
+        const barLabels = svg.selectAll(".bar-label")
+            .data(filledData.filter(d => d.frequency > frequencyLimit), d => d.fellingDate);
+
+        // EXIT: remove labels no longer needed
+        barLabels.exit().remove();
+
+        // UPDATE: update existing labels
+        barLabels
+            .attr("x", d => x(d.fellingDate) + x.bandwidth() / 2)
+            .attr("y", d => y(frequencyLimit) - 5)
+            .text(d => d.frequency);
+
+        // ENTER: add new labels
+        barLabels.enter()
+            .append("text")
+            .attr("class", "bar-label")
+            .attr("x", d => x(d.fellingDate) + x.bandwidth() / 2)
+            .attr("y", d => y(frequencyLimit) - 5)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "10px")
+            .attr("fill", "rgb(163, 11, 11)")
+            .text(d => d.frequency);
 
         svg.append("defs")
             .append("filter")
@@ -500,8 +536,9 @@
                 <feBlend in="SourceGraphic" in2="blurry" mode="normal"/>
             `);
 
+            let fullYAxisActive = false;
         // Add overlay for click detection
-       svg.append("rect")
+        svg.append("rect")
             .attr("class", "click-overlay")
             .attr("x", marginLeft)
             .attr("y", 0)
@@ -529,26 +566,62 @@
 
                 currentYearTimeline = closest;
                 timelineIndex = filledData.findIndex(d => d.fellingDate == closest);
+                if(filledData.find(d => d.fellingDate == closest).frequency > frequencyLimit) {
+                    y.domain([0, maxFrequency]);
+
+                    svg.select(".y-axis")
+                        .transition()
+                        .duration(300)
+                        .call(d3.axisLeft(y).ticks(ticksAmount).tickFormat(d3.format("~s")));
+
+                    // Update bars to full scale
+                    svg.selectAll(".bar")
+                        .transition()
+                        .duration(300)
+                        .attr("y", d => y(d.frequency))
+                        .attr("height", d => y(0) - y(d.frequency));
+                    
+                    fullYAxisActive = true;    
+                } else {
+                    fullYAxisActive = false;
+
+                    y.domain([0, yMax]);
+
+                    svg.select(".y-axis")
+                        .transition()
+                        .duration(300)
+                        .call(d3.axisLeft(y).ticks(ticksAmount).tickFormat(d3.format("~s")));
+                    
+                    // Update bars to limited scale
+                    svg.selectAll(".bar")
+                        .transition()
+                        .duration(300)
+                        .attr("y", d => y(Math.min(d.frequency, frequencyLimit)))
+                        .attr("height", d => y(0) - y(Math.min(d.frequency, frequencyLimit)));
+                }
             })
             .on("mousemove", (event) => {
                 const [mouseX] = d3.pointer(event);
                 const years = x.domain();
                 const closest = years.reduce((a, b) => {
-                const aDist = Math.abs(x(a) + x.bandwidth() / 2 - mouseX);
-                const bDist = Math.abs(x(b) + x.bandwidth() / 2 - mouseX);
-                return aDist < bDist ? a : b;
+                    const aDist = Math.abs(x(a) + x.bandwidth() / 2 - mouseX);
+                    const bDist = Math.abs(x(b) + x.bandwidth() / 2 - mouseX);
+                    return aDist < bDist ? a : b;
                 });
 
-                // Show or update tooltip with the year 'closest'
+                const d = filledData.find(d => d.fellingDate === closest);
+
+                // TODO: not working, fix later
+                // y.domain([0, maxFrequency]);
+
                 showTooltip(event, closest);
-
-                // Highlight the corresponding bar
                 highlightBar(closest);
-
             })
-            .on("mouseout", () => {
+            .on("mouseout", () => {	
                 hideTooltip();
+                highlightBar(null);
             });
+
 
 
         // Append the SVG to the DOM (to the element with id 'timeline-container')

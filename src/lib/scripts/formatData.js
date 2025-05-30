@@ -34,21 +34,26 @@ export const formatData = (data, isHalfModel = false) => {
 
 export const formatDataBatavia = (data) => {
   return data.map(item => {
+    const originalFelling = item['Interpret./ felling'] || '';
+
+    // Match the first 4-digit year and insert (1628) after it
+    const fellingDate = originalFelling.replace(/(\b\d{4}\b)/, '$1 (1628)');
+
     return {
       keyCode: item.Dendrocode,
       location: "Amsterdam, Batavia shipwreck",
       length: item.N,
       startYear: item['start yr.'],
       endYear: item['end yr.'],
-      fellingDate: item['Interpret./ felling'],
+      fellingDate: fellingDate,
       provenance: item.Provenance,
       pith: item.pith,
       SW: item.SW,
       bark: item['bark?'],
       extraEnd: item['extra end'],
-    }
-  })
-}
+    };
+  });
+};
 
 export const formatDataSjoerd = (data) => {
   return data.map(item => {
@@ -95,8 +100,14 @@ export const getFellingDates = (dataSet, name) => {
     earliestYears = rawFellingDates
       .map(data => {
         if (typeof data === "string") {
-          // Match 4-digit year in the string
-          const match = data.match(/\b\d{4}\b/);
+          // First try to find a year in parentheses (e.g., (1628))
+          let match = data.match(/\((\d{4})\)/);
+          if (match) {
+            return parseInt(match[1], 10);
+          }
+
+          // Fallback: first 4-digit number outside parentheses
+          match = data.match(/\b\d{4}\b/);
           return match ? parseInt(match[0], 10) : null;
         }
         return null;

@@ -27,6 +27,10 @@
                 &.active {
                     fill: whitesmoke;
                 }
+
+                &.outlier {
+                    fill:rgb(163, 11, 11) !important;
+                }
             }
 
             #tooltip {
