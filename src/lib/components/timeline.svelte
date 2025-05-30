@@ -611,6 +611,9 @@
 
                 const d = filledData.find(d => d.fellingDate === closest);
 
+                // TODO: not working, fix later
+                // y.domain([0, maxFrequency]);
+
                 showTooltip(event, closest);
                 highlightBar(closest);
             })

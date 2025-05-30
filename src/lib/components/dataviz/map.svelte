@@ -493,8 +493,21 @@
 
         // If it's a string (e.g., "1500-1550" or "1500"), extract first part
         if (typeof fellingDate === 'string') {
-            const yearStr = fellingDate.split('-')[0].trim();
-            const year = parseInt(yearStr, 10);
+            // Try to find a year inside parentheses first
+            const parenMatch = fellingDate.match(/\((\d{4})\)/);
+            if (parenMatch) {
+                return parseInt(parenMatch[1], 10);
+            }
+
+            // If no parentheses, check if it is a range "1500-1550"
+            if (fellingDate.includes('-')) {
+                const yearStr = fellingDate.split('-')[0].trim();
+                const year = parseInt(yearStr, 10);
+                return isNaN(year) ? null : year;
+            }
+
+            // Otherwise try parsing the whole string as year (e.g. "1500")
+            const year = parseInt(fellingDate.trim(), 10);
             return isNaN(year) ? null : year;
         }
 
@@ -632,6 +645,7 @@
         setProvenaceOpacity();
 
         if (Array.isArray(timelineDataSelection)) {
+            console.log("Drawing timeline data selection", timelineDataSelection);
             timelineDataSelection.forEach(firstLevel => {
                 const objectType = firstLevel.name || "unknown";
 
