@@ -209,7 +209,7 @@
         if(timelineClicked || zeroState) {
             finalOpacity = 1;
         } else if (!timelineClicked) {
-            finalOpacity = 0.1;
+            finalOpacity = 0;
         }
 
         const opacityStep = (initialOpacity - finalOpacity) / coords.length;
@@ -770,6 +770,16 @@
     $: if(timelineRunning || !timelineRunning) { 
         setProvenaceOpacity();
     }
+
+    let previousTimelineRunning = timelineRunning;
+
+    $: if (timelineRunning && !previousTimelineRunning) {
+        cancelAnimatingTradeRoutes();
+    }
+
+    // Update the previous value **after** the reactive block
+    $: previousTimelineRunning = timelineRunning;
+
 </script>  
     
 <style>

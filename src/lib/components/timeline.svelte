@@ -609,6 +609,7 @@
     $: if (activeDataSets && chartContainer) {
         fellingDateFrequency = getFellingDateFrequency(activeDataSets);
         drawBarchart(fellingDateFrequency);
+        timelineRunning = false;
     }
 
     $: if(timelineClicked) {
