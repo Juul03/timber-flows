@@ -62,10 +62,16 @@
 
 <footer class="bg-blur py-3">
   <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-8">
+    <div class="row justify-content-between">
+        <div class="col-7">
             <h2 class="text-primary">About</h2>
-            <p class="text-primary">Explore the dataset of Woods for Goods project in an interactive datavisualisation.</p>
+            <p class="text-primary">
+                Explore the dataset of Woods for Goods project in an interactive datavisualisation.
+                You can filter the data by wood purpose, type and subtype.
+                The map shows the locations of the datapoints, and the timeline shows the felling dates of the wood.
+                Hover over the paths to see more information about the datapoints.
+                This tool helps you gain insights into the movement and use of wood in the Low Countries from the 16th to the 18th century.
+            </p>
         </div>
         <div class="col-4">
             <h2 class="text-primary">Links</h2>
@@ -102,8 +108,8 @@
                 </li>
             </ul>
         </div>
-        <div class="col-8">
-            <p class="small m-0 text-center">
+        <div class="col-12 d-flex justify-content-center">
+            <p class="w-75 small m-0 text-center">
                 This website was created by Julia Hoek, February till June 2025. In collaboration with Marta Domínguez-Delmás.
                 For technical issues, email
                 <a href="mailto:juliahoek16@gmail.com">juliahoek16@gmail.com</a>.
@@ -114,7 +120,6 @@
     </div>
   </div>
 </footer>
-
 
 <script>
     import '../assets/styles/app.scss';

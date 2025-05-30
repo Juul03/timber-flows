@@ -116,3 +116,13 @@ p {
 body {
     overflow-x:hidden;
 }
+
+footer {
+    a {
+        transition:.6s;
+    }
+    a:hover {
+        text-decoration:underline;
+        font-weight:bold;
+    }
+}
