@@ -504,7 +504,7 @@
         barLabels.enter()
             .append("text")
             .attr("class", "bar-label")
-            .attr("x", d => x(d.fellingDate) + x.bandwidth() / 2)
+            .attr("x", d => x(d.fellingDate) - 12 + x.bandwidth() / 2)
             .attr("y", d => y(frequencyLimit) - 5)
             .attr("text-anchor", "middle")
             .attr("font-size", "10px")
