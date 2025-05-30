@@ -363,6 +363,11 @@
 
         const allFrequencies = data.map(d => d.frequency);
         let maxFrequency = d3.max(allFrequencies);
+        let ticksAmount = 5;
+        
+        if(maxFrequency < ticksAmount) {
+            ticksAmount = maxFrequency;
+        }
 
         if(minYear === undefined || maxYear === undefined) {
             const allYears = data.map(d => +d.fellingDate).filter(y => !isNaN(y));
@@ -439,7 +444,7 @@
         // update y-axis
         const yAxis = svg.select(".y-axis")
             .transition()
-            .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format("~s"))) 
+            .call(d3.axisLeft(y).ticks(ticksAmount).tickFormat(d3.format("~s"))) 
 
 
         // Update bars
