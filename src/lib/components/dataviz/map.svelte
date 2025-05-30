@@ -639,6 +639,9 @@
 
     const drawTimelineYearData = () => {
         clearTradeRoutesFromMap();
+        if(animationSpeed === animationSpeedSlow) {
+            cancelAnimatingTradeRoutes();
+        }
 
         routeDrawCounts = {};
 
@@ -755,9 +758,12 @@
         }
     }
 
-
     $: if (timelineDataSelection != undefined && leafletReady && map) {
         animationSpeed = animationSpeedFast;
+
+        if(timelineClicked) {
+            animationSpeed = animationSpeedSlow;
+        }
         drawTimelineYearData();
     }
 

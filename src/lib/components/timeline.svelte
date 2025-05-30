@@ -375,9 +375,6 @@
             ticksAmount = yMax;
         }
 
-        console.log("ticksamount", ticksAmount);
-        console.log("ymax", yMax);
-
         if(minYear === undefined || maxYear === undefined) {
             const allYears = data.map(d => +d.fellingDate).filter(y => !isNaN(y));
             const minAllYears = d3.min(allYears);
@@ -400,10 +397,9 @@
             .range([marginLeft, containerWidth - marginRight])
             .padding(0);
 
-
         // Y scale: Frequency values (based on the count)
         const y = d3.scaleLinear()
-            .domain([0, frequencyLimit])
+            .domain([0, yMax])
             .range([height - marginBottom, marginTop]);
 
         if (!svg) {
@@ -528,7 +524,6 @@
                 <feBlend in="SourceGraphic" in2="blurry" mode="normal"/>
             `);
 
-            let fullYAxisActive = false;
         // Add overlay for click detection
         svg.append("rect")
             .attr("class", "click-overlay")
@@ -558,49 +553,32 @@
 
                 currentYearTimeline = closest;
                 timelineIndex = filledData.findIndex(d => d.fellingDate == closest);
-                if(filledData.find(d => d.fellingDate == closest).frequency > frequencyLimit) {
-                    y.domain([0, maxFrequency]);
+                const closestData = filledData.find(d => d.fellingDate == closest);
+                const isOutlier = closestData?.frequency > frequencyLimit;
+                const newYDomain = isOutlier ? [0, maxFrequency] : [0, yMax];
 
-                    svg.select(".y-axis")
-                        .transition()
-                        .duration(300)
-                        .call(d3.axisLeft(y).ticks(ticksAmount).tickFormat(d3.format("~s")));
+                y.domain(newYDomain);
 
-                    // Update bars to full scale
-                    svg.selectAll(".bar")
-                        .transition()
-                        .duration(300)
-                        .attr("y", d => y(d.frequency))
-                        .attr("height", d => y(0) - y(d.frequency));
-                    
-                    barLabels.transition()
-                        .duration(300)
-                        .attr("fill", "rgb(0,0,0,0");
+                // Update y-axis
+                svg.select(".y-axis")
+                    .transition()
+                    .duration(300)
+                    .call(d3.axisLeft(y).ticks(ticksAmount).tickFormat(d3.format("~s")));
 
-                    fullYAxisActive = true;
-                } else {
-                    fullYAxisActive = false;
+                // Update bars
+                svg.selectAll(".bar")
+                    .transition()
+                    .duration(300)
+                    .attr("y", d => y(d.frequency))
+                    .attr("height", d => y(0) - y(d.frequency));
 
-                    y.domain([0, yMax]);
+                // Fade out/in labels depending on outlier state
+                barLabels.transition()
+                    .duration(300)
+                    .style("opacity", isOutlier ? 0 : 1);
 
-                    svg.select(".y-axis")
-                        .transition()
-                        .duration(300)
-                        .call(d3.axisLeft(y).ticks(ticksAmount).tickFormat(d3.format("~s")));
-                    
-                    // Update bars to limited scale
-                    svg.selectAll(".bar")
-                        .transition()
-                        .duration(300)
-                        .attr("y", d => y(d.frequency)) // actual top of bar
-                        .attr("height", d => y(0) - y(d.frequency)) 
-                        // .attr("y", d => y(Math.min(d.frequency, frequencyLimit)))
-                        // .attr("height", d => y(0) - y(Math.min(d.frequency, frequencyLimit)));
+                fullYAxisActive = isOutlier;
 
-                    barLabels.transition()
-                        .duration(300)
-                        .attr("fill", "rgb(0,0,0,1");
-                }
             })
             .on("mousemove", (event) => {
                 const [mouseX] = d3.pointer(event);
