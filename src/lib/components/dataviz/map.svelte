@@ -364,10 +364,21 @@
 
                     let location = routeData.location;
                     const categoryPath = getCategoryPathCombined(filtersObject, routeData, keywordMap);
+                    let fellingDate = routeData.fellingDate;
+                    let startYear = routeData.startYear;
 
-                    tooltipRouteContent.fellingDate = routeData.fellingDate;
+                    console.log("routedata", routeData)
+                    if(routeData.sapwood === 0 || routeData.fellingDate?.toString().length === 4) {
+                        fellingDate = `After ${routeData.fellingDate}`;
+                    }
+
+                    if(routeData.startYear === undefined) {
+                        startYear = routeData.endYear - routeData.length + 1;
+                    }
+
+                    tooltipRouteContent.fellingDate = fellingDate;
                     tooltipRouteContent.location = routeData.location;
-                    tooltipRouteContent.startYear = routeData.startYear;
+                    tooltipRouteContent.startYear = startYear;
                     tooltipRouteContent.endYear = routeData.endYear;
                     tooltipRouteContent.length = routeData.length;
                     tooltipRouteContent.TBP = routeData.TBP;
