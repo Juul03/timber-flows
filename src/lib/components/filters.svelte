@@ -173,7 +173,7 @@
     </div>
     {#if fullscreenFilters}
         <div
-            class="offcanvas show custom-offcanvas bg-blur rounded border-0 p-4"
+            class="offcanvas show custom-offcanvas {selectedMapType == 'dark' ? 'bg-dark' : 'bg-blur'} rounded border-0 p-4"
             tabindex="-1"
             id="offcanvasFullscreenFilters"
             aria-labelledby="offcanvasFullscreenFiltersLabel"
