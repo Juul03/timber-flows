@@ -9,7 +9,7 @@ export const subtypeMap = {
     Buildings: "constructions",
     "Churches in Buildings": "constructions",
     "Houses in Buildings": "constructions",
-    "Deck beams in Buildings": "constructions",
+    "Superimposed tiebeam in Buildings": "constructions",
     "Truss legs in Buildings": "constructions",
     "Corbels in Buildings": "constructions",
     Shipwrecks: "constructions",

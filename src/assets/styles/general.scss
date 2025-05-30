@@ -7,6 +7,17 @@
     height:1rem;
 }
 
+.svg-primary {
+    fill: #6f3903;
+}
+
+.btn-link {
+    text-decoration: none;
+    .svg-icon-small {
+        fill: #6f3903;
+    }
+}
+
 .svg-icon-small {
     width:.8rem;
     height:.8rem;
@@ -95,5 +106,23 @@ p {
         &::placeholder {
             color: lightgrey;
         }
+    }
+}
+
+.h-90 {
+    height: 90% !important;
+}
+
+body {
+    overflow-x:hidden;
+}
+
+footer {
+    a {
+        transition:.6s;
+    }
+    a:hover {
+        text-decoration:underline;
+        font-weight:bold;
     }
 }
