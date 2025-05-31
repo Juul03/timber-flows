@@ -10,8 +10,36 @@
         {tooltipPosition}
     />
 {/if}
+{#if popup && showPopupAgain}
+    <div class="popup-container col-3 position-absolute top-50 start-50 translate-middle z-3 bg-white rounded p-3">
+        <div class="row popup-content">
+            <div class="col-12">
+                <h3 class="center">{popupContent.title}</h3>
+                <p>{popupContent.description}</p>
+                <button 
+                    class="btn btn-primary d-inine-flex" 
+                    on:click={() => popup = false}
+                >
+                    Got it! Close
+                </button>
+                <button 
+                    class="btn btn-link d-inine-flex" 
+                    on:click={() => {
+                        popup = false
+                        showPopupAgain = false;
+                        }}
+                >
+                    Don't show again
+                </button>
+            </div>
+        </div>
+    </div>
+{/if}
 
 <script>
+    // import { PUBLIC_ARCGIS_API_KEY } from '$env/static/public';
+    export let arcgisApiKey;
+
     import { onMount, onDestroy } from 'svelte';
     import { browser } from '$app/environment';
     import { lineString } from '@turf/helpers';
@@ -42,6 +70,7 @@
     export let selectedLocations = [];
     export let previousSelectedLocations = [];
     export let selectionPath;
+    export let selectedMapLayers = [];
 
     // Compontent variables
     let previousActiveDataSets = null;
@@ -53,11 +82,18 @@
 
     let leafletReady = false;
     let leaflet;
+    let esri;
     
     let mapContainer;
     let map;
     let currentTileLayer;
     let markersActive = false;
+    let cityMarkers = [];
+    let waterwaysLayer = null;
+
+    let popup = false;
+    let showPopupAgain = true;
+    let popupContent = { title: '', description: '' };
 
     const provenanceEllipseMap = new Map();
     const locationEllipseMap = new Map();
@@ -89,14 +125,27 @@
 
         },
         {
-            value: 'dark',
-            mapLink: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        },
-        {
             value: 'rivers',
             mapLink: 'https://tiles.stadiamaps.com/tiles/outdoors/{z}/{x}/{y}{r}.png',
             attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</a>'
+        },
+        {
+            value: 'arcgis_topo',
+            mapLink: 'Topographic', // Esri basemap ID
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, USGS, NOAA',
+            isEsri: true
+        },
+        {
+            value: 'gray_light',
+            mapLink: 'Gray',
+            attribution: 'Tiles &copy; Esri &mdash; Esri Dark Gray Basemap',
+            isEsri: true
+        },
+        {
+            value: 'gray_dark',
+            mapLink: 'DarkGray',
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, USGS, NOAA',
+            isEsri: true
         },
 
     ];
@@ -124,10 +173,12 @@
         const customIcon = createCustomIcon(leaflet);
 
         tradeCities.forEach(city => {
-            let marker = leaflet.marker(city.coordinates, { icon: customIcon }).addTo(map);
-            marker.bindPopup(city.name).openPopup();
+            const marker = leaflet.marker(city.coordinates, { icon: customIcon }).addTo(map);
+            marker.bindPopup(city.name);
+            cityMarkers.push(marker);
         });
     };
+
 
     const addProvenancesToMap = (leaflet, provenances, map) => {
         provenances.forEach(provenance => {
@@ -591,6 +642,7 @@
             leaflet = await import('leaflet');
             leafletReady = true;
             await import('leaflet-ellipse');
+            esri = await import('esri-leaflet');
 
             map = leaflet.map(mapContainer).setView([54.6128, 12.216797], 5);
             if (map) {
@@ -709,31 +761,82 @@
     };
 
     let updateCurrentMap = (mapType) => {
+        console.log("selected maptype", mapType);
         const selected = mapTypes.find(m => m.value === mapType);
 
-        if (!selected || !selected.mapLink) {
-            return;
-        }
+        if (!esri) return;
+        if (!selected) return;
 
-        // Remove current map class
-        mapTypes.forEach(m => {
-            mapContainer.classList.remove(`map-${m.value}`);
-        });
-
-        // Add the new map type class
+        // Remove old class
+        mapTypes.forEach(m => mapContainer.classList.remove(`map-${m.value}`));
         mapContainer.classList.add(`map-${mapType}`);
 
-        // Remove the old tile layer if it exists
+        // Remove old tile layer if exists
         if (currentTileLayer) {
             map.removeLayer(currentTileLayer);
         }
 
-        // Create and add the new tile layer
-        currentTileLayer = leaflet.tileLayer(selected.mapLink, {
-            attribution: selected.attribution
-        }).addTo(map);
+        // Remove existing tile layer
+        if (currentTileLayer) {
+            map.removeLayer(currentTileLayer);
+        }
 
-    }
+        // Add Esri or standard Leaflet tile layer
+        if (selected.isEsri) {
+            currentTileLayer = esri.basemapLayer(selected.mapLink, {
+                apikey: arcgisApiKey
+            }).addTo(map);
+        } else {
+            currentTileLayer = leaflet.tileLayer(selected.mapLink, {
+                attribution: selected.attribution
+            }).addTo(map);
+        }
+    };
+    let loadingPopup = null;
+
+    // Maplayers
+    const updateMapLayer = () => {
+        // Toggle rivers
+        if (selectedMapLayers.includes('rivers')) {
+            if (!waterwaysLayer) {
+            popup = true;
+            popupContent = {
+                title: 'Loading waterways layer',
+                description: 'This layer is pretty big. It will take a while before anything is showing up. Please be patient.'
+            };
+
+
+            waterwaysLayer = esri.featureLayer({
+                url: 'https://services-eu1.arcgis.com/zci5bUiJ8olAal7N/arcgis/rest/services/OpenStreetMap_Waterways_for_Europe/FeatureServer/0',
+                simplifyFactor: 0.5,
+                precision: 5,
+                style: () => ({
+                color: '#3399cc',
+                weight: 1.2
+                })
+            }).addTo(map);
+            }
+        } else {
+            if (waterwaysLayer && map.hasLayer(waterwaysLayer)) {
+            map.removeLayer(waterwaysLayer);
+            waterwaysLayer = null;
+            }
+        }
+
+        // Toggle markers for trade cities
+        if (selectedMapLayers.includes('cities')) {
+            addMarkersToMap(leaflet, tradeCitiesCoords, map);
+        } else {
+            cityMarkers.forEach(marker => {
+                if (map.hasLayer(marker)) {
+                    map.removeLayer(marker);
+                }
+            });
+            cityMarkers = [];
+            
+        }
+    };
+
 
     // Utility function for deep comparison
     const deepEqual = (a, b) => {
@@ -790,6 +893,11 @@
 
     // Update the previous value **after** the reactive block
     $: previousTimelineRunning = timelineRunning;
+
+    $: if(selectedMapLayers) {
+        console.log("Selected map layers changed:", selectedMapLayers);
+        updateMapLayer();
+    }
 
 </script>  
     

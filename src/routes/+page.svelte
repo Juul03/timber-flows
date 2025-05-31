@@ -12,6 +12,8 @@
             {selectionPath}
             {selectedLocations}
             {previousSelectedLocations}
+            {selectedMapLayers}
+            arcgisApiKey={data.arcgisApiKey}
             bind:zeroState
         />
         <div class="container position-relative z-3">
@@ -29,6 +31,7 @@
                     bind:selectedOption
                     bind:selectedMapType
                     bind:selectedLocations
+                    bind:selectedMapLayers
                 />
                 <div class="row justify-content-end">
                     <div class="col-9">
@@ -123,6 +126,7 @@
 
 <script>
     import '../assets/styles/app.scss';
+    export let data;
 
     import { onMount } from 'svelte';
 
@@ -158,6 +162,7 @@
     export let previousSelectedLocations = [];
 
     export let selectedMapType = 'area';
+    export let selectedMapLayers = [];
 
     // Dynamic retrieved from timeline
     let currentYearTimeline;

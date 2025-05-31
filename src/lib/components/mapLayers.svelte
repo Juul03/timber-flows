@@ -52,6 +52,13 @@
                                 name="maplayers"
                                 id={type.name}
                                 value={type.value}
+                                on:click={() => {
+                                    if (selectedMapLayers.includes(type.value)) {
+                                        selectedMapLayers = selectedMapLayers.filter(layer => layer !== type.value);
+                                    } else {
+                                        selectedMapLayers = [...selectedMapLayers, type.value];
+                                    }
+                                }}
                             />
                             <label class="form-check-label w-100" for={type.name}>
                                 {type.name}
@@ -67,17 +74,26 @@
 <script>
     // Exported var
     export let selectedMapType = 'area';
+    export let selectedMapLayers = [];
 
 	let dropdownOpen = false;
 
     let mapTypes = [
         {
-            name:'Area map',
+            name: 'Basemap gray light',
+            value: 'gray_light'
+        },
+        {
+            name: 'Basemap gray dark',
+            value: 'gray_dark'
+        },
+        {
+            name:'Area map (no borders)',
             value: 'area'
         },
         {
-            name: 'Basemap (dark)',
-            value: 'dark'
+            name: 'Topographic',
+            value: 'arcgis_topo',
         }
     ];
 

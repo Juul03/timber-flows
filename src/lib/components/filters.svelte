@@ -169,6 +169,7 @@
     <div class="position-absolute bottom-0 mb-2">
         <MapLayers
             bind:selectedMapType
+            bind:selectedMapLayers
         />
     </div>
     {#if fullscreenFilters}
@@ -298,6 +299,7 @@
     // export var from this component to parent
     export let selectionPath = [];
     export let selectedOption = 'All';
+    export let selectedMapLayers = [];
 
     // export from searchbar
     export let searchTerm = '';
