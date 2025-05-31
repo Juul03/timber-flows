@@ -10,6 +10,22 @@
         {tooltipPosition}
     />
 {/if}
+{#if popup}
+    <div class="popup-container col-3 position-absolute top-50 start-50 translate-middle z-3 bg-white rounded p-3">
+        <div class="row popup-content">
+            <div class="col-12">
+                <h3 class="center">{popupContent.title}</h3>
+                <p>{popupContent.description}</p>
+                <button 
+                    class="btn btn-primary d-inine-flex" 
+                    on:click={() => popup = false}
+                >
+                    Got it! Close
+                </button>
+            </div>
+        </div>
+    </div>
+{/if}
 
 <script>
     import { PUBLIC_ARCGIS_API_KEY } from '$env/static/public';
@@ -64,6 +80,9 @@
     let markersActive = false;
     let cityMarkers = [];
     let waterwaysLayer = null;
+
+    let popup = false;
+    let popupContent = { title: '', description: '' };
 
     const provenanceEllipseMap = new Map();
     const locationEllipseMap = new Map();
@@ -762,12 +781,20 @@
             }).addTo(map);
         }
     };
+    let loadingPopup = null;
 
     // Maplayers
     const updateMapLayer = () => {
         // Toggle rivers
         if (selectedMapLayers.includes('rivers')) {
             if (!waterwaysLayer) {
+            popup = true;
+            popupContent = {
+                title: 'Loading waterways layer',
+                description: 'This layer is pretty big. It will take a while before anything is showing up. Please be patient.'
+            };
+
+
             waterwaysLayer = esri.featureLayer({
                 url: 'https://services-eu1.arcgis.com/zci5bUiJ8olAal7N/arcgis/rest/services/OpenStreetMap_Waterways_for_Europe/FeatureServer/0',
                 simplifyFactor: 0.5,

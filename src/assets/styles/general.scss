@@ -54,6 +54,12 @@
 
 .btn {
     border:none;
+
+    &.btn-primary:hover {
+        background-color:#b8722c;
+        color:black;
+
+    }
 }
 
 ::-webkit-scrollbar {
