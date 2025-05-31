@@ -7,7 +7,6 @@
         stroke: whitesmoke;
         stroke-opacity:.5;
         stroke-width: .5px;
-        // border: .5px solid whitesmoke;
         transition: opacity 0.5s ease, fill-opacity 0.5s ease;
     }
 
@@ -17,7 +16,8 @@
         }
     }
 
-    &.map-dark {
+    &.map-dark,
+    &.map-gray_dark {
         .provenanceEllipse {
             fill: whitesmoke;
             opacity: .5;

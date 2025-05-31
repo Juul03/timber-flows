@@ -72,12 +72,16 @@
 
     let mapTypes = [
         {
-            name:'Area map',
-            value: 'area'
+            name: 'Basemap gray light',
+            value: 'gray_light'
         },
         {
-            name: 'Basemap (dark)',
-            value: 'dark'
+            name: 'Basemap gray dark',
+            value: 'gray_dark'
+        },
+        {
+            name:'Area map (no borders)',
+            value: 'area'
         },
         {
             name: 'Topographic',
