@@ -44,6 +44,7 @@
     export let selectedLocations = [];
     export let previousSelectedLocations = [];
     export let selectionPath;
+    export let selectedMapLayers = [];
 
     // Compontent variables
     let previousActiveDataSets = null;
@@ -61,6 +62,8 @@
     let map;
     let currentTileLayer;
     let markersActive = false;
+    let cityMarkers = [];
+    let waterwaysLayer = null;
 
     const provenanceEllipseMap = new Map();
     const locationEllipseMap = new Map();
@@ -140,10 +143,12 @@
         const customIcon = createCustomIcon(leaflet);
 
         tradeCities.forEach(city => {
-            let marker = leaflet.marker(city.coordinates, { icon: customIcon }).addTo(map);
-            marker.bindPopup(city.name).openPopup();
+            const marker = leaflet.marker(city.coordinates, { icon: customIcon }).addTo(map);
+            marker.bindPopup(city.name);
+            cityMarkers.push(marker);
         });
     };
+
 
     const addProvenancesToMap = (leaflet, provenances, map) => {
         provenances.forEach(provenance => {
@@ -758,6 +763,43 @@
         }
     };
 
+    // Maplayers
+    const updateMapLayer = () => {
+        // Toggle rivers
+        if (selectedMapLayers.includes('rivers')) {
+            if (!waterwaysLayer) {
+            waterwaysLayer = esri.featureLayer({
+                url: 'https://services-eu1.arcgis.com/zci5bUiJ8olAal7N/arcgis/rest/services/OpenStreetMap_Waterways_for_Europe/FeatureServer/0',
+                simplifyFactor: 0.5,
+                precision: 5,
+                style: () => ({
+                color: '#3399cc',
+                weight: 1.2
+                })
+            }).addTo(map);
+            }
+        } else {
+            if (waterwaysLayer && map.hasLayer(waterwaysLayer)) {
+            map.removeLayer(waterwaysLayer);
+            waterwaysLayer = null;
+            }
+        }
+
+        // Toggle markers for trade cities
+        if (selectedMapLayers.includes('cities')) {
+            addMarkersToMap(leaflet, tradeCitiesCoords, map);
+        } else {
+            cityMarkers.forEach(marker => {
+                if (map.hasLayer(marker)) {
+                    map.removeLayer(marker);
+                }
+            });
+            cityMarkers = [];
+            
+        }
+    };
+
+
     // Utility function for deep comparison
     const deepEqual = (a, b) => {
         return JSON.stringify(a) === JSON.stringify(b);
@@ -813,6 +855,11 @@
 
     // Update the previous value **after** the reactive block
     $: previousTimelineRunning = timelineRunning;
+
+    $: if(selectedMapLayers) {
+        console.log("Selected map layers changed:", selectedMapLayers);
+        updateMapLayer();
+    }
 
 </script>  
     
