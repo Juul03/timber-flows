@@ -53,6 +53,7 @@
 
     let leafletReady = false;
     let leaflet;
+    let esri;
     
     let mapContainer;
     let map;
@@ -97,6 +98,18 @@
             value: 'rivers',
             mapLink: 'https://tiles.stadiamaps.com/tiles/outdoors/{z}/{x}/{y}{r}.png',
             attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</a>'
+        },
+        {
+            value: 'arcgis_topo',
+            mapLink: 'Topographic', // Esri basemap ID
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, USGS, NOAA',
+            isEsri: true
+        },
+        {
+            value: 'arcgis_dark',
+            mapLink: 'DarkGray',
+            attribution: 'Tiles &copy; Esri &mdash; Esri Dark Gray Basemap',
+            isEsri: true
         },
 
     ];
@@ -591,6 +604,7 @@
             leaflet = await import('leaflet');
             leafletReady = true;
             await import('leaflet-ellipse');
+            esri = await import('esri-leaflet');
 
             map = leaflet.map(mapContainer).setView([54.6128, 12.216797], 5);
             if (map) {
@@ -708,32 +722,67 @@
         animatingTradeRoutes = [];
     };
 
+    // let updateCurrentMap = (mapType) => {
+    //     // const selected = mapTypes.find(m => m.value === mapType);
+    //     const selected = 'arcgis_topo';
+
+    //     if (!selected || !selected.mapLink) {
+    //         return;
+    //     }
+
+    //     // Remove current map class
+    //     mapTypes.forEach(m => {
+    //         mapContainer.classList.remove(`map-${m.value}`);
+    //     });
+
+    //     // Add the new map type class
+    //     mapContainer.classList.add(`map-${mapType}`);
+
+    //     // Remove the old tile layer if it exists
+    //     if (currentTileLayer) {
+    //         map.removeLayer(currentTileLayer);
+    //     }
+
+    //     // Create and add the new tile layer
+    //     // currentTileLayer = leaflet.tileLayer(selected.mapLink, {
+    //     //     attribution: selected.attribution
+    //     // }).addTo(map);
+    //     currentTileLayer = esri.basemapLayer(selected.mapLink, {
+    //             apikey: 'AAPTxy8BH1VEsoebNVZXo8HurIA3XJs-52-_aEUkFwoGZ3A55XCnHHU8ALkJq_e9oXYZCFh6QjRO0yRl5aFVooEXCIbqkfGmYgiuj-fQPa3DtWQ0KszWWcDDsyj5razhHCQs1KdB5iR4QpwPVE-aNC3vgvCyvwZjTByrIHOmO1UCkJ8u9a0JUAJXvrqLSStPlBhyhijcCF9EwGwosU_FvR8waQj6-IoJ5RBrOpwcOEgS_PQ.AT1_N4YzJM2g'  // Replace with your key
+    //         }).addTo(map);
+
+    // }
     let updateCurrentMap = (mapType) => {
         const selected = mapTypes.find(m => m.value === mapType);
 
-        if (!selected || !selected.mapLink) {
-            return;
-        }
+        if (!esri) return;
+        if (!selected) return;
 
-        // Remove current map class
-        mapTypes.forEach(m => {
-            mapContainer.classList.remove(`map-${m.value}`);
-        });
-
-        // Add the new map type class
+        // Remove old class
+        mapTypes.forEach(m => mapContainer.classList.remove(`map-${m.value}`));
         mapContainer.classList.add(`map-${mapType}`);
 
-        // Remove the old tile layer if it exists
+        // Remove old tile layer if exists
         if (currentTileLayer) {
             map.removeLayer(currentTileLayer);
         }
 
-        // Create and add the new tile layer
-        currentTileLayer = leaflet.tileLayer(selected.mapLink, {
-            attribution: selected.attribution
-        }).addTo(map);
+        // Remove existing tile layer
+        if (currentTileLayer) {
+            map.removeLayer(currentTileLayer);
+        }
 
-    }
+        // Add Esri or standard Leaflet tile layer
+        if (selected.isEsri) {
+            currentTileLayer = esri.basemapLayer(selected.mapLink, {
+                apikey: 'API_key'
+            }).addTo(map);
+        } else {
+            currentTileLayer = leaflet.tileLayer(selected.mapLink, {
+                attribution: selected.attribution
+            }).addTo(map);
+        }
+    };
 
     // Utility function for deep comparison
     const deepEqual = (a, b) => {

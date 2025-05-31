@@ -78,6 +78,10 @@
         {
             name: 'Basemap (dark)',
             value: 'dark'
+        },
+        {
+            name: 'Topographic',
+            value: 'arcgis_topo',
         }
     ];
 
