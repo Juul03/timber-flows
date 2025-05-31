@@ -10,7 +10,7 @@
         {tooltipPosition}
     />
 {/if}
-{#if popup}
+{#if popup && showPopupAgain}
     <div class="popup-container col-3 position-absolute top-50 start-50 translate-middle z-3 bg-white rounded p-3">
         <div class="row popup-content">
             <div class="col-12">
@@ -21,6 +21,15 @@
                     on:click={() => popup = false}
                 >
                     Got it! Close
+                </button>
+                <button 
+                    class="btn btn-link d-inine-flex" 
+                    on:click={() => {
+                        popup = false
+                        showPopupAgain = false;
+                        }}
+                >
+                    Don't show again
                 </button>
             </div>
         </div>
@@ -82,6 +91,7 @@
     let waterwaysLayer = null;
 
     let popup = false;
+    let showPopupAgain = true;
     let popupContent = { title: '', description: '' };
 
     const provenanceEllipseMap = new Map();
