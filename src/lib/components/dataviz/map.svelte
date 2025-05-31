@@ -37,7 +37,8 @@
 {/if}
 
 <script>
-    import { PUBLIC_ARCGIS_API_KEY } from '$env/static/public';
+    // import { PUBLIC_ARCGIS_API_KEY } from '$env/static/public';
+    export let arcgisApiKey;
 
     import { onMount, onDestroy } from 'svelte';
     import { browser } from '$app/environment';
@@ -783,7 +784,7 @@
         // Add Esri or standard Leaflet tile layer
         if (selected.isEsri) {
             currentTileLayer = esri.basemapLayer(selected.mapLink, {
-                apikey: PUBLIC_ARCGIS_API_KEY
+                apikey: arcgisApiKey
             }).addTo(map);
         } else {
             currentTileLayer = leaflet.tileLayer(selected.mapLink, {

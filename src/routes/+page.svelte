@@ -13,6 +13,7 @@
             {selectedLocations}
             {previousSelectedLocations}
             {selectedMapLayers}
+            arcgisApiKey={data.arcgisApiKey}
             bind:zeroState
         />
         <div class="container position-relative z-3">
@@ -125,6 +126,7 @@
 
 <script>
     import '../assets/styles/app.scss';
+    export let data;
 
     import { onMount } from 'svelte';
 
