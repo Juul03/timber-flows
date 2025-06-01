@@ -418,7 +418,6 @@
                     let fellingDate = routeData.fellingDate;
                     let startYear = routeData.startYear;
 
-                    console.log("routedata", routeData)
                     if(routeData.sapwood === 0 || routeData.fellingDate?.toString().length === 4) {
                         fellingDate = `After ${routeData.fellingDate}`;
                     }
