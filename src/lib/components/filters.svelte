@@ -196,9 +196,17 @@
                 </div>
                 {#each filterCategories as category}
                     <div class="col h-90 rounded">
-                        <h4 class="position-sticky top-0 z-3 bg-blur pt-3 pb-2 px-3 mb-0 rounded-top" style={`color: ${colorScale(category.toLowerCase())} !important`}>
-                            {category}
-                        </h4>
+                        <div class="d-flex justify-content-between position-sticky top-0 z-3 bg-blur pt-3 pb-2 px-3 rounded-top">
+                            <h4 
+                                class="mb-0" 
+                                style={`color: ${colorScale(category.toLowerCase())} !important`}
+                                >
+                                {category}
+                            </h4>
+                            <span class="small text-light">
+                                {findDataPointsAmount(category)}
+                            </span>
+                        </div>
                         <div class="bg-blur rounded-bottom p-3 h-90 overflow-auto">
                             {#each getOptionsArray(filtersObject, [category]) as [option, children]}
                                 <div class="form-check ms-0">
@@ -215,6 +223,9 @@
                                         class="form-check-label d-flex justify-content-between w-100 {selectedOption === option ? 'fw-bold' : 'fw-normal'}"
                                         for={option}>
                                         {option}
+                                        <span class="small text-light">
+                                            {findDataPointsAmount(option)}
+                                        </span>
                                     </label>
                                 </div>
                                 {#if children && typeof children === 'object'}
@@ -234,6 +245,9 @@
                                                 for={subOption}
                                                 >
                                                 {subOption}
+                                                <span class="small text-light">
+                                                    {findDataPointsAmount(subOption)}
+                                                </span>
                                             </label>
                                         </div>
                                         {#if subChildren && typeof subChildren === 'object'}
@@ -253,6 +267,9 @@
                                                         for={subSubOption}
                                                     >
                                                         {subSubOption}
+                                                        <span class="small text-light">
+                                                            {findDataPointsAmount(subSubOption)}
+                                                        </span>
                                                     </label>
                                                 </div>
                                             {/each}
