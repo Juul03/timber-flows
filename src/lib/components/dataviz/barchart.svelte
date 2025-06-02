@@ -98,9 +98,9 @@
             .append("svg")
             .attr("width", width)
             .attr("height", height);
-
+            
         const x = d3.scaleBand()
-            .domain(data.map(d => d.provenance))
+            .domain(d3.groupSort(data, D => -d3.sum(D, d => d.constructions + d.artworks), d => d.provenance))
             .range([margin.left, width - margin.right])
             .padding(0.1);
 
