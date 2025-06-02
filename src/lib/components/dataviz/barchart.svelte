@@ -35,7 +35,17 @@
                             </div>
                         {/if}
                     </div>
-
+                </div>
+                <div class="col-12 d-flex justify-content-end">
+                    <!-- select sorting method: alpahbetic, descending, descending constructions, descending artworks -->
+                    <select class="form-select small w-auto bg-light-grey border-0 rounded-pill px-3 py-1 text-truncate fw-bold">
+                        <option value="alphabetic">Sort: Alphabetic</option>
+                        <option value="descending">Descending</option>
+                        <option value="descending-constructions">Descending Constructions</option>
+                        <option value="descending-artworks">Descending Artworks</option>
+                    </select>
+                </div>
+                <div class="col-12">
                     <div id={chartId + "-stacked"} class="w-100"></div>
                     <div id={chartId + "-normalized"} class="w-100"></div>
                 </div>
@@ -143,7 +153,7 @@
             .call(d3.axisLeft(y));
     }
 
-    function drawStackedBarchartNormalized(containerId, data) {
+    const drawStackedBarchartNormalized = (containerId, data) => {
         const keys = ["constructions", "artworks"];
         const width = 500;
         const height = 300;
@@ -201,10 +211,10 @@
 
     onMount(() => {
         chartData = getStackedData(activeDataSets);
-        chartIds.forEach(id => drawStackedBarchart(id, chartData));
         chartIds.forEach(id => {
+            drawStackedBarchart(id + "-stacked", chartData);
             drawStackedBarchartNormalized(id + "-normalized", chartData);
-        })
+        });
     });
 
     const addNewChart = () => {
@@ -221,10 +231,10 @@
         chartIds = chartIds.filter(id => id !== chartId);
     };
 
-    $: if (activeDataSets.length > 0) {
-        chartData = getStackedData(activeDataSets);
+    $: if (chartIds.length && chartData.length) {
         chartIds.forEach(id => {
-            onMount(() => drawStackedBarchart(id + "-stacked", chartData));
+            drawStackedBarchart(id + "-stacked", chartData);
+            drawStackedBarchartNormalized(id + "-normalized", chartData);
         });
     }
 
