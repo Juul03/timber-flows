@@ -1,6 +1,6 @@
 <div class="row align-items-center">
     {#each chartIds as chartId (chartId)}
-        <div class="col-6 py-2">
+        <div class="col-4 py-2">
             <div class="row">
                 <div class="col-12">
                     <div class="d-flex justify-content-between align-items-center">
@@ -41,7 +41,7 @@
             </div>
         </div>
     {/each}
-    <div class="col-6">
+    <div class="col-4">
         <button class="btn btn-primary d-flex justify-content-center align-items-center gap-2" on:click={addNewChart}>
             Add chart
             <svg class="svg-icon icon-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -62,50 +62,73 @@
     let chartIds = ['barchart-container-0']; // start with one chart
     let chartCounter = 1;
 
-    const getProvenanceFrequency = (dataSets) => {
+    const getStackedData = (dataSets) => {
         const counts = {};
         dataSets.forEach(ds => {
+            // "constructions" or "artworks" or "furniture
+            const type = ds.name;
             if (ds.data) {
                 ds.data.forEach(group => {
                     const items = Array.isArray(group.data) ? group.data : [group];
                     items.forEach(item => {
                         const prov = item.provenance || 'Unknown';
-                        counts[prov] = (counts[prov] || 0) + 1;
+                        if (!counts[prov]) counts[prov] = { constructions: 0, artworks: 0 };
+                        if (type === "constructions") counts[prov].constructions += 1;
+                        if (type === "artworks") counts[prov].artworks += 1;
                     });
                 });
             }
         });
+        // Convert to array for D3
+        return Object.entries(counts).map(([provenance, values]) => ({
+            provenance,
+            ...values
+        }));
+    }
 
-        return Object.entries(counts).map(([provenance, frequency]) => ({ provenance, frequency }));
-    };
-
-    const drawBarchart = (containerId) => {
-        const container = document.getElementById(containerId);
-        if (!container) return;
-
-        const width = container.clientWidth || 550;
+    const drawStackedBarchart = (containerId, data) => {
+        const keys = ["constructions", "artworks"];
+        const width = 500;
         const height = 300;
         const margin = { top: 20, right: 20, bottom: 50, left: 40 };
 
-        chartData.sort((a, b) => b.frequency - a.frequency);
-        d3.select(container).selectAll("*").remove();
+        d3.select(`#${containerId}`).selectAll("*").remove();
 
-        const svg = d3.select(container)
+        const svg = d3.select(`#${containerId}`)
             .append("svg")
             .attr("width", width)
-            .attr("height", height)
-            .attr("viewBox", `0 0 ${width} ${height}`)
-            .attr("preserveAspectRatio", "xMidYMid meet");
+            .attr("height", height);
 
         const x = d3.scaleBand()
-            .domain(chartData.map(d => d.provenance))
+            .domain(data.map(d => d.provenance))
             .range([margin.left, width - margin.right])
             .padding(0.1);
 
+        const series = d3.stack()
+            .keys(keys)
+            (data);
+
         const y = d3.scaleLinear()
-            .domain([0, d3.max(chartData, d => d.frequency)])
+            .domain([0, d3.max(series, s => d3.max(s, d => d[1]))])
             .nice()
             .range([height - margin.bottom, margin.top]);
+
+        const color = d3.scaleOrdinal()
+            .domain(keys)
+            .range(["#4e79a7", "#f28e2b"]);
+
+        svg.append("g")
+            .selectAll("g")
+            .data(series)
+            .join("g")
+            .attr("fill", d => color(d.key))
+            .selectAll("rect")
+            .data(d => d)
+            .join("rect")
+            .attr("x", d => x(d.data.provenance))
+            .attr("y", d => y(d[1]))
+            .attr("height", d => y(d[0]) - y(d[1]))
+            .attr("width", x.bandwidth());
 
         svg.append("g")
             .attr("transform", `translate(0,${height - margin.bottom})`)
@@ -117,37 +140,31 @@
         svg.append("g")
             .attr("transform", `translate(${margin.left},0)`)
             .call(d3.axisLeft(y));
-
-        svg.selectAll(".bar")
-            .data(chartData)
-            .enter().append("rect")
-            .attr("class", "bar")
-            .attr("x", d => x(d.provenance))
-            .attr("y", d => y(d.frequency))
-            .attr("width", x.bandwidth())
-            .attr("height", d => y(0) - y(d.frequency))
-            .attr("fill", "steelblue");
-    };
+    }
 
     onMount(() => {
-        chartData = getProvenanceFrequency(activeDataSets);
-        chartIds.forEach(id => drawBarchart(id));
+        chartData = getStackedData(activeDataSets);
+        chartIds.forEach(id => drawStackedBarchart(id, chartData));
     });
-
-    $: if (activeDataSets.length > 0) {
-        chartData = getProvenanceFrequency(activeDataSets);
-        chartIds.forEach(id => {
-            onMount(() => drawBarchart(id));
-        });
-    }
 
     const addNewChart = () => {
         const newId = `barchart-container-${chartCounter++}`;
         chartIds = [...chartIds, newId];
-        tick().then(() => drawBarchart(newId)); // wait for DOM to render new container
+        tick().then(() => drawStackedBarchart(newId, chartData)); // wait for DOM to render new container
     };
 
     const removeChart = (chartId) => {
         chartIds = chartIds.filter(id => id !== chartId);
     };
+
+    $: if (activeDataSets.length > 0) {
+        chartData = getStackedData(activeDataSets);
+        chartIds.forEach(id => {
+            onMount(() => drawStackedBarchart(id, chartData));
+        });
+    }
+
+    $: if (chartIds.length && chartData.length) {
+        chartIds.forEach(id => drawStackedBarchart(id, chartData));
+    }
 </script>
