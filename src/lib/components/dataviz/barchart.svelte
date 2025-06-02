@@ -36,7 +36,8 @@
                         {/if}
                     </div>
 
-                    <div id={chartId} class="w-100"></div>
+                    <div id={chartId + "-stacked"} class="w-100"></div>
+                    <div id={chartId + "-normalized"} class="w-100"></div>
                 </div>
             </div>
         </div>
@@ -98,7 +99,7 @@
             .append("svg")
             .attr("width", width)
             .attr("height", height);
-            
+
         const x = d3.scaleBand()
             .domain(d3.groupSort(data, D => -d3.sum(D, d => d.constructions + d.artworks), d => d.provenance))
             .range([margin.left, width - margin.right])
@@ -142,15 +143,78 @@
             .call(d3.axisLeft(y));
     }
 
+    function drawStackedBarchartNormalized(containerId, data) {
+        const keys = ["constructions", "artworks"];
+        const width = 500;
+        const height = 300;
+        const margin = { top: 20, right: 20, bottom: 50, left: 40 };
+
+        d3.select(`#${containerId}`).selectAll("*").remove();
+
+        const svg = d3.select(`#${containerId}`)
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        const x = d3.scaleBand()
+            .domain(d3.groupSort(data, D => -d3.sum(D, d => d.constructions + d.artworks), d => d.provenance))
+            .range([margin.left, width - margin.right])
+            .padding(0.1);
+
+        const series = d3.stack()
+            .keys(keys)
+            .offset(d3.stackOffsetExpand) // 100% stacked!
+            (data);
+
+        const y = d3.scaleLinear()
+            .domain([0, 1])
+            .range([height - margin.bottom, margin.top]);
+
+        const color = d3.scaleOrdinal()
+            .domain(keys)
+            .range(["#4e79a7", "#f28e2b"]);
+
+        svg.append("g")
+            .selectAll("g")
+            .data(series)
+            .join("g")
+            .attr("fill", d => color(d.key))
+            .selectAll("rect")
+            .data(d => d)
+            .join("rect")
+            .attr("x", d => x(d.data.provenance))
+            .attr("y", d => y(d[1]))
+            .attr("height", d => y(d[0]) - y(d[1]))
+            .attr("width", x.bandwidth());
+
+        svg.append("g")
+            .attr("transform", `translate(0,${height - margin.bottom})`)
+            .call(d3.axisBottom(x))
+            .selectAll("text")
+            .attr("transform", "rotate(-40)")
+            .style("text-anchor", "end");
+
+        svg.append("g")
+            .attr("transform", `translate(${margin.left},0)`)
+            .call(d3.axisLeft(y).tickFormat(d3.format(".0%")));
+    }
+
     onMount(() => {
         chartData = getStackedData(activeDataSets);
         chartIds.forEach(id => drawStackedBarchart(id, chartData));
+        chartIds.forEach(id => {
+            drawStackedBarchartNormalized(id + "-normalized", chartData);
+        })
     });
 
     const addNewChart = () => {
+        // add new chart
         const newId = `barchart-container-${chartCounter++}`;
         chartIds = [...chartIds, newId];
-        tick().then(() => drawStackedBarchart(newId, chartData)); // wait for DOM to render new container
+        tick().then(() => drawStackedBarchart(newId + "-stacked", chartData)); // wait for DOM to render new container
+
+        // add new normalized chart
+        tick().then(() => drawStackedBarchartNormalized(newId + "-normalized", chartData));
     };
 
     const removeChart = (chartId) => {
@@ -160,11 +224,11 @@
     $: if (activeDataSets.length > 0) {
         chartData = getStackedData(activeDataSets);
         chartIds.forEach(id => {
-            onMount(() => drawStackedBarchart(id, chartData));
+            onMount(() => drawStackedBarchart(id + "-stacked", chartData));
         });
     }
 
     $: if (chartIds.length && chartData.length) {
-        chartIds.forEach(id => drawStackedBarchart(id, chartData));
+        chartIds.forEach(id => drawStackedBarchart(id + "-stacked", chartData));
     }
 </script>
