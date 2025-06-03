@@ -791,6 +791,7 @@
             }).addTo(map);
         }
     };
+
     let loadingPopup = null;
 
     // Maplayers
@@ -813,7 +814,8 @@
                     style: () => ({
                         color: '#3399cc',
                         weight: 2,
-                        opacity: 0.8
+                        opacity: 0.8,
+                        className: 'river-path'
                     }),
                     onEachFeature: function (feature, layer) {
                         const name = feature.properties?.NAME || 'Unnamed river';

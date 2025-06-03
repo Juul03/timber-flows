@@ -16,6 +16,11 @@
         }
     }
 
+    .river-path {
+        transition: stroke 0.2s ease-out, stroke-width 0.2s ease-out;
+    }
+
+
     &.map-dark,
     &.map-gray_dark {
         .provenanceEllipse {
