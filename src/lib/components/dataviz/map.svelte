@@ -635,6 +635,8 @@
         zeroState = false;
         skipNextDrawMapData = true;
     };
+
+    let oakLayer = null;
         
     onMount(async () => {
         if (browser) {
@@ -676,6 +678,18 @@
             if(zeroState) {
                 drawMapDataByYear(activeDataSets);
             }
+
+            fetch('/data/Quercus_robur_plg_clip.json')
+                .then(res => res.json())
+                .then(data => {
+                oakLayer = L.geoJSON(data, {
+                    style: {
+                    color: 'green',
+                    weight: 1,
+                    fillOpacity: 0.4
+                    }
+                }).addTo(map);
+            });
         }
     });
 
