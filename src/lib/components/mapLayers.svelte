@@ -105,6 +105,10 @@
         {
             name: 'Trade cities',
             value: 'cities'
+        },
+        {
+            name: 'Oak distribution',
+            value: 'oak_distribution'
         }
     ];
 

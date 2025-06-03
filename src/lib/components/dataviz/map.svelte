@@ -90,6 +90,7 @@
     let markersActive = false;
     let cityMarkers = [];
     let waterwaysLayer = null;
+    let oakLayer = null;
 
     let popup = false;
     let showPopupAgain = true;
@@ -918,7 +919,39 @@
             cityMarkers = [];
             
         }
+
+        if(selectedMapLayers.includes('oak_distribution')) {
+            loadOakDistribution(map);
+        } else {
+            if (oakLayer && map.hasLayer(oakLayer)) {
+                map.removeLayer(oakLayer);
+                oakLayer = null;
+            }
+        }
     };
+
+    const loadOakDistribution = async (map) => {
+        if (oakLayer) {
+            map.removeLayer(oakLayer);
+            oakLayer = null;
+            return;
+        }
+
+        const response = await fetch('/data/Quercus_robur_plg_clip.json');
+        const geojson = await response.json();
+
+        oakLayer = L.geoJSON(geojson, {
+            style: {
+                color: '#228B22',
+                weight: 1,
+                fillOpacity: 0.5
+            },
+            onEachFeature: (layer) => {
+                const name = 'Oak distribution';
+                layer.bindTooltip(name);
+            }
+        }).addTo(map);
+    }
 
 
     // Utility function for deep comparison
