@@ -700,7 +700,6 @@
     }
 
     const drawTimelineYearData = () => {
-        console.log("Drawing timeline year data");
         clearTradeRoutesFromMap();
         if(animationSpeed === animationSpeedSlow) {
             cancelAnimatingTradeRoutes();
@@ -711,7 +710,6 @@
         setProvenaceOpacity();
 
         if (Array.isArray(timelineDataSelection)) {
-            console.log("Drawing timeline data selection", timelineDataSelection);
             timelineDataSelection.forEach(firstLevel => {
                 const objectType = firstLevel.name || "unknown";
 
@@ -761,7 +759,6 @@
     };
 
     let updateCurrentMap = (mapType) => {
-        console.log("selected maptype", mapType);
         const selected = mapTypes.find(m => m.value === mapType);
 
         if (!esri) return;
@@ -958,10 +955,6 @@
         }
     }
 
-    $: if(timelineDataSelection) {
-        console.log("Timeline data selection changed:", timelineDataSelection);
-    }
-
     $: if (timelineDataSelection != undefined && leafletReady && map) {
         animationSpeed = animationSpeedFast;
 
@@ -985,7 +978,6 @@
     $: previousTimelineRunning = timelineRunning;
 
     $: if(selectedMapLayers) {
-        console.log("Selected map layers changed:", selectedMapLayers);
         updateMapLayer();
     }
 

@@ -478,7 +478,6 @@
 
 
     const filterDataOnTimeline = () => {
-        console.log("filter items");
         timelineDataSelection = [];
 
         if (selectionPath[0] == null && selectedOption === 'All') {
@@ -534,7 +533,6 @@
     }
 
     $: if(currentYearTimeline) {
-        console.log("current year timeline received", currentYearTimeline);
         filterDataOnTimeline();
     }
 
