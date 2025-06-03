@@ -80,6 +80,7 @@
                     <div id={chartId + "-stacked"} class="w-100"></div>
                     <div id={chartId + "-normalized"} class="w-100"></div>
                 </div>
+                <div id="spacer"></div>
             </div>
         </div>
     {/each}

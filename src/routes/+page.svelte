@@ -1,70 +1,70 @@
-<h1 class="text-primary d-none">Timber Flows</h1>
-
-<main class="{selectedMapType}">
-    <div class="{currentView == "map" ? "" : "d-none"}">
-        <Map {activeDataSets}
-            {timelineDataSelection}
-            {selectedMapType}
-            {keywordMap}
-            {timelineClicked}
-            {timelineRunning}
-            {timelineSpeed}
-            {selectionPath}
-            {selectedLocations}
-            {previousSelectedLocations}
-            {selectedMapLayers}
-            arcgisApiKey={data.arcgisApiKey}
-            bind:zeroState
-        />
-        <div class="container position-relative z-3">
-            <div class="position-absolute w-100 top-0">
-                <Filters 
-                    {dataWoodPurposes}
-                    {uniqueLocations}
-                    {totalDatapoints}
-                    {datapointsLength}
-                    {activeDataSets}
-                    bind:selectedWoodPurpose 
-                    bind:selectedType 
-                    bind:selectedSubType
-                    bind:selectionPath
-                    bind:selectedOption
-                    bind:selectedMapType
-                    bind:selectedLocations
-                    bind:selectedMapLayers
-                />
-                <div class="row justify-content-end">
-                    <div class="col-9">
-                        <Timeline 
-                            {activeDataSets}
-                            {selectedMapType}
-                            bind:currentYearTimeline
-                            bind:timelineClicked
-                            bind:timelineRunning
-                            bind:timelineSpeed
-                        />
+<div class="page-wrapper d-flex flex-column min-vh-100">
+    <main class="{selectedMapType} flex-grow-1">
+        <h1 class="text-primary d-none">Timber Flows</h1>
+        <div class="{currentView == "map" ? "" : "d-none"}">
+            <Map {activeDataSets}
+                {timelineDataSelection}
+                {selectedMapType}
+                {keywordMap}
+                {timelineClicked}
+                {timelineRunning}
+                {timelineSpeed}
+                {selectionPath}
+                {selectedLocations}
+                {previousSelectedLocations}
+                {selectedMapLayers}
+                arcgisApiKey={data.arcgisApiKey}
+                bind:zeroState
+            />
+            <div class="container position-relative z-3">
+                <div class="position-absolute w-100 top-0">
+                    <Filters 
+                        {dataWoodPurposes}
+                        {uniqueLocations}
+                        {totalDatapoints}
+                        {datapointsLength}
+                        {activeDataSets}
+                        bind:selectedWoodPurpose 
+                        bind:selectedType 
+                        bind:selectedSubType
+                        bind:selectionPath
+                        bind:selectedOption
+                        bind:selectedMapType
+                        bind:selectedLocations
+                        bind:selectedMapLayers
+                    />
+                    <div class="row justify-content-end">
+                        <div class="col-9">
+                            <Timeline 
+                                {activeDataSets}
+                                {selectedMapType}
+                                bind:currentYearTimeline
+                                bind:timelineClicked
+                                bind:timelineRunning
+                                bind:timelineSpeed
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="container {currentView != "map" ? "" : "d-none"}">
-        <div class="row">
-            <div class="col">
-                <Barchart
-                    {activeDataSets}
-                />
-                <!-- <img class="w-100" src="/img/placeholder-barchart.png" alt="barchart placeholder img"> -->
+        <div class="container {currentView != "map" ? "" : "d-none"}">
+            <div class="row">
+                <div class="col">
+                    <Barchart
+                        {activeDataSets}
+                    />
+                </div>
             </div>
         </div>
-    </div>
-    <div class="position-absolute bottom-0 start-50 translate-middle-x mb-2">
-        <SwitchViews
-            bind:currentView
-        />
-    </div>
-</main>
-<Footer/>
+        <div class="position-absolute bottom-0 start-50 translate-middle-x mb-2">
+            <SwitchViews
+                bind:currentView
+            />
+        </div>
+    </main>
+    <Footer/>
+</div>
 
 <script>
     import '../assets/styles/app.scss';
