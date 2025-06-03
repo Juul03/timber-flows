@@ -111,7 +111,8 @@
     let chartSorts = {
         'barchart-container-0': 'descending'
     }
-
+    
+    let prevGlobalMax = 0;
     let globalMax = 100;
 
     const getSortedDomain = (data, sort) => {
@@ -248,6 +249,27 @@
             .nice()
             .range([height - margin.bottom, margin.top]);
 
+        svg.append("g")
+            .attr("transform", `translate(0,${height - margin.bottom})`)
+            .call(d3.axisBottom(x))
+            .selectAll("text")
+            .attr("transform", "rotate(-40)")
+            .style("text-anchor", "end");
+
+        svg.append("g")
+            .attr("transform", `translate(${margin.left},0)`)
+            .call(d3.axisLeft(y));
+        
+        if (!data || data.length === 0 || data.every(d => (d.constructions === 0 && d.artworks === 0))) {
+            svg.append("text")
+                .attr("x", width / 2)
+                .attr("y", height / 2)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "1.2em")
+                .text("No data, select a wider interval");
+            return;
+        }
+
         const color = d3.scaleOrdinal()
             .domain(keys)
             .range(["#4e79a7", "#f28e2b"]);
@@ -295,17 +317,6 @@
             .attr("width", x.bandwidth())
             .attr("y", d => y(d[1]))
             .attr("height", d => y(d[0]) - y(d[1]));
-
-        svg.append("g")
-            .attr("transform", `translate(0,${height - margin.bottom})`)
-            .call(d3.axisBottom(x))
-            .selectAll("text")
-            .attr("transform", "rotate(-40)")
-            .style("text-anchor", "end");
-
-        svg.append("g")
-            .attr("transform", `translate(${margin.left},0)`)
-            .call(d3.axisLeft(y));
     }
 
     const drawStackedBarchartNormalized = (containerId, data) => {
@@ -435,6 +446,11 @@
             drawStackedBarchart(newId + "-stacked", data, sort);
             drawStackedBarchartNormalized(newId + "-normalized", data);
         });
+
+        // if(globalMax > (prevGlobalMax + 10)) {
+        //     console.log("update charts");
+        //     prevGlobalMax = globalMax;
+        // }
     };
     
    const updateChart = (chartId) => {
