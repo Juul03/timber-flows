@@ -98,6 +98,8 @@
     import { onMount, tick } from 'svelte';
     import * as d3 from 'd3';
 
+    import { colorScale} from '$lib/scripts/colorConfig';
+
     export let activeDataSets = [];
 
     let chartData = [];
@@ -116,18 +118,70 @@
     let globalMax = 100;
 
     const getSortedDomain = (data, sort) => {
-        if (sort === 'alphabetic') {
-            return data.map(d => d.provenance).sort((a, b) => a.localeCompare(b));
-        }
+        // Provenances with construction data
+        const withConstructions = data.filter(d => d.constructions > 0);
+        // Provenances with no construction data but with artworks
+        const withArtworksOnly = data.filter(d => d.constructions === 0 && d.artworks > 0);
+        // Provenances with no artworks but with constructions
+        const withConstructionsOnly = data.filter(d => d.artworks === 0 && d.constructions > 0);
+        // Provenances with no data at all
+        const noData = data.filter(d => d.constructions === 0 && d.artworks === 0);
+
+        let sortedWithConstructions = [];
+        let sortedWithArtworksOnly = [];
+        let sortedWithConstructionsOnly = [];
+        let sortedNoData = [];
+
         if (sort === 'descending-constructions') {
-            return data.slice().sort((a, b) => b.constructions - a.constructions).map(d => d.provenance);
+            // Sort constructions descending
+            sortedWithConstructions = withConstructions
+                .slice()
+                .sort((a, b) => b.constructions - a.constructions)
+                .map(d => d.provenance);
+            // Sort the rest descending by total
+            sortedWithArtworksOnly = withArtworksOnly
+                .slice()
+                .sort((a, b) => (b.constructions + b.artworks) - (a.constructions + a.artworks))
+                .map(d => d.provenance);
+            // No data at the end, alphabetically
+            sortedNoData = noData.map(d => d.provenance).sort((a, b) => a.localeCompare(b));
+            return [...sortedWithConstructions, ...sortedWithArtworksOnly, ...sortedNoData];
         }
+
         if (sort === 'descending-artworks') {
-            return data.slice().sort((a, b) => b.artworks - a.artworks).map(d => d.provenance);
+            // Provenances with artworks
+            const withArtworks = data.filter(d => d.artworks > 0);
+            // Provenances with no artworks but with constructions
+            sortedWithConstructionsOnly = withConstructionsOnly
+                .slice()
+                .sort((a, b) => (b.constructions + b.artworks) - (a.constructions + a.artworks))
+                .map(d => d.provenance);
+            // Sort artworks descending
+            const sortedWithArtworks = withArtworks
+                .slice()
+                .sort((a, b) => b.artworks - a.artworks)
+                .map(d => d.provenance);
+            // No data at the end, alphabetically
+            sortedNoData = noData.map(d => d.provenance).sort((a, b) => a.localeCompare(b));
+            return [...sortedWithArtworks, ...sortedWithConstructionsOnly, ...sortedNoData];
         }
-        // Default: descending by total
-        return data.slice().sort((a, b) => (b.constructions + b.artworks) - (a.constructions + a.artworks)).map(d => d.provenance);
-    }
+
+        // The rest of your sorts remain unchanged:
+        if (sort === 'alphabetic') {
+            const withData = data.filter(d => (d.constructions || d.artworks));
+            const noData = data.filter(d => !d.constructions && !d.artworks);
+            const sortedWithData = withData.map(d => d.provenance).sort((a, b) => a.localeCompare(b));
+            const sortedNoData = noData.map(d => d.provenance).sort((a, b) => a.localeCompare(b));
+            return [...sortedWithData, ...sortedNoData];
+        } else {
+            // Default: descending by total
+            const withData = data.filter(d => (d.constructions || d.artworks));
+            const noData = data.filter(d => !d.constructions && !d.artworks);
+            const sortedWithData = withData.slice().sort((a, b) => (b.constructions + b.artworks) - (a.constructions + a.artworks)).map(d => d.provenance);
+            const sortedNoData = noData.map(d => d.provenance).sort((a, b) => a.localeCompare(b));
+            return [...sortedWithData, ...sortedNoData];
+        }
+    };
     
     const extractYear = (fellingDate) => {
         if (!fellingDate) return null;
@@ -223,7 +277,10 @@
     }
 
     const drawStackedBarchart = (containerId, data, sort) => {
-        const keys = ["constructions", "artworks"];
+        let keys = ["constructions", "artworks"];
+        if (sort === "descending-artworks") {
+            keys = ["artworks", "constructions"];
+        }
         const width = 500;
         const height = 300;
         const margin = { top: 20, right: 20, bottom: 50, left: 40 };
@@ -270,9 +327,9 @@
             return;
         }
 
-        const color = d3.scaleOrdinal()
-            .domain(keys)
-            .range(["#4e79a7", "#f28e2b"]);
+        // const color = d3.scaleOrdinal()
+        //     .domain(keys)
+        //     .range(["#4e79a7", "#f28e2b"]);
 
         // bars update enter exit
         const bars = svg.selectAll("g.layer")
@@ -287,7 +344,7 @@
         const barsEnter = bars.enter()
             .append("g")
             .attr("class", "layer")
-            .attr("fill", d => color(d.key));
+            .attr("fill", d => colorScale(d.key));
 
         const rects = barsEnter.merge(bars)
             .selectAll("rect")
@@ -320,7 +377,10 @@
     }
 
     const drawStackedBarchartNormalized = (containerId, data, sort) => {
-        const keys = ["constructions", "artworks"];
+        let keys = ["constructions", "artworks"];
+        if (sort === "descending-artworks") {
+            keys = ["artworks", "constructions"];
+        }
         const width = 500;
         const height = 300;
         const margin = { top: 20, right: 20, bottom: 50, left: 40 };
@@ -346,9 +406,9 @@
             .domain([0, 1])
             .range([height - margin.bottom, margin.top]);
 
-        const color = d3.scaleOrdinal()
-            .domain(keys)
-            .range(["#4e79a7", "#f28e2b"]);
+        // const color = d3.scaleOrdinal()
+        //     .domain(keys)
+        //     .range(["#4e79a7", "#f28e2b"]);
 
         // bars update enter exit
         const bars = svg.selectAll("g.layer")
@@ -363,7 +423,7 @@
         const barsEnter = bars.enter()
             .append("g")
             .attr("class", "layer")
-            .attr("fill", d => color(d.key));
+            .attr("fill", d => colorScale(d.key));
 
         const rects = barsEnter.merge(bars)
             .selectAll("rect")
