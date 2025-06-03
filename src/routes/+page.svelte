@@ -38,6 +38,10 @@
                         <Timeline 
                             {activeDataSets}
                             {selectedMapType}
+                            bind:currentYearTimeline
+                            bind:timelineClicked
+                            bind:timelineRunning
+                            bind:timelineSpeed
                         />
                     </div>
                 </div>
