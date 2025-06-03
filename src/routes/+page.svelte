@@ -38,6 +38,10 @@
                         <Timeline 
                             {activeDataSets}
                             {selectedMapType}
+                            bind:currentYearTimeline
+                            bind:timelineClicked
+                            bind:timelineRunning
+                            bind:timelineSpeed
                         />
                     </div>
                 </div>
@@ -474,6 +478,7 @@
 
 
     const filterDataOnTimeline = () => {
+        console.log("filter items");
         timelineDataSelection = [];
 
         if (selectionPath[0] == null && selectedOption === 'All') {
@@ -529,6 +534,7 @@
     }
 
     $: if(currentYearTimeline) {
+        console.log("current year timeline received", currentYearTimeline);
         filterDataOnTimeline();
     }
 

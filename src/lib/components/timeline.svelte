@@ -92,6 +92,7 @@
     let timelineLine;
     let xScaleTimeline;
     let timelineIndex = 0;
+    let fullYAxisActive = false;
     export let timelineRunning = false;
     export let timelineClicked = false;
     export let timelineSpeed = 500;

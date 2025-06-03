@@ -700,6 +700,7 @@
     }
 
     const drawTimelineYearData = () => {
+        console.log("Drawing timeline year data");
         clearTradeRoutesFromMap();
         if(animationSpeed === animationSpeedSlow) {
             cancelAnimatingTradeRoutes();
@@ -955,6 +956,10 @@
             animationSpeed = animationSpeedSlow;
             drawMapData();
         }
+    }
+
+    $: if(timelineDataSelection) {
+        console.log("Timeline data selection changed:", timelineDataSelection);
     }
 
     $: if (timelineDataSelection != undefined && leafletReady && map) {

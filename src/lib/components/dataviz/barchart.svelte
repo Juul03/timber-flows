@@ -480,15 +480,4 @@
             updateAllCharts();
         }
     };
-
-    // $: if (chartIds.length && activeDataSets.length) {
-    //     chartIds.forEach(id => {
-    //         const interval = chartIntervals[id];
-    //         if (interval) {
-    //             const data = getStackedData(activeDataSets, interval.start, interval.end);
-    //             drawStackedBarchart(id + "-stacked", data);
-    //             drawStackedBarchartNormalized(id + "-normalized", data);
-    //         }
-    //     });
-    // }
 </script>
