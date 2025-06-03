@@ -368,6 +368,7 @@
         frequencyLimit = 14;
         let maxFrequency = d3.max(allFrequencies);
         const yMax = maxFrequency > frequencyLimit ? frequencyLimit : Math.max(maxFrequency, 1);
+        let fullYAxisActive;
 
         let ticksAmount = 5;
 

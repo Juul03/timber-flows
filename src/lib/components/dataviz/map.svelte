@@ -655,11 +655,11 @@
             }
 
             // get long and lat on click
-            // const onMapClick = (event) => {
-            //     alert("You clicked the map at " + event.latlng);
-            // }
+            const onMapClick = (event) => {
+                alert("You clicked the map at " + event.latlng);
+            }
 
-            // map.on('click', onMapClick);
+            map.on('click', onMapClick);
 
             animationSpeed = animationSpeedSlow;
             updateCurrentMap(selectedMapType || 'area');
@@ -673,9 +673,11 @@
             addProvenancesToMap(leaflet, provenancesCoords, map);
             addLocationsToMap(leaflet, endpointsLocations, map);
 
-            if(zeroState) {
-                drawMapDataByYear(activeDataSets);
-            }
+            zeroState = false;
+
+            // if(zeroState) {
+            //     drawMapDataByYear(activeDataSets);
+            // }
         }
     });
 
