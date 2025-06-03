@@ -798,22 +798,31 @@
         // Toggle rivers
         if (selectedMapLayers.includes('rivers')) {
             if (!waterwaysLayer) {
-            popup = true;
-            popupContent = {
-                title: 'Loading waterways layer',
-                description: 'This layer is pretty big. It will take a while before anything is showing up. Please be patient.'
-            };
+                popup = true;
+                popupContent = {
+                    title: 'Loading waterways layer',
+                    description: 'This layer is pretty big. It will take a while before anything is showing up. Please be patient.'
+                };
 
 
-            waterwaysLayer = esri.featureLayer({
-                url: 'https://services-eu1.arcgis.com/zci5bUiJ8olAal7N/arcgis/rest/services/OpenStreetMap_Waterways_for_Europe/FeatureServer/0',
-                simplifyFactor: 0.5,
-                precision: 5,
-                style: () => ({
-                color: '#3399cc',
-                weight: 1.2
-                })
-            }).addTo(map);
+                waterwaysLayer = esri.featureLayer({
+                    url: 'https://services5.arcgis.com/sjP4Ugu5s0dZWLjd/arcgis/rest/services/European_main_rivers/FeatureServer/0',
+                    simplifyFactor: 0.5,
+                    precision: 5,
+                    style: () => ({
+                        color: '#3399cc',
+                        weight: 2
+                    }),
+                    onEachFeature: function (feature, layer) {
+                        const name = feature.properties?.NAME || 'Unnamed river';
+                        layer.bindTooltip(name, {
+                            permanent: false,
+                            direction: 'auto',
+                            className: 'river-label'
+                        });
+                    }
+                }).addTo(map);
+
             }
         } else {
             if (waterwaysLayer && map.hasLayer(waterwaysLayer)) {
