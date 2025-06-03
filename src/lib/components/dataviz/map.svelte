@@ -946,7 +946,7 @@
                 weight: 1,
                 fillOpacity: 0.5
             },
-            onEachFeature: (layer) => {
+            onEachFeature: (feature, layer) => {
                 const name = 'Oak distribution';
                 layer.bindTooltip(name);
             }
