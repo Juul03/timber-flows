@@ -13,8 +13,15 @@
                                 max={chartIntervals[chartId]?.end || 1800}
                                 value={chartIntervals[chartId].start}
                                 on:input={e => {
-                                    chartIntervals[chartId].start = +e.target.value;
-                                    updateChart(chartId);
+                                    const val = +e.target.value;
+                                    chartIntervals[chartId].start = val;
+                                    if (
+                                        chartIntervals[chartId].start &&
+                                        chartIntervals[chartId].end &&
+                                        chartIntervals[chartId].start < chartIntervals[chartId].end
+                                    ) {
+                                        updateChart(chartId);
+                                    }
                                 }}
                             >
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="2" viewBox="0 0 12 2">
@@ -28,8 +35,15 @@
                                 max="1800"
                                 value={chartIntervals[chartId]?.end}
                                 on:input={e => {
-                                    chartIntervals[chartId].end = +e.target.value;
-                                    updateChart(chartId);
+                                    const val = +e.target.value;
+                                    chartIntervals[chartId].end = val;
+                                    if (
+                                        chartIntervals[chartId].start &&
+                                        chartIntervals[chartId].end &&
+                                        chartIntervals[chartId].start < chartIntervals[chartId].end
+                                    ) {
+                                        updateChart(chartId);
+                                    }
                                 }}
                             >
                         </div>
@@ -146,8 +160,29 @@
         return null;
     };
 
+    const getAllProvenances = (dataSets) => {
+        const provSet = new Set();
+        dataSets.forEach(ds => {
+            if (ds.data) {
+                ds.data.forEach(group => {
+                    const items = Array.isArray(group.data) ? group.data : [group];
+                    items.forEach(item => {
+                        provSet.add(item.provenance || 'Unknown');
+                    });
+                });
+            }
+        });
+        return Array.from(provSet);
+    }
+
     const getStackedData = (dataSets, startYear, endYear) => {
+        const allprovenances = getAllProvenances(dataSets);
         const counts = {};
+
+        allprovenances.forEach(prov => {
+            counts[prov] = { constructions: 0, artworks: 0 };
+        });
+
         dataSets.forEach(ds => {
             const type = ds.name;
             if (ds.data) {
