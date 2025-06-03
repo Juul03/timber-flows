@@ -804,6 +804,7 @@
                     description: 'This layer is pretty big. It will take a while before anything is showing up. Please be patient.'
                 };
 
+                let selectedLayer = null;
 
                 waterwaysLayer = esri.featureLayer({
                     url: 'https://services5.arcgis.com/sjP4Ugu5s0dZWLjd/arcgis/rest/services/European_main_rivers/FeatureServer/0',
@@ -811,18 +812,92 @@
                     precision: 5,
                     style: () => ({
                         color: '#3399cc',
-                        weight: 2
+                        weight: 2,
+                        opacity: 0.8
                     }),
                     onEachFeature: function (feature, layer) {
                         const name = feature.properties?.NAME || 'Unnamed river';
-                        layer.bindTooltip(name, {
+
+                        // Add tooltip but not permanent at first
+                        const tooltip = layer.bindTooltip(name, {
                             permanent: false,
                             direction: 'auto',
                             className: 'river-label'
                         });
+
+                        const highlightStyle = {
+                            color: '#004488',
+                            weight: 5,
+                            opacity: 1
+                        };
+
+                        const defaultStyle = {
+                            color: '#3399cc',
+                            weight: 2,
+                            opacity: 0.8
+                        };
+
+                        layer._isSelected = false;
+
+                        layer.on('mouseover', function () {
+                            if (!layer._isSelected) {
+                                layer.setStyle(highlightStyle);
+                            }
+                        });
+
+                        layer.on('mouseout', function () {
+                            if (!layer._isSelected) {
+                                layer.setStyle(defaultStyle);
+                            }
+                        });
+
+                        layer.on('click', function () {
+                            // Deselect previously selected river
+                            if (selectedLayer && selectedLayer !== layer) {
+                                selectedLayer._isSelected = false;
+                                selectedLayer.setStyle(defaultStyle);
+                                selectedLayer.unbindTooltip(); // remove the persistent label
+                                selectedLayer.bindTooltip(selectedLayer.feature.properties?.NAME || 'Unnamed river', {
+                                    permanent: false,
+                                    direction: 'auto',
+                                    className: 'river-label'
+                                });
+                            }
+
+                            // Select current layer
+                            layer._isSelected = true;
+                            selectedLayer = layer;
+                            layer.setStyle(highlightStyle);
+
+                            layer.unbindTooltip(); // clear old tooltip
+                            layer.bindTooltip(name, {
+                                permanent: true,
+                                direction: 'center',
+                                className: 'river-label-selected'
+                            }).openTooltip();
+                        });
                     }
                 }).addTo(map);
 
+                // set highloghtstyle to defaultstyle when there is a click not on the layer
+                map.on('click', function (e) {
+                    // if selecgtedLayer en selectedLayer is not clicked
+                    if (selectedLayer && !selectedLayer.getBounds().contains(e.latlng)) {
+                        selectedLayer._isSelected = false;
+                        selectedLayer.setStyle({
+                            color: '#3399cc',
+                            weight: 2,
+                            opacity: 0.8
+                        });
+                        selectedLayer.unbindTooltip(); // remove the persistent label
+                        selectedLayer.bindTooltip(selectedLayer.feature.properties?.NAME || 'Unnamed river', {
+                            permanent: false,
+                            direction: 'auto',
+                            className: 'river-label'
+                        });
+                        selectedLayer = null;
+                    }
+                });
             }
         } else {
             if (waterwaysLayer && map.hasLayer(waterwaysLayer)) {
