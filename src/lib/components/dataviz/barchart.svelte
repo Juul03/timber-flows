@@ -319,7 +319,7 @@
             .attr("height", d => y(d[0]) - y(d[1]));
     }
 
-    const drawStackedBarchartNormalized = (containerId, data) => {
+    const drawStackedBarchartNormalized = (containerId, data, sort) => {
         const keys = ["constructions", "artworks"];
         const width = 500;
         const height = 300;
@@ -333,7 +333,7 @@
             .attr("height", height);
 
         const x = d3.scaleBand()
-            .domain(d3.groupSort(data, D => -d3.sum(D, d => d.constructions + d.artworks), d => d.provenance))
+            .domain(getSortedDomain(data, sort))
             .range([margin.left, width - margin.right])
             .padding(0.1);
 
@@ -415,26 +415,12 @@
             if (interval) {
                 const data = getStackedData(activeDataSets, interval.start, interval.end);
                 drawStackedBarchart(id + "-stacked", data, sort);
-                drawStackedBarchartNormalized(id + "-normalized", data);
+                drawStackedBarchartNormalized(id + "-normalized", data, sort);
             }
         });
     });
 
-    // const updateAllCharts = () => {
-    //     globalMax = getGlobalMax();
-    //     chartIds.forEach(id => {
-    //         const interval = chartIntervals[id];
-    //         const sort = chartSorts[id] || 'descending';
-    //         if (interval) {
-    //             const data = getStackedData(activeDataSets, interval.start, interval.end);
-    //             drawStackedBarchart(id + "-stacked", data, sort);
-    //         }
-    //     });
-    // }
-
     const addNewChart = () => {
-        // globalMax = getGlobalMax();
-
         const newId = `barchart-container-${chartCounter++}`;
         chartIds = [...chartIds, newId];
         chartIntervals[newId] = { start: 1400, end: 1800 };
@@ -444,14 +430,30 @@
             const sort = chartSorts[newId] || 'descending';
             const data = getStackedData(activeDataSets, interval.start, interval.end);
             drawStackedBarchart(newId + "-stacked", data, sort);
-            drawStackedBarchartNormalized(newId + "-normalized", data);
-        });
+            drawStackedBarchartNormalized(newId + "-normalized", data, sort);
 
-        // if(globalMax > (prevGlobalMax + 10)) {
-        //     console.log("update charts");
-        //     prevGlobalMax = globalMax;
-        // }
+            const newGlobalMax = getGlobalMax();
+            if(Math.abs(newGlobalMax - prevGlobalMax) > 10) {
+                updateAllCharts();
+            }
+        });
     };
+
+    const updateAllCharts = () => {
+        const newGlobalMax = getGlobalMax();
+        
+        prevGlobalMax = newGlobalMax;
+        globalMax = newGlobalMax;
+        chartIds.forEach(id => {
+            const interval = chartIntervals[id];
+            const sort = chartSorts[id] || 'descending';
+            if (interval) {
+                const data = getStackedData(activeDataSets, interval.start, interval.end);
+                drawStackedBarchart(id + "-stacked", data, sort);
+                drawStackedBarchartNormalized(id + "-normalized", data, sort);
+            }
+        });  
+    }
     
    const updateChart = (chartId) => {
         const interval = chartIntervals[chartId];
@@ -459,7 +461,12 @@
         if (interval) {
             const data = getStackedData(activeDataSets, interval.start, interval.end);
             drawStackedBarchart(chartId + "-stacked", data, sort);
-            drawStackedBarchartNormalized(chartId + "-normalized", data);
+            drawStackedBarchartNormalized(chartId + "-normalized", data, sort);
+            
+            const newGlobalMax = getGlobalMax();
+            if(Math.abs(newGlobalMax - prevGlobalMax) > 10) {
+                updateAllCharts();
+            }
         }
     }
 
@@ -467,6 +474,11 @@
         chartIds = chartIds.filter(id => id !== chartId);
         delete chartIntervals[chartId];
         delete chartSorts[chartId];
+
+        const newGlobalMax = getGlobalMax();
+        if(Math.abs(newGlobalMax - prevGlobalMax) > 10) {
+            updateAllCharts();
+        }
     };
 
     // $: if (chartIds.length && activeDataSets.length) {
