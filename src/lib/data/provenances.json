@@ -1,8 +1,106 @@
 [
-  {
-    "name": "Northwest Germany",
-    "coordinateCenter": [52.5, 9.5],
+    {
+    "name": "Southern Norway",
+    "coordinateCenter": [58.338467, 7.419226],
+    "xRadius": 110000,
+    "yRadius": 70000
+  },
+    {
+    "name": "Klaipeda, Lithuania",
+    "coordinateCenter": [55.727581, 21.551779],
     "xRadius": 50000,
-    "yRadius": 100000
+    "yRadius": 30000
+  },
+  {
+    "name": "Lithuania",
+    "coordinateCenter": [ 54.70146, 24.628039],
+    "xRadius": 50000,
+    "yRadius": 30000
+  },
+    {
+    "name": "Gdansk, Poland",
+    "coordinateCenter": [53.789978, 18.686307],
+    "xRadius": 70000,
+    "yRadius": 110000
+  },
+    {
+    "name": "Northeastern Germany",
+    "coordinateCenter": [53.795029, 12.594738],
+    "xRadius": 120000,
+    "yRadius": 75000
+  },
+  {
+    "name": "Lübeck",
+    "coordinateCenter": [53.869720, 10.686389],
+    "xRadius": 40000,
+    "yRadius": 70000
+  },
+    {
+    "name": "NW Germany-Lower Saxony",
+    "coordinateCenter": [53.23006, 8.40369],
+    "xRadius": 90000,
+    "yRadius": 60000
+  },
+  {
+    "name": "Twente/Westphalia",
+    "coordinateCenter": [52.034586, 7.194073],
+    "xRadius": 60000,
+    "yRadius": 40000
+  },
+  {
+    "name": "Central Germany",
+    "coordinateCenter": [50.935329, 7.991537],
+    "xRadius": 80000,
+    "yRadius": 60000
+  },
+  {
+    "name": "Central Western Germany",
+    "coordinateCenter": [51.133458, 6.853312],
+    "xRadius": 60000,
+    "yRadius": 80000
+  },
+  {
+    "name": "South Germany",
+    "coordinateCenter": [48.924823, 8.962673],
+    "xRadius": 100000,
+    "yRadius": 80000
+  },
+    {
+    "name": "Ardennen",
+    "coordinateCenter": [50.128785, 5.316568],
+    "xRadius": 60000,
+    "yRadius": 60000
+  },
+    {
+    "name": "Belgium Meuse Basin",
+    "coordinateCenter": [50.423648, 4.574951],
+    "xRadius": 50000,
+    "yRadius": 60000
+  },
+    {
+    "name": "Northeastern France",
+    "coordinateCenter": [49.59069, 5.041459],
+    "xRadius": 60000,
+    "yRadius": 50000
+  },
+    {
+    "name": "West Germany (Moezel)",
+    "coordinateCenter": [49.882657, 7.03972],
+    "angle": 45,
+    "xRadius": 40000,
+    "yRadius": 80000
+  },
+  {
+    "name": "Eastern France",
+    "coordinateCenter": [49.270075, 5.821133],
+    "angle": 20,
+    "xRadius": 100000,
+    "yRadius": 50000
+  },
+    {
+    "name": "Belgium Meuse Basin",
+    "coordinateCenter": [49.953549, 4.646811],
+    "xRadius": 100000,
+    "yRadius": 50000
   }
 ]

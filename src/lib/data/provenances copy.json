@@ -54,12 +54,6 @@
     "yRadius": 75000
   },
   {
-    "name": "Northern Germany",
-    "coordinateCenter": [53.5, 10.0],
-    "xRadius": 120000,
-    "yRadius": 60000
-  },
-  {
     "name": "Upper Meuse Valley",
     "coordinateCenter": [50.2, 5.2],
     "xRadius": 80000,
