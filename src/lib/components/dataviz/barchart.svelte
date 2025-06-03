@@ -46,13 +46,20 @@
                         {/if}
                     </div>
                 </div>
-                <div class="col-12 d-flex justify-content-end">
+                <div class="col-12 d-flex justify-content-end align-items-center gap-2">
+                    <p class="m-0 text-small">Sort:</p>
                     <!-- select sorting method: alpahbetic, descending, descending constructions, descending artworks -->
-                    <select class="form-select small w-auto bg-light-grey border-0 rounded-pill px-3 py-1 text-truncate fw-bold">
-                        <option value="alphabetic">Sort: Alphabetic</option>
+                    <select
+                        class="form-select small w-auto bg-blur box-shadow border-0 rounded-pill px-3 py-1 text-truncate fw-bold"
+                        value={chartSorts[chartId]}
+                        on:change={e => {
+                            chartSorts[chartId] = e.target.value;
+                            updateChart(chartId);
+                        }}>
+                        <option value="alphabetic">Alphabetic</option>
                         <option value="descending">Descending</option>
-                        <option value="descending-constructions">Descending Constructions</option>
-                        <option value="descending-artworks">Descending Artworks</option>
+                        <option value="descending-constructions">Descending Constr.</option>
+                        <option value="descending-artworks">Descending Artw.</option>
                     </select>
                 </div>
                 <div class="col-12">
@@ -86,6 +93,26 @@
     let chartIntervals = {
         'barchart-container-0': { start: 1400, end: 1800 }
     };
+
+    let chartSorts = {
+        'barchart-container-0': 'descending'
+    }
+
+    let globalMax = 100;
+
+    const getSortedDomain = (data, sort) => {
+        if (sort === 'alphabetic') {
+            return data.map(d => d.provenance).sort((a, b) => a.localeCompare(b));
+        }
+        if (sort === 'descending-constructions') {
+            return data.slice().sort((a, b) => b.constructions - a.constructions).map(d => d.provenance);
+        }
+        if (sort === 'descending-artworks') {
+            return data.slice().sort((a, b) => b.artworks - a.artworks).map(d => d.provenance);
+        }
+        // Default: descending by total
+        return data.slice().sort((a, b) => (b.constructions + b.artworks) - (a.constructions + a.artworks)).map(d => d.provenance);
+    }
     
     const extractYear = (fellingDate) => {
         if (!fellingDate) return null;
@@ -144,7 +171,22 @@
         }));
     };
 
-    const drawStackedBarchart = (containerId, data) => {
+    const getGlobalMax = () => {
+        let max = 0;
+        chartIds.forEach(id => {
+            const interval = chartIntervals[id];
+            if (interval) {
+                const data = getStackedData(activeDataSets, interval.start, interval.end);
+                data.forEach(d => {
+                    const total = (d.constructions || 0) + (d.artworks || 0);
+                    if (total > max) max = total;
+                });
+            }
+        });
+        return max;
+    }
+
+    const drawStackedBarchart = (containerId, data, sort) => {
         const keys = ["constructions", "artworks"];
         const width = 500;
         const height = 300;
@@ -158,7 +200,7 @@
             .attr("height", height);
 
         const x = d3.scaleBand()
-            .domain(d3.groupSort(data, D => -d3.sum(D, d => d.constructions + d.artworks), d => d.provenance))
+            .domain(getSortedDomain(data, sort))
             .range([margin.left, width - margin.right])
             .padding(0.1);
 
@@ -167,7 +209,7 @@
             (data);
 
         const y = d3.scaleLinear()
-            .domain([0, d3.max(series, s => d3.max(s, d => d[1]))])
+            .domain([0, globalMax])
             .nice()
             .range([height - margin.bottom, margin.top]);
 
@@ -319,41 +361,62 @@
     }
 
     onMount(() => {
+        globalMax = getGlobalMax();
+
         chartIds.forEach(id => {
             const interval = chartIntervals[id];
+            const sort = chartSorts[id] || 'descending';
             if (interval) {
                 const data = getStackedData(activeDataSets, interval.start, interval.end);
-                drawStackedBarchart(id + "-stacked", data);
+                drawStackedBarchart(id + "-stacked", data, sort);
                 drawStackedBarchartNormalized(id + "-normalized", data);
             }
         });
     });
 
+    // const updateAllCharts = () => {
+    //     globalMax = getGlobalMax();
+    //     chartIds.forEach(id => {
+    //         const interval = chartIntervals[id];
+    //         const sort = chartSorts[id] || 'descending';
+    //         if (interval) {
+    //             const data = getStackedData(activeDataSets, interval.start, interval.end);
+    //             drawStackedBarchart(id + "-stacked", data, sort);
+    //         }
+    //     });
+    // }
+
     const addNewChart = () => {
+        // globalMax = getGlobalMax();
+
         const newId = `barchart-container-${chartCounter++}`;
         chartIds = [...chartIds, newId];
         chartIntervals[newId] = { start: 1400, end: 1800 };
+        chartSorts[newId] = 'descending';
         tick().then(() => {
             const interval = chartIntervals[newId];
+            const sort = chartSorts[newId] || 'descending';
             const data = getStackedData(activeDataSets, interval.start, interval.end);
-            drawStackedBarchart(newId + "-stacked", data);
+            drawStackedBarchart(newId + "-stacked", data, sort);
             drawStackedBarchartNormalized(newId + "-normalized", data);
         });
     };
     
    const updateChart = (chartId) => {
         const interval = chartIntervals[chartId];
+        const sort = chartSorts[chartId] || 'descending';
         if (interval) {
             const data = getStackedData(activeDataSets, interval.start, interval.end);
-            drawStackedBarchart(chartId + "-stacked", data);
+            drawStackedBarchart(chartId + "-stacked", data, sort);
             drawStackedBarchartNormalized(chartId + "-normalized", data);
         }
     }
 
-    // const removeChart = (chartId) => {
-    //     chartIds = chartIds.filter(id => id !== chartId);
-    //     delete chartIntervals[chartId];
-    // };
+    const removeChart = (chartId) => {
+        chartIds = chartIds.filter(id => id !== chartId);
+        delete chartIntervals[chartId];
+        delete chartSorts[chartId];
+    };
 
     // $: if (chartIds.length && activeDataSets.length) {
     //     chartIds.forEach(id => {
