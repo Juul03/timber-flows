@@ -13,7 +13,7 @@
   },
   {
     "name": "Lithuania",
-    "coordinateCenter": [ 54.70146, 24.628039],
+    "coordinateCenter": [54.70146, 24.628039],
     "xRadius": 50000,
     "yRadius": 30000
   },
@@ -60,6 +60,12 @@
     "yRadius": 80000
   },
   {
+    "name": "Western Germany",
+    "coordinateCenter": [50.9, 7.1],
+    "xRadius": 60000,
+    "yRadius": 80000
+  },
+  {
     "name": "South Germany",
     "coordinateCenter": [48.924823, 8.962673],
     "xRadius": 100000,
@@ -98,9 +104,27 @@
     "yRadius": 50000
   },
     {
-    "name": "Belgium Meuse Basin",
+    "name": "Upper Meuse Valley",
     "coordinateCenter": [49.953549, 4.646811],
     "xRadius": 100000,
     "yRadius": 50000
+  },
+  {
+    "name": "East Sweden",
+    "coordinateCenter": [59.3, 17.9],
+    "xRadius": 70000,
+    "yRadius": 110000
+  },
+  {
+    "name": "Southern Norway",
+    "coordinateCenter": [58.973749, 7.250977],
+    "xRadius": 110000,
+    "yRadius": 70000
+  },
+  {
+    "name": "Western Sweden",
+    "coordinateCenter": [58.425988, 12.216797],
+    "xRadius": 70000,
+    "yRadius": 110000
   }
 ]
