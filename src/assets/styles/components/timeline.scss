@@ -39,7 +39,8 @@
             }
         }
 
-        &.dark {
+        &.dark,
+        &.gray_dark {
             .bar {
                 fill: #b8b8b8;
 
@@ -55,7 +56,10 @@
 }
 
 #tooltip-timeline {
-    &.dark {
+    background: whitesmoke;
+    color: black;
+    &.dark,
+    &.gray_dark {
         background: whitesmoke;
         color: black;
     }
@@ -75,7 +79,8 @@
     }
 }
 
-.dark {
+.dark,
+.gray_dark {
     #timeline {
         input {
             &.minYear {

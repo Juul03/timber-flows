@@ -88,7 +88,7 @@
             value: 'gray_dark'
         },
         {
-            name:'Area map (no borders)',
+            name:'Topographic (no borders)',
             value: 'area'
         },
         {

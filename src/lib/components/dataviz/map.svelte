@@ -186,7 +186,7 @@
             let ellipse = L.ellipse(
                 provenance.coordinateCenter,
                 [provenance.xRadius, provenance.yRadius],
-                0,
+                typeof provenance.angle === "number" ? provenance.angle : 0,
                 {
                     className: 'provenanceEllipse'
                 }
@@ -674,9 +674,11 @@
             addProvenancesToMap(leaflet, provenancesCoords, map);
             addLocationsToMap(leaflet, endpointsLocations, map);
 
-            if(zeroState) {
-                drawMapDataByYear(activeDataSets);
-            }
+            zeroState = false;
+
+            // if(zeroState) {
+            //     drawMapDataByYear(activeDataSets);
+            // }
         }
     });
 
