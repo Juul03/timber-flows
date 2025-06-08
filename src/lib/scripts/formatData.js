@@ -92,37 +92,30 @@ export const getUniqueValues = (data, key) => {
 }
 
 // get FellingDates
+// get FellingDates
 export const getFellingDates = (dataSet, name) => {
   const rawFellingDates = dataSet.map(item => item.fellingDate).filter(Boolean);
-  let earliestYears;
 
-  if (name === "shipwrecksBatavia") {
-    earliestYears = rawFellingDates
-      .map(data => {
-        if (typeof data === "string") {
-          // First try to find a year in parentheses (e.g., (1628))
-          let match = data.match(/\((\d{4})\)/);
-          if (match) {
-            return parseInt(match[1], 10);
-          }
+  const extractYear = (data) => {
+    if (typeof data === "string") {
+      // First try to find a year in parentheses (e.g., (1628))
+      let match = data.match(/\((\d{4})\)/);
+      if (match) {
+        return parseInt(match[1], 10);
+      }
+      // Fallback: first 4-digit number anywhere in the string
+      match = data.match(/(\d{4})/);
+      return match ? parseInt(match[1], 10) : null;
+    }
+    if (typeof data === "number") {
+      return data;
+    }
+    return null;
+  };
 
-          // Fallback: first 4-digit number outside parentheses
-          match = data.match(/\b\d{4}\b/);
-          return match ? parseInt(match[0], 10) : null;
-        }
-        return null;
-      })
-      .filter(Boolean); // Remove nulls
-  } else {
-    earliestYears = rawFellingDates
-      .map(data => {
-        if (typeof data === "string") {
-          return parseInt(data.substring(0, 4), 10);
-        }
-        return data;
-      })
-      .filter(Boolean); // Remove nulls
-  }
+  const earliestYears = rawFellingDates
+    .map(extractYear)
+    .filter(Boolean); // Remove nulls
 
   return earliestYears.sort();
 };

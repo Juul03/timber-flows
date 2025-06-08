@@ -366,7 +366,7 @@
         const fellingDateTicks = 25;
 
         const allFrequencies = data.map(d => d.frequency);
-        frequencyLimit = 14;
+        frequencyLimit = 20;
         let maxFrequency = d3.max(allFrequencies);
         const yMax = maxFrequency > frequencyLimit ? frequencyLimit : Math.max(maxFrequency, 1);
         let fullYAxisActive;
