@@ -86,6 +86,7 @@
     import dataPanelPaintings from '$lib/data/artworks/panelPaintings.json';
     import dataSculptures from '$lib/data/artworks/sculptures.json';
     import dataBuildings from '$lib/data/constructions/buildings.json';
+    import dataShipwrecks from '$lib/data/constructions/shipwrecks.json';
 
     // Scripts
     import { formatData, formatDataBatavia, formatDataSjoerd, getUniqueValues, getFellingDates, getUniqueLocations, countDataPoints, countFlatDataPoints } from '$lib/scripts/formatData.js';
@@ -140,6 +141,7 @@
     let formattedDataPanelPaintings = formatDataSjoerd(dataPanelPaintings);
     let formattedDataSculptures = formatDataSjoerd(dataSculptures);
     let formattedDataBuildings = formatDataSjoerd(dataBuildings);
+    let formattedDataShipwrecks = formatDataSjoerd(dataShipwrecks);
 
     // Data variables
     let halfModels = formattedDataHalfModels;
@@ -149,6 +151,7 @@
     let panelPaintings = formattedDataPanelPaintings;
     let sculptures = formattedDataSculptures;
     let buildings = formattedDataBuildings;
+    let shipwrecks = formattedDataShipwrecks;
 
     let dataSetsArtworks = [
         {
@@ -169,6 +172,10 @@
         {
             name: "constructions",
             data: constructions,
+        },
+        {
+            name: "shipwrecks",
+            data: shipwrecks,
         },
         {
             name: "shipwrecksBatavia",
@@ -252,7 +259,7 @@
         },
         {
             name: "Shipwrecks",
-            datapoints:shipwrecksBatavia.length + 6
+            datapoints:shipwrecksBatavia.length + shipwrecks.length
         },
         {
             name: "Batavia shipwreck",
@@ -264,7 +271,7 @@
         },
         {
             name: "Non-specified shipwrecks",
-            datapoints:6
+            datapoints:shipwrecks.length
         },
         {
             name: "Superimposed tiebeam",
@@ -369,37 +376,20 @@
             if (selectedOption === "Constructions") return dataSetsConstructions;
 
             if (selectionPath[1] === "Shipwrecks") {
-                const shipwrecksSet = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
+                const shipwrecksSet = dataSetsConstructions.find(set => set.name === "shipwrecks");
+                const shipwrecksBataviaSet = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
 
-                if(selectedOption === "Shipwrecks" && keywordMap[selectedOption]) {
-                    if (!dataSetCache[selectedOption]) {
-                        const filtered = findAllKeysWithValue(dataSetsConstructions, selectedOption, location, keywordMap[selectedOption]);
-                        dataSetCache[selectedOption] = filtered;
-                    }
-                    const filteredData = dataSetCache[selectedOption] || [];
-
-                    // Combine buildingsSet data with filteredData, avoiding duplicates if needed
-                    const combinedData = [];
-
-                    if (shipwrecksSet) combinedData.push(shipwrecksSet);
-                    combinedData.push(...filteredData);
-
-                    return combinedData;
-                } else if(selectedOption === "Batavia shipwreck") {
-                    const set = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
-                    return set ? [set] : [];
+                if (selectedOption === "Shipwrecks") {
+                    // Always return both general and Batavia shipwrecks
+                    const result = [];
+                    if (shipwrecksSet) result.push(shipwrecksSet);
+                    if (shipwrecksBataviaSet) result.push(shipwrecksBataviaSet);
+                    return result;
+                } else if (selectedOption === "Batavia shipwreck") {
+                    return shipwrecksBataviaSet ? [shipwrecksBataviaSet] : [];
                 } else if (selectedOption === "Non-specified shipwrecks") {
-                    if(!dataSetCache['Shipwrecks']) {
-                        const filtered = findAllKeysWithValue(dataSetsConstructions, selectedOption, location, keywordMap['Shipwrecks']);
-                        dataSetCache['Shipwrecks'] = filtered;
-                    }
-                    const filteredData = dataSetCache['Shipwrecks'] || [];
-                    return filteredData;
+                    return shipwrecksSet ? [shipwrecksSet] : [];
                 }
-                // if (selectedOption === "Shipwrecks" || selectedOption === "Batavia shipwreck") {
-                //     const set = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
-                //     return set ? [set] : [];
-                // }
             } else if (selectionPath[1] === "Archeology") {
                 const set = dataSetsConstructions.find(set => set.name === "archeology");
                 return set ? [set] : [];

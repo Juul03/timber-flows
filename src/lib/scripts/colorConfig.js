@@ -18,6 +18,7 @@ export const subtypeMap = {
     panelPaintings: "artworks",
     sculptures: "artworks",
     buildings: "constructions",
+    shipwrecks: "constructions",
 };
 
 export const colorScale = scaleOrdinal()

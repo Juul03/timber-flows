@@ -58,8 +58,20 @@ export const formatDataBatavia = (data) => {
 export const formatDataSjoerd = (data) => {
   return data.map(item => {
     let provenance = item.Provenance;
+    let endYear = item.DateS;
+
     if (provenance === "NW Germany") {
       provenance = "Northwest Germany";
+    } else if (provenance === "Southern Germany") {
+      provenance = "South Germany";
+    } else if (provenance === "Southeast Lithuania") {
+      provenance = "Lithuania";
+    } else if (provenance === "Poland") {
+      provenance = "Poland, Gdansk";
+    }
+
+    if(item.EndYear && item.EndYear !== "") {
+      endYear = item.EndYear;
     }
 
     return {
@@ -69,9 +81,10 @@ export const formatDataSjoerd = (data) => {
       latitude: item.Latitude?.toString().replace(',', '.'),
       longitude: item.Longitude?.toString().replace(',', '.'),
       length: item.Length,
-      sapwood: item.Sapwoord,
+      sapwood: item.Sapwood,
       WK: item.WK,
-      endYear: item.DateS,
+      startYear: item.StartYear,
+      endYear: endYear,
       fellingDate: item['Estimated felling date'],
       TBP: item.TBP,
       reference: item.Reference,
@@ -250,7 +263,9 @@ export function findCategoryPathFromObjectType(tree, objectType) {
   const objectTypeMap = {
     A: 'Archeology',
     P: 'Panel paintings',
-    S: 'Sculptures',
+    Sc: 'Sculptures',
+    S: 'Shipwrecks',
+    C: 'Constructions',
   };
 
   const targetLabel = objectTypeMap[objectType];
