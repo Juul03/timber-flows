@@ -87,6 +87,7 @@
     import dataSculptures from '$lib/data/artworks/sculptures.json';
     import dataBuildings from '$lib/data/constructions/buildings.json';
     import dataShipwrecks from '$lib/data/constructions/shipwrecks.json';
+    import dataFurniture from '$lib/data/furniture/furniture.json';
 
     // Scripts
     import { formatData, formatDataBatavia, formatDataSjoerd, getUniqueValues, getFellingDates, getUniqueLocations, countDataPoints, countFlatDataPoints } from '$lib/scripts/formatData.js';
@@ -142,6 +143,7 @@
     let formattedDataSculptures = formatDataSjoerd(dataSculptures);
     let formattedDataBuildings = formatDataSjoerd(dataBuildings);
     let formattedDataShipwrecks = formatDataSjoerd(dataShipwrecks);
+    let formattedDataFurniture = formatDataSjoerd(dataFurniture);
 
     // Data variables
     let halfModels = formattedDataHalfModels;
@@ -152,6 +154,7 @@
     let sculptures = formattedDataSculptures;
     let buildings = formattedDataBuildings;
     let shipwrecks = formattedDataShipwrecks;
+    let furniture = formattedDataFurniture;
 
     let dataSetsArtworks = [
         {
@@ -191,6 +194,13 @@
         }
     ];
 
+    let dataSetsFurniture = [
+        {
+            name: "furniture",
+            data: furniture,
+        }
+    ];
+
     let dataSetsAll = [
         {
             name: "artworks",
@@ -199,6 +209,10 @@
         {
             name: "constructions",
             data: dataSetsConstructions,
+        },
+        {
+            name: "furniture",
+            data: dataSetsFurniture,
         }
     ];
 
@@ -248,6 +262,18 @@
         {
             name: "Artworks",
             datapoints:totalArtworks
+        },
+        {
+            name: "Furniture",
+            datapoints: furniture.length
+        },
+        {
+            name: "Constructions",
+            datapoints: totalConstructions
+        },
+        {
+            name: "Shipwrecks Batavia",
+            datapoints: shipwrecksBatavia.length
         },
         {
             name: "Buildings",
@@ -431,6 +457,13 @@
                 return buildingsSet ? [buildingsSet] : [];
             }
             return [];
+        }
+
+        if (selectionPath[0] === "Furniture") {
+            if (selectedOption === "Furniture") return dataSetsFurniture;
+
+            const set = dataSetsFurniture.find(set => set.name === "furniture");
+            return set ? [set] : [];
         }
 
         if(selectedOption === "All" || selectedOption === null) {

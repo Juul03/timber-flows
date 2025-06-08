@@ -59,6 +59,7 @@ export const formatDataSjoerd = (data) => {
   return data.map(item => {
     let provenance = item.Provenance;
     let endYear = item.DateS;
+    let location = item.Site;
 
     if (provenance === "NW Germany") {
       provenance = "Northwest Germany";
@@ -74,10 +75,14 @@ export const formatDataSjoerd = (data) => {
       endYear = item.EndYear;
     }
 
+    if(item.Location && item.Location !== "") {
+      location = item.Location;
+    }
+
     return {
       keyCode: item.SampleCode,
       objectType: item.Category,
-      location: item.Site,
+      location: location,
       latitude: item.Latitude?.toString().replace(',', '.'),
       longitude: item.Longitude?.toString().replace(',', '.'),
       length: item.Length,
@@ -194,6 +199,8 @@ export function findCategoryPath(tree, targetLabel, path = []) {
 }
 
 export function getCategoryPathCombined(tree, routeData, keywordMap) {
+  console.log("getCategoryPathCombined", routeData);
+  console.log("objectType", routeData.objectType);
   if (routeData.objectType) {
     const pathFromObjectType = findCategoryPathFromObjectType(tree, routeData.objectType);
     if (pathFromObjectType) return pathFromObjectType;
@@ -266,6 +273,7 @@ export function findCategoryPathFromObjectType(tree, objectType) {
     Sc: 'Sculptures',
     S: 'Shipwrecks',
     C: 'Constructions',
+    F: 'Furniture'
   };
 
   const targetLabel = objectTypeMap[objectType];

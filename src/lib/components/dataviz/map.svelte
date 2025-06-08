@@ -415,6 +415,7 @@
                     showTooltipRoute = true;
 
                     let location = routeData.location;
+                    console.log("Hovering route for location:", routeData);
                     const categoryPath = getCategoryPathCombined(filtersObject, routeData, keywordMap);
                     let fellingDate = routeData.fellingDate;
                     let startYear = routeData.startYear;
