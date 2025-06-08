@@ -674,7 +674,7 @@
             addProvenancesToMap(leaflet, provenancesCoords, map);
             addLocationsToMap(leaflet, endpointsLocations, map);
 
-            zeroState = false;
+            // zeroState = false;
 
             if(zeroState) {
                 drawMapDataByYear(activeDataSets);
