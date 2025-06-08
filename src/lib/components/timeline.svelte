@@ -40,7 +40,7 @@
         </div>
         <div class="row">
             <div class="col-12 d-flex justify-content-end gap-1">
-                <button class="btn btn-secondary bg-blur d-flex align-items-center justify-content-center" on:click={startTimelineAnimation}>
+                <button class="btn btn-secondary bg-blur d-flex align-items-center justify-content-center" aria-label="timeline control {timelineRunning ? 'play' : 'stop'}" on:click={startTimelineAnimation}>
                     {#if timelineRunning}
                         <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
                             <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->

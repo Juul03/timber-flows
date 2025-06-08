@@ -116,12 +116,6 @@
     "yRadius": 110000
   },
   {
-    "name": "Southern Norway",
-    "coordinateCenter": [58.973749, 7.250977],
-    "xRadius": 110000,
-    "yRadius": 70000
-  },
-  {
     "name": "Western Sweden",
     "coordinateCenter": [58.425988, 12.216797],
     "xRadius": 70000,

@@ -1,3 +1,8 @@
+<svelte:head>
+  <title>Timber Flows: Visualizing Oak Trade into the Low Countries (1400–1800)</title>
+  <meta name="description" content="Explore interactive maps and bar charts showing the historical distribution of oak and timber trade routes into the Low Countries from 1400 to 1800. Data collected from the Woods for Goods project." />
+</svelte:head>
+
 <div class="page-wrapper d-flex flex-column min-vh-100">
     <main class="{selectedMapType} flex-grow-1">
         <h1 class="text-primary d-none">Timber Flows</h1>
