@@ -676,9 +676,9 @@
 
             zeroState = false;
 
-            // if(zeroState) {
-            //     drawMapDataByYear(activeDataSets);
-            // }
+            if(zeroState) {
+                drawMapDataByYear(activeDataSets);
+            }
         }
     });
 
