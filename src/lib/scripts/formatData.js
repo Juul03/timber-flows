@@ -163,6 +163,10 @@ export const getUniqueLocations = (datasets) => {
         part = 'Alphen aan den Rijn'
       }
 
+      if(part === 'de') {
+        part = 'De Bilt'
+      }
+
       return part;
     });
 
