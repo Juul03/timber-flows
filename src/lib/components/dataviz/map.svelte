@@ -674,11 +674,11 @@
             addProvenancesToMap(leaflet, provenancesCoords, map);
             addLocationsToMap(leaflet, endpointsLocations, map);
 
-            // zeroState = false;
+            zeroState = false;
 
-            if(zeroState) {
-                drawMapDataByYear(activeDataSets);
-            }
+            // if(zeroState) {
+            //     drawMapDataByYear(activeDataSets);
+            // }
         }
     });
 
@@ -713,6 +713,7 @@
         setProvenaceOpacity();
 
         if (Array.isArray(timelineDataSelection)) {
+            console.log("Drawing timeline data selection", timelineDataSelection);
             timelineDataSelection.forEach(firstLevel => {
                 const objectType = firstLevel.name || "unknown";
 

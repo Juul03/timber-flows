@@ -441,33 +441,20 @@
         return [];
     };
 
-    const getYear = (fellingDate) => {
-        if (!fellingDate) return null;
-
-        if (typeof fellingDate === 'number') {
-            return fellingDate;
-        }
-
-        if (typeof fellingDate === 'string') {
-            // Try to find a year inside parentheses first
-            const parenMatch = fellingDate.match(/\((\d{4})\)/);
-            if (parenMatch) {
-                return parseInt(parenMatch[1], 10);
+    const getYear = (data) => {
+        if (typeof data === "string") {
+            // First try to find a year in parentheses (e.g., (1628))
+            let match = data.match(/\((\d{4})\)/);
+            if (match) {
+                return parseInt(match[1], 10);
             }
-
-            // If no parentheses, check if it is a range "1500-1550"
-            if (fellingDate.includes('-')) {
-                const yearStr = fellingDate.split('-')[0].trim();
-                const year = parseInt(yearStr, 10);
-                return isNaN(year) ? null : year;
-            }
-
-            // Otherwise try parsing the whole string as year (e.g. "1500")
-            const year = parseInt(fellingDate.trim(), 10);
-            return isNaN(year) ? null : year;
+            // Fallback: first 4-digit number anywhere in the string
+            match = data.match(/(\d{4})/);
+            return match ? parseInt(match[1], 10) : null;
         }
-
-        // Fallback
+        if (typeof data === "number") {
+            return data;
+        }
         return null;
     };
 

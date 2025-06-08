@@ -67,7 +67,7 @@ export const formatDataSjoerd = (data) => {
     } else if (provenance === "Southeast Lithuania") {
       provenance = "Lithuania";
     } else if (provenance === "Poland") {
-      provenance = "Poland, Gdansk";
+      provenance = "Gdansk, Poland";
     }
 
     if(item.EndYear && item.EndYear !== "") {
