@@ -4,12 +4,6 @@
     bind:this={mapContainer}
     >
 </div>
-
-<label class="position-absolute top-0 start-50 z-3">
-    <input type="checkbox" bind:checked={showDirectRoutes} />
-    Show direct routes only
-</label>
-
 {#if showTooltipRoute}
     <TooltipRoute
         {tooltipRouteContent}
@@ -77,8 +71,6 @@
     export let previousSelectedLocations = [];
     export let selectionPath;
     export let selectedMapLayers = [];
-
-    let showDirectRoutes = true;
 
     // Compontent variables
     let previousActiveDataSets = null;
@@ -317,14 +309,7 @@
         if (!routeData) return;
 
         const offsetCoordinates = offsetPath(route.coordinates, offset);
-        let finalCoordinates;
-
-        if (showDirectRoutes && offsetCoordinates.length >= 2) {
-            // Only use the first and last coordinate for a direct line
-            finalCoordinates = [offsetCoordinates[0], offsetCoordinates[offsetCoordinates.length - 1]];
-        } else {
-            finalCoordinates = [...offsetCoordinates];
-        }
+        let finalCoordinates = [...offsetCoordinates];
 
         // Check if exact lat/lng are provided
         if (
@@ -430,7 +415,6 @@
                     showTooltipRoute = true;
 
                     let location = routeData.location;
-                    console.log("Hovering route for location:", routeData);
                     const categoryPath = getCategoryPathCombined(filtersObject, routeData, keywordMap);
                     let fellingDate = routeData.fellingDate;
                     let startYear = routeData.startYear;
@@ -729,7 +713,6 @@
         setProvenaceOpacity();
 
         if (Array.isArray(timelineDataSelection)) {
-            console.log("Drawing timeline data selection", timelineDataSelection);
             timelineDataSelection.forEach(firstLevel => {
                 const objectType = firstLevel.name || "unknown";
 

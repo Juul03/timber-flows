@@ -203,8 +203,6 @@ export function findCategoryPath(tree, targetLabel, path = []) {
 }
 
 export function getCategoryPathCombined(tree, routeData, keywordMap) {
-  console.log("getCategoryPathCombined", routeData);
-  console.log("objectType", routeData.objectType);
   if (routeData.objectType) {
     const pathFromObjectType = findCategoryPathFromObjectType(tree, routeData.objectType);
     if (pathFromObjectType) return pathFromObjectType;

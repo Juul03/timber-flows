@@ -552,6 +552,6 @@
     }
 
     $: if (currentView) {
-        console.log("current view changes in parent", currentView);
+        // console.log("current view changes in parent", currentView);
     }
 </script>

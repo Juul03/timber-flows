@@ -295,7 +295,7 @@
 
     // Show timeline events
     const openTimelineEvents = () => {
-        console.log("open timeline events");
+        // console.log("open timeline events");
     }
 
     // onMount
@@ -615,7 +615,7 @@
     }
 
     $: if(timelineClicked) {
-        console.log("timeline clicked child", timelineClicked);
+        // console.log("timeline clicked child", timelineClicked);
     }
 
     export let selectedMapType;
