@@ -1,7 +1,7 @@
 [
     {
         "SampleCode": "14.047.001",
-        "Category": "S",
+        "Category": "Sc",
         "Site": "Breukelen, Wrak in de Vecht",
         "Latitude": "52,1645542",
         "Longitude": "5,0028581383",
@@ -16,7 +16,7 @@
     },
     {
         "SampleCode": "14.090.003",
-        "Category": "S",
+        "Category": "Sc",
         "Site": "Harderwijk, Waterfront en Havenfront",
         "Latitude": "52,347402",
         "Longitude": "5,6291317",
@@ -31,7 +31,7 @@
     },
     {
         "SampleCode": "15.035.B01",
-        "Category": "S",
+        "Category": "Sc",
         "Site": "Deventer, Ruimte voor de Rivier",
         "Latitude": "52,24927325",
         "Longitude": "6,1761306398",
@@ -46,7 +46,7 @@
     },
     {
         "SampleCode": "15.060.001",
-        "Category": "S",
+        "Category": "Sc",
         "Site": "Deventer, Ruimte voor de rivier",
         "Latitude": "52,24927325",
         "Longitude": "6,1761306398",
@@ -61,7 +61,7 @@
     },
     {
         "SampleCode": "15.060.002",
-        "Category": "S",
+        "Category": "Sc",
         "Site": "Deventer, Ruimte voor de rivier",
         "Latitude": "52,24927325",
         "Longitude": "6,1761306398",
@@ -76,7 +76,7 @@
     },
     {
         "SampleCode": "15.060.B01",
-        "Category": "S",
+        "Category": "Sc",
         "Site": "Deventer, Ruimte voor de rivier",
         "Latitude": "52,24927325",
         "Longitude": "6,1761306398",
@@ -91,7 +91,7 @@
     },
     {
         "SampleCode": "15.080.002",
-        "Category": "S",
+        "Category": "Sc",
         "Site": "Ballum, scheepswrak",
         "Latitude": "53,41036725",
         "Longitude": "5,6945647906",
@@ -106,7 +106,7 @@
     },
     {
         "SampleCode": "15.108.002",
-        "Category": "S",
+        "Category": "Sc",
         "Site": "Oud-Beijerland, Herinrichting Bierkade/Scheepmakershaven",
         "Latitude": "51,80812165",
         "Longitude": "4,4093244547",
@@ -121,7 +121,7 @@
     },
     {
         "SampleCode": "16.061.001",
-        "Category": "S",
+        "Category": "Sc",
         "Site": "versterking Markermeerdijken",
         "Latitude": "0",
         "Longitude": "0",
@@ -136,7 +136,7 @@
     },
     {
         "SampleCode": "16.063.003",
-        "Category": "S",
+        "Category": "Sc",
         "Site": "Deventer, Ruimte voor de Rivier",
         "Latitude": "52,24927325",
         "Longitude": "6,1761306398",
@@ -151,7 +151,7 @@
     },
     {
         "SampleCode": "16.097.001",
-        "Category": "S",
+        "Category": "Sc",
         "Site": "Markerwadden, duikinspectie",
         "Latitude": "0",
         "Longitude": "0",
@@ -166,7 +166,7 @@
     },
     {
         "SampleCode": "17.093.001",
-        "Category": "S",
+        "Category": "Sc",
         "Site": "Hoornse Hop",
         "Latitude": "52,6407153",
         "Longitude": "4,7720438",
@@ -181,7 +181,7 @@
     },
     {
         "SampleCode": "17.095.001",
-        "Category": "S",
+        "Category": "Sc",
         "Site": "onbekend wrak",
         "Latitude": "0",
         "Longitude": "0",
@@ -196,7 +196,7 @@
     },
     {
         "SampleCode": "15.088.001",
-        "Category": "S",
+        "Category": "Sc",
         "Site": "collectie H.C.M.J. Lokenberg",
         "Latitude": "0",
         "Longitude": "0",

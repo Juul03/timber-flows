@@ -86,6 +86,8 @@
     import dataPanelPaintings from '$lib/data/artworks/panelPaintings.json';
     import dataSculptures from '$lib/data/artworks/sculptures.json';
     import dataBuildings from '$lib/data/constructions/buildings.json';
+    import dataShipwrecks from '$lib/data/constructions/shipwrecks.json';
+    import dataFurniture from '$lib/data/furniture/furniture.json';
 
     // Scripts
     import { formatData, formatDataBatavia, formatDataSjoerd, getUniqueValues, getFellingDates, getUniqueLocations, countDataPoints, countFlatDataPoints } from '$lib/scripts/formatData.js';
@@ -140,6 +142,8 @@
     let formattedDataPanelPaintings = formatDataSjoerd(dataPanelPaintings);
     let formattedDataSculptures = formatDataSjoerd(dataSculptures);
     let formattedDataBuildings = formatDataSjoerd(dataBuildings);
+    let formattedDataShipwrecks = formatDataSjoerd(dataShipwrecks);
+    let formattedDataFurniture = formatDataSjoerd(dataFurniture);
 
     // Data variables
     let halfModels = formattedDataHalfModels;
@@ -149,6 +153,8 @@
     let panelPaintings = formattedDataPanelPaintings;
     let sculptures = formattedDataSculptures;
     let buildings = formattedDataBuildings;
+    let shipwrecks = formattedDataShipwrecks;
+    let furniture = formattedDataFurniture;
 
     let dataSetsArtworks = [
         {
@@ -171,6 +177,10 @@
             data: constructions,
         },
         {
+            name: "shipwrecks",
+            data: shipwrecks,
+        },
+        {
             name: "shipwrecksBatavia",
             data: shipwrecksBatavia,
         },
@@ -184,6 +194,13 @@
         }
     ];
 
+    let dataSetsFurniture = [
+        {
+            name: "furniture",
+            data: furniture,
+        }
+    ];
+
     let dataSetsAll = [
         {
             name: "artworks",
@@ -192,6 +209,10 @@
         {
             name: "constructions",
             data: dataSetsConstructions,
+        },
+        {
+            name: "furniture",
+            data: dataSetsFurniture,
         }
     ];
 
@@ -243,6 +264,18 @@
             datapoints:totalArtworks
         },
         {
+            name: "Furniture",
+            datapoints: furniture.length
+        },
+        {
+            name: "Constructions",
+            datapoints: totalConstructions
+        },
+        {
+            name: "Shipwrecks Batavia",
+            datapoints: shipwrecksBatavia.length
+        },
+        {
             name: "Buildings",
             datapoints: buildings.length + 8 + 13 + 6 + 25 + 15
         },
@@ -252,7 +285,7 @@
         },
         {
             name: "Shipwrecks",
-            datapoints:shipwrecksBatavia.length + 6
+            datapoints:shipwrecksBatavia.length + shipwrecks.length
         },
         {
             name: "Batavia shipwreck",
@@ -264,7 +297,7 @@
         },
         {
             name: "Non-specified shipwrecks",
-            datapoints:6
+            datapoints:shipwrecks.length
         },
         {
             name: "Superimposed tiebeam",
@@ -308,7 +341,7 @@
     let fellingDatesHalfModels = getFellingDates(halfModels);
     
     // Get all unique locations (for constructions)
-    uniqueLocations = getUniqueLocations([constructions, shipwrecksBatavia, archeology, buildings, sculptures, panelPaintings, halfModels]);
+    uniqueLocations = getUniqueLocations([constructions, shipwrecksBatavia, shipwrecks, archeology, buildings, sculptures, panelPaintings, halfModels, furniture]);
 
     const findAllKeysWithValue = (dataSetsConstructions, dataSetName, location, buildingKeywords) => {
         const filteredData = dataSetsConstructions.map(dataset => {
@@ -369,37 +402,20 @@
             if (selectedOption === "Constructions") return dataSetsConstructions;
 
             if (selectionPath[1] === "Shipwrecks") {
-                const shipwrecksSet = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
+                const shipwrecksSet = dataSetsConstructions.find(set => set.name === "shipwrecks");
+                const shipwrecksBataviaSet = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
 
-                if(selectedOption === "Shipwrecks" && keywordMap[selectedOption]) {
-                    if (!dataSetCache[selectedOption]) {
-                        const filtered = findAllKeysWithValue(dataSetsConstructions, selectedOption, location, keywordMap[selectedOption]);
-                        dataSetCache[selectedOption] = filtered;
-                    }
-                    const filteredData = dataSetCache[selectedOption] || [];
-
-                    // Combine buildingsSet data with filteredData, avoiding duplicates if needed
-                    const combinedData = [];
-
-                    if (shipwrecksSet) combinedData.push(shipwrecksSet);
-                    combinedData.push(...filteredData);
-
-                    return combinedData;
-                } else if(selectedOption === "Batavia shipwreck") {
-                    const set = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
-                    return set ? [set] : [];
+                if (selectedOption === "Shipwrecks") {
+                    // Always return both general and Batavia shipwrecks
+                    const result = [];
+                    if (shipwrecksSet) result.push(shipwrecksSet);
+                    if (shipwrecksBataviaSet) result.push(shipwrecksBataviaSet);
+                    return result;
+                } else if (selectedOption === "Batavia shipwreck") {
+                    return shipwrecksBataviaSet ? [shipwrecksBataviaSet] : [];
                 } else if (selectedOption === "Non-specified shipwrecks") {
-                    if(!dataSetCache['Shipwrecks']) {
-                        const filtered = findAllKeysWithValue(dataSetsConstructions, selectedOption, location, keywordMap['Shipwrecks']);
-                        dataSetCache['Shipwrecks'] = filtered;
-                    }
-                    const filteredData = dataSetCache['Shipwrecks'] || [];
-                    return filteredData;
+                    return shipwrecksSet ? [shipwrecksSet] : [];
                 }
-                // if (selectedOption === "Shipwrecks" || selectedOption === "Batavia shipwreck") {
-                //     const set = dataSetsConstructions.find(set => set.name === "shipwrecksBatavia");
-                //     return set ? [set] : [];
-                // }
             } else if (selectionPath[1] === "Archeology") {
                 const set = dataSetsConstructions.find(set => set.name === "archeology");
                 return set ? [set] : [];
@@ -443,6 +459,13 @@
             return [];
         }
 
+        if (selectionPath[0] === "Furniture") {
+            if (selectedOption === "Furniture") return dataSetsFurniture;
+
+            const set = dataSetsFurniture.find(set => set.name === "furniture");
+            return set ? [set] : [];
+        }
+
         if(selectedOption === "All" || selectedOption === null) {
             return dataSetsAll;
 
@@ -451,33 +474,20 @@
         return [];
     };
 
-    const getYear = (fellingDate) => {
-        if (!fellingDate) return null;
-
-        if (typeof fellingDate === 'number') {
-            return fellingDate;
-        }
-
-        if (typeof fellingDate === 'string') {
-            // Try to find a year inside parentheses first
-            const parenMatch = fellingDate.match(/\((\d{4})\)/);
-            if (parenMatch) {
-                return parseInt(parenMatch[1], 10);
+    const getYear = (data) => {
+        if (typeof data === "string") {
+            // First try to find a year in parentheses (e.g., (1628))
+            let match = data.match(/\((\d{4})\)/);
+            if (match) {
+                return parseInt(match[1], 10);
             }
-
-            // If no parentheses, check if it is a range "1500-1550"
-            if (fellingDate.includes('-')) {
-                const yearStr = fellingDate.split('-')[0].trim();
-                const year = parseInt(yearStr, 10);
-                return isNaN(year) ? null : year;
-            }
-
-            // Otherwise try parsing the whole string as year (e.g. "1500")
-            const year = parseInt(fellingDate.trim(), 10);
-            return isNaN(year) ? null : year;
+            // Fallback: first 4-digit number anywhere in the string
+            match = data.match(/(\d{4})/);
+            return match ? parseInt(match[1], 10) : null;
         }
-
-        // Fallback
+        if (typeof data === "number") {
+            return data;
+        }
         return null;
     };
 
@@ -542,6 +552,6 @@
     }
 
     $: if (currentView) {
-        console.log("current view changes in parent", currentView);
+        // console.log("current view changes in parent", currentView);
     }
 </script>

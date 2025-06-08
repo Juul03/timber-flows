@@ -74,6 +74,7 @@
                         <option value="descending">Descending</option>
                         <option value="descending-constructions">Descending Constr.</option>
                         <option value="descending-artworks">Descending Artw.</option>
+                        <option value="descending-furniture">Descending Furn.</option>
                     </select>
                 </div>
                 <div class="col-12">
@@ -167,6 +168,20 @@
             return [...sortedWithArtworks, ...sortedWithConstructionsOnly, ...sortedNoData];
         }
 
+        if(sort === 'descending-furniture') {
+            // Sort furniture descending
+            const withFurniture = data.filter(d => d.furniture > 0);
+            const sortedWithFurniture = withFurniture
+                .slice()
+                .sort((a, b) => b.furniture - a.furniture)
+                .map(d => d.provenance);
+            // The rest of the sorts remain unchanged:
+            const withData = data.filter(d => (d.constructions || d.artworks || d.furniture));
+            const noData = data.filter(d => !d.constructions && !d.artworks && !d.furniture);
+            const sortedWithData = withData.map(d => d.provenance).sort((a, b) => a.localeCompare(b));
+            return [...sortedWithFurniture, ...sortedWithData, ...noData.map(d => d.provenance).sort((a, b) => a.localeCompare(b))];
+        }
+
         // The rest of your sorts remain unchanged:
         if (sort === 'alphabetic') {
             const withData = data.filter(d => (d.constructions || d.artworks));
@@ -236,7 +251,7 @@
         const counts = {};
 
         allprovenances.forEach(prov => {
-            counts[prov] = { constructions: 0, artworks: 0 };
+            counts[prov] = { constructions: 0, artworks: 0, furniture: 0 };
         });
 
         dataSets.forEach(ds => {
@@ -248,9 +263,10 @@
                         const year = extractYear(item.fellingDate);
                         if (year && year >= startYear && year <= endYear) {
                             const prov = item.provenance || 'Unknown';
-                            if (!counts[prov]) counts[prov] = { constructions: 0, artworks: 0 };
+                            if (!counts[prov]) counts[prov] = { constructions: 0, artworks: 0, furniture: 0 };
                             if (type === "constructions") counts[prov].constructions += 1;
                             if (type === "artworks") counts[prov].artworks += 1;
+                            if (type === "furniture") counts[prov].furniture += 1;
                         }
                     });
                 });
@@ -278,9 +294,11 @@
     }
 
     const drawStackedBarchart = (containerId, data, sort) => {
-        let keys = ["constructions", "artworks"];
+        let keys = ["constructions", "artworks", "furniture"];
         if (sort === "descending-artworks") {
-            keys = ["artworks", "constructions"];
+            keys = ["artworks", "constructions", "furniture"];
+        } else if (sort === "descending-furniture") {
+            keys = ["furniture", "constructions", "artworks"];
         }
         const width = 500;
         const height = 300;
@@ -378,9 +396,11 @@
     }
 
     const drawStackedBarchartNormalized = (containerId, data, sort) => {
-        let keys = ["constructions", "artworks"];
+        let keys = ["constructions", "artworks", "furniture"];
         if (sort === "descending-artworks") {
             keys = ["artworks", "constructions"];
+        } else if (sort === "descending-furniture") {
+            keys = ["furniture", "constructions", "artworks"];
         }
         const width = 500;
         const height = 300;

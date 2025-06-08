@@ -58,20 +58,38 @@ export const formatDataBatavia = (data) => {
 export const formatDataSjoerd = (data) => {
   return data.map(item => {
     let provenance = item.Provenance;
+    let endYear = item.DateS;
+    let location = item.Site;
+
     if (provenance === "NW Germany") {
       provenance = "Northwest Germany";
+    } else if (provenance === "Southern Germany") {
+      provenance = "South Germany";
+    } else if (provenance === "Southeast Lithuania") {
+      provenance = "Lithuania";
+    } else if (provenance === "Poland") {
+      provenance = "Gdansk, Poland";
+    }
+
+    if(item.EndYear && item.EndYear !== "") {
+      endYear = item.EndYear;
+    }
+
+    if(item.Location && item.Location !== "") {
+      location = item.Location;
     }
 
     return {
       keyCode: item.SampleCode,
       objectType: item.Category,
-      location: item.Site,
+      location: location,
       latitude: item.Latitude?.toString().replace(',', '.'),
       longitude: item.Longitude?.toString().replace(',', '.'),
       length: item.Length,
-      sapwood: item.Sapwoord,
+      sapwood: item.Sapwood,
       WK: item.WK,
-      endYear: item.DateS,
+      startYear: item.StartYear,
+      endYear: endYear,
       fellingDate: item['Estimated felling date'],
       TBP: item.TBP,
       reference: item.Reference,
@@ -92,37 +110,30 @@ export const getUniqueValues = (data, key) => {
 }
 
 // get FellingDates
+// get FellingDates
 export const getFellingDates = (dataSet, name) => {
   const rawFellingDates = dataSet.map(item => item.fellingDate).filter(Boolean);
-  let earliestYears;
 
-  if (name === "shipwrecksBatavia") {
-    earliestYears = rawFellingDates
-      .map(data => {
-        if (typeof data === "string") {
-          // First try to find a year in parentheses (e.g., (1628))
-          let match = data.match(/\((\d{4})\)/);
-          if (match) {
-            return parseInt(match[1], 10);
-          }
+  const extractYear = (data) => {
+    if (typeof data === "string") {
+      // First try to find a year in parentheses (e.g., (1628))
+      let match = data.match(/\((\d{4})\)/);
+      if (match) {
+        return parseInt(match[1], 10);
+      }
+      // Fallback: first 4-digit number anywhere in the string
+      match = data.match(/(\d{4})/);
+      return match ? parseInt(match[1], 10) : null;
+    }
+    if (typeof data === "number") {
+      return data;
+    }
+    return null;
+  };
 
-          // Fallback: first 4-digit number outside parentheses
-          match = data.match(/\b\d{4}\b/);
-          return match ? parseInt(match[0], 10) : null;
-        }
-        return null;
-      })
-      .filter(Boolean); // Remove nulls
-  } else {
-    earliestYears = rawFellingDates
-      .map(data => {
-        if (typeof data === "string") {
-          return parseInt(data.substring(0, 4), 10);
-        }
-        return data;
-      })
-      .filter(Boolean); // Remove nulls
-  }
+  const earliestYears = rawFellingDates
+    .map(extractYear)
+    .filter(Boolean); // Remove nulls
 
   return earliestYears.sort();
 };
@@ -150,6 +161,10 @@ export const getUniqueLocations = (datasets) => {
 
       if (part === 'alphen') {
         part = 'Alphen aan den Rijn'
+      }
+
+      if(part === 'de') {
+        part = 'De Bilt'
       }
 
       return part;
@@ -257,7 +272,10 @@ export function findCategoryPathFromObjectType(tree, objectType) {
   const objectTypeMap = {
     A: 'Archeology',
     P: 'Panel paintings',
-    S: 'Sculptures',
+    Sc: 'Sculptures',
+    S: 'Shipwrecks',
+    C: 'Constructions',
+    F: 'Furniture'
   };
 
   const targetLabel = objectTypeMap[objectType];

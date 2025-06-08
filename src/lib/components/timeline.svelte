@@ -295,7 +295,7 @@
 
     // Show timeline events
     const openTimelineEvents = () => {
-        console.log("open timeline events");
+        // console.log("open timeline events");
     }
 
     // onMount
@@ -366,7 +366,7 @@
         const fellingDateTicks = 25;
 
         const allFrequencies = data.map(d => d.frequency);
-        frequencyLimit = 14;
+        frequencyLimit = 20;
         let maxFrequency = d3.max(allFrequencies);
         const yMax = maxFrequency > frequencyLimit ? frequencyLimit : Math.max(maxFrequency, 1);
         let fullYAxisActive;
@@ -615,7 +615,7 @@
     }
 
     $: if(timelineClicked) {
-        console.log("timeline clicked child", timelineClicked);
+        // console.log("timeline clicked child", timelineClicked);
     }
 
     export let selectedMapType;
