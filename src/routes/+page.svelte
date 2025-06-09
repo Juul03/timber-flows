@@ -88,6 +88,7 @@
     import dataBuildings from '$lib/data/constructions/buildings.json';
     import dataShipwrecks from '$lib/data/constructions/shipwrecks.json';
     import dataFurniture from '$lib/data/furniture/furniture.json';
+    import dataStaves from '$lib/data/constructions/staves.json';
 
     // Scripts
     import { formatData, formatDataBatavia, formatDataSjoerd, getUniqueValues, getFellingDates, getUniqueLocations, countDataPoints, countFlatDataPoints } from '$lib/scripts/formatData.js';
@@ -144,6 +145,7 @@
     let formattedDataBuildings = formatDataSjoerd(dataBuildings);
     let formattedDataShipwrecks = formatDataSjoerd(dataShipwrecks);
     let formattedDataFurniture = formatDataSjoerd(dataFurniture);
+    let formattedDataStaves = formatDataSjoerd(dataStaves);
 
     // Data variables
     let halfModels = formattedDataHalfModels;
@@ -155,6 +157,7 @@
     let buildings = formattedDataBuildings;
     let shipwrecks = formattedDataShipwrecks;
     let furniture = formattedDataFurniture;
+    let staves = formattedDataStaves;
 
     let dataSetsArtworks = [
         {
@@ -191,6 +194,10 @@
         {
             name: "buildings",
             data: buildings,
+        },
+        {
+            name: "staves",
+            data: staves,
         }
     ];
 
@@ -290,6 +297,10 @@
         {
             name: "Batavia shipwreck",
             datapoints: shipwrecksBatavia.length
+        },
+        {
+            name: "Staves",
+            datapoints: staves.length
         },
         {
             name: "Non-specified building",
@@ -455,6 +466,9 @@
 
                 // fallback: just return buildingsSet if no keywordMap or selectedOption doesn't match
                 return buildingsSet ? [buildingsSet] : [];
+            } else if (selectionPath[1] === "Staves") {
+                const set = dataSetsConstructions.find(set => set.name === "staves");
+                return set ? [set] : [];
             }
             return [];
         }

@@ -34,7 +34,8 @@ export const filtersObject = {
                 "Outer transom": null,
                 "Diagonal transom": null,
             }
-        }
+        },
+      Staves: null,
     },
     Artworks: {
       Halfmodels: null,  
