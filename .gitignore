@@ -24,6 +24,7 @@ vite.config.ts.timestamp-*
 
 # Custom
 # Ignore all JSON files in specific folders
+src/lib/data/datafiles/*.json
 src/lib/data/artworks/*.json
 src/lib/data/furniture/*.json
 src/lib/data/constructions/*.json

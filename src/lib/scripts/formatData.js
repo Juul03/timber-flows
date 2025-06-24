@@ -215,20 +215,8 @@ export function getCategoryPathCombined(tree, routeData, keywordMap) {
   return ['Uncategorized'];
 }
 
-export function findCategoryPathFromLocation(tree, location, keywordMap) {
+export function findCategoryPathFromLocation(tree, location) {
   const lowerLoc = location.toLowerCase();
-
-  // Step 1: Collect all matched labels
-  const matchedLabels = new Set();
-
-  for (const [englishLabel, keywords] of Object.entries(keywordMap)) {
-    for (const keyword of keywords) {
-      if (lowerLoc.includes(keyword)) {
-        matchedLabels.add(englishLabel);
-        break;
-      }
-    }
-  }
 
   // Step 2: Special case for Halfmodels
   if (lowerLoc.includes('ng-mc') || lowerLoc.includes('indet')) {
@@ -236,7 +224,7 @@ export function findCategoryPathFromLocation(tree, location, keywordMap) {
     if (halfmodelPath) return halfmodelPath;
   }
 
-  // Step 3: Find the deepest path that includes one or more matched labels
+  // Step 3: Try to find a path matching the location as a label
   let bestPath = null;
 
   function dfs(node, path = []) {
@@ -244,7 +232,7 @@ export function findCategoryPathFromLocation(tree, location, keywordMap) {
       const newPath = [...path, key];
       const child = node[key];
 
-      if (matchedLabels.has(key)) {
+      if (lowerLoc.includes(key.toLowerCase())) {
         if (!bestPath || newPath.length > bestPath.length) {
           bestPath = newPath;
         }
@@ -259,10 +247,10 @@ export function findCategoryPathFromLocation(tree, location, keywordMap) {
   dfs(tree);
 
   if (!bestPath) {
-        if (lowerLoc && lowerLoc !== '' && !lowerLoc.includes('ng-mc') && !lowerLoc.includes('indet')) {
-            const constructionsPath = findCategoryPath(tree, 'Constructions');
-            if (constructionsPath) return constructionsPath;
-        }
+    if (lowerLoc && lowerLoc !== '' && !lowerLoc.includes('ng-mc') && !lowerLoc.includes('indet')) {
+      const constructionsPath = findCategoryPath(tree, 'Constructions');
+      if (constructionsPath) return constructionsPath;
+    }
   }
 
   return bestPath || ['Uncategorized'];

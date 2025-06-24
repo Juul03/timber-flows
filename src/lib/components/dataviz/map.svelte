@@ -63,7 +63,6 @@
     export let activeDataSets;
     export let timelineDataSelection;
     export let selectedMapType;
-    export let keywordMap = {};
     export let timelineClicked;
     export let timelineRunning;
     export let timelineSpeed = 500;
@@ -415,7 +414,7 @@
                     showTooltipRoute = true;
 
                     let location = routeData.location;
-                    const categoryPath = getCategoryPathCombined(filtersObject, routeData, keywordMap);
+                    const categoryPath = getCategoryPathCombined(filtersObject, routeData);
                     let fellingDate = routeData.fellingDate;
                     let startYear = routeData.startYear;
 
@@ -979,6 +978,7 @@
             !deepEqual(selectionPath, previousSelectionPath)
         )
     ) {
+        console.log("active", activeDataSets);
         if (skipNextDrawMapData) {
             skipNextDrawMapData = false;
         } else {
