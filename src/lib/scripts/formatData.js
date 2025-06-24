@@ -276,18 +276,11 @@ export function findCategoryPathFromObjectType(tree, objectType) {
 export function countDataPoints(dataSets) {
     let count = 0;
 
-    dataSets.forEach(category => {
-        if (Array.isArray(category.data)) {
-            category.data.forEach(subset => {
-                if (Array.isArray(subset.data)) {
-                    // subset.data is an array of datapoints
-                    count += subset.data.length;
-                } else {
-                    console.warn("Unexpected data structure:", subset);
-                }
-            });
+    dataSets.forEach(set => {
+        if (Array.isArray(set.data)) {
+            count += set.data.length;
         } else {
-            console.warn("Unexpected data structure:", category);
+            console.warn("Unexpected data structure:", set);
         }
     });
 

@@ -28,7 +28,7 @@
         </div>
         <div class="col-12 d-flex flex-wrap gap-2 align-items-center">
             <button 
-                class="badge rounded-pill bg-blur border-0 {selectionPath.length === 0 ? 'fw-bold' : 'fw-normal'}"
+                class="badge rounded-pill bg-blur border-0 {selectionPath?.length === 0 ? 'fw-bold' : 'fw-normal'}"
                 on:click={() => {
                     selectionPath = [];
                     selectedOption = 'All';
@@ -42,10 +42,10 @@
                     <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
                 </svg>
                 <button 
-                    class={`badge rounded-pill border-0 ${index === 0 ? `bg-blur-${selectionPath[0].toLowerCase()}` : 'bg-blur'} ${index === selectionPath.length - 1 ? 'fw-bold' : 'fw-normal'}`}
+                    class={`badge rounded-pill border-0 ${index === 0 ? `bg-blur-${selectionPath[0].toLowerCase()}` : 'bg-blur'} ${index === selectionPath?.length - 1 ? 'fw-bold' : 'fw-normal'}`}
                     on:click={() => {
                         selectionPath = selectionPath.slice(0, index + 1);
-                        selectedOption = `${selectionPath[selectionPath.length - 1]}`;
+                        selectedOption = `${selectionPath[selectionPath?.length - 1]}`;
                     }}
                 >
                     {label}
@@ -59,6 +59,53 @@
             <div id="woodPurposeFilter" class="d-flex flex-column justify-content-between bg-blur rounded p-3">
                 <div>
                     <div class="form-check">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="all"
+                            checked={selectedOptions.length === Object.keys(filtersObject).length}
+                            on:change={() => {
+                                if (selectedOptions.length === Object.keys(filtersObject).length) {
+                                    selectedOptions = [];
+                                } else {
+                                    selectedOptions = Object.keys(filtersObject);
+                                }
+                            }}
+                        />
+                        <label class="form-check-label" for="all">
+                            All
+                        </label>
+                    </div>
+                    {#each Object.keys(filtersObject) as category}
+                        <div class="form-check">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id={category}
+                                value={category}
+                                checked={selectedOptions.includes(category)}
+                                on:change={() => {
+                                    if (selectedOptions.includes(category)) {
+                                        selectedOptions = selectedOptions.filter(opt => opt !== category);
+                                    } else {
+                                        selectedOptions = [...selectedOptions, category];
+                                    }
+                                }}
+                            />
+                            <!-- TODO: {selectedOptions.contains(category) ? 'fw-bold' : 'fw-normal'} -->
+                            <label 
+                                class="form-check-label d-flex justify-content-between w-100" 
+                                style="color: {colorScale(toCamelCase(category))}"
+                                for={category}
+                                >
+                                {category}
+                                <span class="small text-light">
+                                    {findDataPointsAmount(category)}
+                                </span>
+                            </label>
+                        </div>
+                    {/each}
+                    <!-- <div class="form-check">
                         <input
                             class="form-check-input"
                             type="radio"
@@ -96,16 +143,7 @@
                                 </span>
                             </label>
                         </div>
-                    {/each}
-                </div>
-                <div>
-                    <button class="w-100 text-end btn btn-link fw-bold pe-0" on:click = {toggleFiltersFullscreen}>
-                        <span class="small">Show all filters</span>
-                        <svg class="svg-icon-small" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                            <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
-                            <path d="M384 32c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32l320 0zM160 144c-13.3 0-24 10.7-24 24s10.7 24 24 24l94.1 0L119 327c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l135-135L288 328c0 13.3 10.7 24 24 24s24-10.7 24-24l0-160c0-13.3-10.7-24-24-24l-152 0z"/>
-                        </svg>
-                    </button>
+                    {/each} -->
                 </div>
             </div>
         </div>
@@ -121,9 +159,10 @@
                 >
                   Select locations
                   <span class="small text-light">
-                    {uniqueLocations.length}
+                    {uniqueLocations?.length}
                   </span>
                 </button>
+                {#if uniqueLocations && Array.isArray(uniqueLocations)}
                 <ul class="dropdown-menu checkbox-list bg-blur rounded-bottom border-0 w-100 p-3">
                     <div class="d-flex flex-column">
                         <li class="mb-2 sticky-top z-1">
@@ -158,11 +197,12 @@
                                 </div>
                             </li>
                         {/each}
-                        {#if filteredObjects.length === 0}
+                        {#if filteredObjects?.length === 0}
                             <li>Sorry, no matching location available</li>
                         {/if}
                     </div>
                 </ul>
+                {/if}
             </div>          
         </div>
     </div>
@@ -172,120 +212,11 @@
             bind:selectedMapLayers
         />
     </div>
-    {#if fullscreenFilters}
-        <div
-            class="offcanvas show custom-offcanvas {selectedMapType == 'dark' ? 'bg-dark' : 'bg-blur'} rounded border-0 p-4"
-            tabindex="-1"
-            id="offcanvasFullscreenFilters"
-            aria-labelledby="offcanvasFullscreenFiltersLabel"
-     >
-            <button 
-                class="btn btn-link fw-bold position-absolute top-0 end-0 mt-2 me-2 z-2"
-                style="z-index: 1051;"
-                on:click={toggleFiltersFullscreen}
-                aria-label="Close filters"
-            >
-                <span class="small">Close filters</span>
-                <svg class="svg-icon-small" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-                    <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
-                </svg>
-            </button>
-            <div class="row h-100">
-                <div class="col-12">
-                    <h3>Filters</h3>
-                </div>
-                {#each filterCategories as category}
-                    <div class="col h-90 rounded">
-                        <div class="d-flex justify-content-between position-sticky top-0 z-3 bg-blur pt-3 pb-2 px-3 rounded-top">
-                            <h4 
-                                class="mb-0" 
-                                style={`color: ${colorScale(category.toLowerCase())} !important`}
-                                >
-                                {category}
-                            </h4>
-                            <span class="small text-light">
-                                {findDataPointsAmount(category)}
-                            </span>
-                        </div>
-                        <div class="bg-blur rounded-bottom p-3 h-90 overflow-auto">
-                            {#each getOptionsArray(filtersObject, [category]) as [option, children]}
-                                <div class="form-check ms-0">
-                                    <input
-                                        class="form-check-input" 
-                                        type="radio" 
-                                        name={category} 
-                                        id={option} 
-                                        value={option}
-                                        checked={selectedOption === option}
-                                        on:click={() => handleSelectFilterFull(option)}
-                                    />
-                                    <label
-                                        class="form-check-label d-flex justify-content-between w-100 {selectedOption === option ? 'fw-bold' : 'fw-normal'}"
-                                        for={option}>
-                                        {option}
-                                        <span class="small text-light">
-                                            {findDataPointsAmount(option)}
-                                        </span>
-                                    </label>
-                                </div>
-                                {#if children && typeof children === 'object'}
-                                    {#each Object.entries(children) as [subOption, subChildren]}
-                                        <div class="form-check ms-2">
-                                            <input
-                                                class="form-check-input" 
-                                                type="radio" 
-                                                name={category} 
-                                                id={subOption} 
-                                                value={subOption}
-                                                checked={selectedOption === subOption}
-                                                on:click={() => handleSelectFilterFull(subOption)}
-                                            />
-                                            <label
-                                                class="form-check-label d-flex justify-content-between w-100 {selectedOption === subOption ? 'fw-bold' : 'fw-normal'}" 
-                                                for={subOption}
-                                                >
-                                                {subOption}
-                                                <span class="small text-light">
-                                                    {findDataPointsAmount(subOption)}
-                                                </span>
-                                            </label>
-                                        </div>
-                                        {#if subChildren && typeof subChildren === 'object'}
-                                            {#each Object.entries(subChildren) as [subSubOption, _]}
-                                                <div class="form-check ms-4">
-                                                    <input
-                                                        class="form-check-input" 
-                                                        type="radio" 
-                                                        name={category} 
-                                                        id={subSubOption} 
-                                                        value={subSubOption}
-                                                        checked={selectedOption === subSubOption}
-                                                        on:click={() => handleSelectFilterFull(subSubOption)}
-                                                    />
-                                                    <label
-                                                        class="form-check-label d-flex justify-content-between w-100 {selectedOption === subSubOption ? 'fw-bold' : 'fw-normal'}" 
-                                                        for={subSubOption}
-                                                    >
-                                                        {subSubOption}
-                                                        <span class="small text-light">
-                                                            {findDataPointsAmount(subSubOption)}
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            {/each}
-                                        {/if}
-                                    {/each}
-                                {/if}
-                            {/each}
-                        </div>
-                    </div>
-                {/each}
-            </div>
-        </div>
-    {/if}
 </div>
 
 <script>
+    import { onMount } from 'svelte';
+
     import { colorScale, subtypeMap } from '$lib/scripts/colorConfig';
 
     const subtype = "Churches";
@@ -316,6 +247,7 @@
     // export var from this component to parent
     export let selectionPath = [];
     export let selectedOption = 'All';
+    export let selectedOptions = [];
     export let selectedMapLayers = [];
 
     // export from searchbar
@@ -425,9 +357,21 @@
     }
 
     const findDataPointsAmount = (option) => {
-        const data = datapointsLength.find(data => data.name === option);
-        return data ? data.datapoints : 0;
+        if(datapointsLength) {
+            const data = datapointsLength.find(data => data.name === option);
+            return data ? data.datapoints : 0;
+        }
+      
     };
+
+    const toCamelCase = (str) => {
+        console.log("camelcase", str);
+        const string = str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
+            return index === 0 ? word.toLowerCase() : word.toUpperCase();
+        }).replace(/\s+/g, '');
+        console.log("string camelcase", string);
+        return string;
+    }
 
     const countDatapointsForLocation = (location) => {
         let count = 0;
@@ -460,13 +404,19 @@
         return count;
     }
 
-    $: sortedLocations = [...uniqueLocations]
-        .sort((a, b) => {
+    onMount(() => {
+        selectedOptions = Object.keys(filtersObject);
+        // selectedOptions = ['Constructions'];
+    });
+
+    $: sortedLocations = uniqueLocations && Array.isArray(uniqueLocations)
+        ? [...uniqueLocations].sort((a, b) => {
             const aSelected = selectedLocations.includes(a);
             const bSelected = selectedLocations.includes(b);
 
             if (aSelected && !bSelected) return -1;
             if (!aSelected && bSelected) return 1;
             return a.localeCompare(b); // Alphabetical fallback
-        });
+        })
+        : [];
 </script>

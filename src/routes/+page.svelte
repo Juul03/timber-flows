@@ -23,7 +23,7 @@
             />
             <div class="container position-relative z-3">
                 <div class="position-absolute w-100 top-0">
-                    <!-- <Filters 
+                    <Filters 
                         {dataWoodPurposes}
                         {uniqueLocations}
                         {totalDatapoints}
@@ -34,20 +34,21 @@
                         bind:selectedSubType
                         bind:selectionPath
                         bind:selectedOption
+                        bind:selectedOptions
                         bind:selectedMapType
                         bind:selectedLocations
                         bind:selectedMapLayers
-                    /> -->
+                    />
                     <div class="row justify-content-end">
                         <div class="col-9">
-                            <Timeline 
+                            <!-- <Timeline 
                                 {activeDataSets}
                                 {selectedMapType}
                                 bind:currentYearTimeline
                                 bind:timelineClicked
                                 bind:timelineRunning
                                 bind:timelineSpeed
-                            />
+                            /> -->
                         </div>
                     </div>
                 </div>
@@ -133,7 +134,7 @@
         },
         { 
             file: 'shipwreckBatavia.json', 
-            name: 'shipwrecksBatavia', 
+            name: 'shipwreckBatavia', 
             format: 'formatDataBatavia' 
         },
         { 
@@ -163,7 +164,7 @@
     let sculptures;
     let constructions;
     let shipwrecks;
-    let shipwrecksBatavia;
+    let shipwreckBatavia;
     let archeology;
     let buildings;
     let staves;
@@ -177,7 +178,9 @@
     let selectedSubType = "all";
 
     let selectionPath = [];
+    // TODO: remove selectedOption when options work
     let selectedOption = 'All';
+    let selectedOptions = [];
 
     export let selectedLocations = [];
     export let previousSelectedLocations = [];
@@ -201,8 +204,8 @@
     export let timelineDataSelection;
 
     // // exported var 
-    // export let uniqueLocations;
-    // export let totalDatapoints;
+    export let uniqueLocations;
+    export let totalDatapoints;
 
     // Format data files
     // let formattedDataHalfModels = formatData(dataHalfModels, true);
@@ -293,7 +296,6 @@
     //     }
     // ];
 
-    // totalDatapoints = countDataPoints(dataSetsAll);
     // const totalConstructions = dataSetsConstructions.reduce((sum, ds) => sum + ds.data.length, 0);
     // const totalArtworks = dataSetsArtworks.reduce((sum, ds) => sum + ds.data.length, 0);
 
@@ -319,92 +321,7 @@
     //     "Houses": null
     // };
 
-    // export let datapointsLength = [
-    //     {
-    //         name: "All",
-    //         datapoints: totalDatapoints
-    //     },
-    //     {
-    //         name: "Halfmodels",
-    //         datapoints: halfModels.length
-    //     },
-    //     {
-    //         name: "Sculptures",
-    //         datapoints: sculptures.length
-    //     },
-    //     {
-    //         name: "Panel paintings",
-    //         datapoints:panelPaintings.length
-    //     },
-    //     {
-    //         name: "Artworks",
-    //         datapoints:totalArtworks
-    //     },
-    //     {
-    //         name: "Furniture",
-    //         datapoints: furniture.length
-    //     },
-    //     {
-    //         name: "Constructions",
-    //         datapoints: totalConstructions
-    //     },
-    //     {
-    //         name: "Shipwrecks Batavia",
-    //         datapoints: shipwrecksBatavia.length
-    //     },
-    //     {
-    //         name: "Buildings",
-    //         datapoints: buildings.length + 8 + 13 + 6 + 25 + 15
-    //     },
-    //     {
-    //         name: "Archeology",
-    //         datapoints:archeology.length
-    //     },
-    //     {
-    //         name: "Shipwrecks",
-    //         datapoints:shipwrecksBatavia.length + shipwrecks.length
-    //     },
-    //     {
-    //         name: "Batavia shipwreck",
-    //         datapoints: shipwrecksBatavia.length
-    //     },
-    //     {
-    //         name: "Staves",
-    //         datapoints: staves.length
-    //     },
-    //     {
-    //         name: "Non-specified building",
-    //         datapoints: buildings.length
-    //     },
-    //     {
-    //         name: "Non-specified shipwrecks",
-    //         datapoints:shipwrecks.length
-    //     },
-    //     {
-    //         name: "Superimposed tiebeam",
-    //         datapoints: 8
-    //     },
-    //     {
-    //         name: "Truss legs",
-    //         datapoints: 13
-    //     },
-    //     {
-    //         name: "Corbels",
-    //         datapoints: 6
-    //     },
-    //     {
-    //         name: "Churches",
-    //         datapoints: 25
-    //     },
-    //     {
-    //         name: "Houses",
-    //         datapoints: 15
-    //     },
-    //     {
-    //         name: "Constructions",
-    //         datapoints: totalConstructions
-    //     },
-    // ];
+    export let datapointsLength;
 
     // Active data based on selected filters
     export let activeDataSets = dataSetsAll;
@@ -420,9 +337,6 @@
 
     // Get all felling dates 
     // let fellingDatesHalfModels = getFellingDates(halfModels);
-    
-    // Get all unique locations (for constructions)
-    // uniqueLocations = getUniqueLocations([constructions, shipwrecksBatavia, shipwrecks, archeology, buildings, sculptures, panelPaintings, halfModels, furniture]);
 
     // const findAllKeysWithValue = (dataSetsConstructions, dataSetName, location, buildingKeywords) => {
     //     const filteredData = dataSetsConstructions.map(dataset => {
@@ -440,6 +354,27 @@
 
     //     return filteredData;
     // }
+
+    const displayNameToKey = {
+        "Halfmodels": "halfModels",
+        "Panel paintings": "panelPaintings",
+        "Sculptures": "sculptures",
+        "Constructions": "constructions",
+        "Shipwrecks": "shipwrecks",
+        "Shipwreck Batavia": "shipwreckBatavia",
+        "Archeology": "archeology",
+        "Buildings": "buildings",
+        "Staves": "staves",
+        "Furniture": "furniture"
+    };
+
+    const filterDataOnSelection = () => {
+        return dataSetsAll.filter(ds =>
+            selectedOptions
+                .map(opt => displayNameToKey[opt])
+                .includes(ds.name)
+        );
+    };
 
     // const filterDataOnSelection = () => {
     //     const findMore = () => {
@@ -580,6 +515,7 @@
         timelineDataSelection = [];
 
         // Loop through each dataset (e.g. halfModels, sculptures, etc.)
+        // TODO: loop through active datasets
         activeDataSets.forEach(dataSet => {
             if (!Array.isArray(dataSet.data)) return;
 
@@ -602,7 +538,7 @@
         sculptures: v => (sculptures = v),
         constructions: v => (constructions = v),
         shipwrecks: v => (shipwrecks = v),
-        shipwrecksBatavia: v => (shipwrecksBatavia = v),
+        shipwreckBatavia: v => (shipwreckBatavia = v),
         archeology: v => (archeology = v),
         buildings: v => (buildings = v),
         staves: v => (staves = v),
@@ -640,7 +576,57 @@
     onMount(async () => {
         await import('bootstrap/dist/js/bootstrap.bundle.min.js');
 
-        loadAllDataFiles();
+        await loadAllDataFiles();
+        // Get all unique locations (for constructions)
+        uniqueLocations = getUniqueLocations([constructions, shipwreckBatavia, shipwrecks, archeology, buildings, sculptures, panelPaintings, halfModels, furniture]);
+        // Count the amount of datapoints
+        totalDatapoints = countDataPoints(dataSetsAll);
+        datapointsLength = [
+            {
+                name: "All",
+                datapoints: totalDatapoints
+            },
+            {
+                name: "Half models",
+                datapoints: halfModels.length
+            },
+            {
+                name: "Panel paintings",
+                datapoints:panelPaintings.length
+            },
+            {
+                name: "Sculptures",
+                datapoints: sculptures.length
+            },
+            {
+                name: "Constructions",
+                datapoints: constructions.length
+            },
+            {
+                name: "Shipwrecks",
+                datapoints:shipwrecks.length
+            },
+            {
+                name: "Shipwreck Batavia",
+                datapoints: shipwreckBatavia.length
+            },
+            {
+                name: "Archeology",
+                datapoints:archeology.length
+            },
+            {
+                name: "Buildings",
+                datapoints: buildings.length
+            },
+            {
+                name: "Staves",
+                datapoints: staves.length
+            },
+            {
+                name: "Furniture",
+                datapoints: furniture.length
+            }
+        ];
     });
 
     // on change, find right dataset
@@ -650,21 +636,23 @@
         { name: "sculptures", data: sculptures },
         { name: "constructions", data: constructions },
         { name: "shipwrecks", data: shipwrecks },
-        { name: "shipwrecksBatavia", data: shipwrecksBatavia },
+        { name: "shipwreckBatavia", data: shipwreckBatavia },
         { name: "archeology", data: archeology },
         { name: "buildings", data: buildings },
         { name: "staves", data: staves },
         { name: "furniture", data: furniture }
     ].filter(ds => ds.data);
 
-    console.log("Data sets loaded:", dataSetsAll);
-
-    $: if(dataSetsAll) {
+    $: if (
+        dataSetsAll.length &&
+        dataSetsAll.every(ds => Array.isArray(ds.data) && ds.data.length > 0)
+    ) {
         activeDataSets = dataSetsAll;
     }
-    // $: if(selectionPath) {
-    //     activeDataSets = filterDataOnSelection();
-    // }
+
+    $: if (selectedOptions && selectedOptions.length) {
+        activeDataSets = filterDataOnSelection();
+    }
 
     $: if(currentYearTimeline) {
         filterDataOnTimeline();

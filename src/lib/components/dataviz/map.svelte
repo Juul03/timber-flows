@@ -498,43 +498,31 @@
         processActiveDataSets(activeDataSets);
     };
 
-    const processActiveDataSets = (activeDataSets) => {
+    const processActiveDataSets = async (activeDataSets) => {
         if (!Array.isArray(activeDataSets)) {
             console.warn("Expected activeDataSets to be an array");
             return;
         }
 
-        // Structured with 'name' and 'data'
-        activeDataSets.forEach(firstLevel => {
-            const objectType = firstLevel.name || "unknown";
-
-            if (Array.isArray(firstLevel.data)) {
-                firstLevel.data.forEach(secondLevel => {
-                    if (secondLevel && Array.isArray(secondLevel.data)) {
-                        // Case 3: Nested .data inside .data
-                        secondLevel.data.forEach(item => {
-                            if(selectedLocations && selectedLocations.length > 0) {
-                                if(!selectedLocations.some(loc => item.location?.toLowerCase().includes(loc.toLowerCase()))) {
-                                    return;
-                                }
-                            }
-                            drawTradeRoute(item, objectType);
-                        });
-                    } else {
-                        // Case 2: Single layer
-                        if(selectedLocations && selectedLocations.length > 0) {
-                            if(!selectedLocations.some(loc => secondLevel.location?.toLowerCase().includes(loc.toLowerCase()))) {
-                                return;
-                            }
+        for (const dataSet of activeDataSets) {
+            const objectType = dataSet.name || "unknown";
+            if (Array.isArray(dataSet.data)) {
+                for (const item of dataSet.data) {
+                    // If you want to filter by selectedLocations:
+                    if (selectedLocations && selectedLocations.length > 0) {
+                        if (!selectedLocations.some(loc => item.location?.toLowerCase().includes(loc.toLowerCase()))) {
+                            continue;
                         }
-                        drawTradeRoute(secondLevel, objectType);
                     }
-                });
+                    drawTradeRoute(item, objectType);
+                }
+                // Wait a bit before drawing the next category (adjust delay as needed)
+                await new Promise(resolve => setTimeout(resolve, animationSpeed/2));
             } else {
-                console.warn("Unrecognized structure in item:", firstLevel);
+                console.warn("Unrecognized structure in item:", dataSet);
             }
-        });
-    }
+        }
+    };
 
     let addZoomControl = (leaflet, map) => {
         map.removeControl(map.zoomControl);
