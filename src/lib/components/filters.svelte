@@ -310,7 +310,7 @@
     // Imported var from mapLayers
     export let selectedMapType = 'area';
     $: if(selectedMapType) {
-        // console.log("selected map type in filters", selectedMapType);
+        console.log("selected map type in filters", selectedMapType);
     }
     
     // export var from this component to parent
