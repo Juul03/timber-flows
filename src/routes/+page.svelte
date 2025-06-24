@@ -40,14 +40,14 @@
                     /> -->
                     <div class="row justify-content-end">
                         <div class="col-9">
-                            <!-- <Timeline 
+                            <Timeline 
                                 {activeDataSets}
                                 {selectedMapType}
                                 bind:currentYearTimeline
                                 bind:timelineClicked
                                 bind:timelineRunning
                                 bind:timelineSpeed
-                            /> -->
+                            />
                         </div>
                     </div>
                 </div>
@@ -186,7 +186,7 @@
     export let selectedMapLayers = [];
 
     // // Dynamic retrieved from timeline
-    // let currentYearTimeline;
+    let currentYearTimeline;
     let timelineClicked = false;
     export let timelineRunning = false;
     export let timelineSpeed = 500;
@@ -558,68 +558,42 @@
     //     return [];
     // };
 
-    // const getYear = (data) => {
-    //     if (typeof data === "string") {
-    //         // First try to find a year in parentheses (e.g., (1628))
-    //         let match = data.match(/\((\d{4})\)/);
-    //         if (match) {
-    //             return parseInt(match[1], 10);
-    //         }
-    //         // Fallback: first 4-digit number anywhere in the string
-    //         match = data.match(/(\d{4})/);
-    //         return match ? parseInt(match[1], 10) : null;
-    //     }
-    //     if (typeof data === "number") {
-    //         return data;
-    //     }
-    //     return null;
-    // };
+    const getYear = (data) => {
+        if (typeof data === "string") {
+            // First try to find a year in parentheses (e.g., (1628))
+            let match = data.match(/\((\d{4})\)/);
+            if (match) {
+                return parseInt(match[1], 10);
+            }
+            // Fallback: first 4-digit number anywhere in the string
+            match = data.match(/(\d{4})/);
+            return match ? parseInt(match[1], 10) : null;
+        }
+        if (typeof data === "number") {
+            return data;
+        }
+        return null;
+    };
 
 
-    // const filterDataOnTimeline = () => {
-    //     timelineDataSelection = [];
+    const filterDataOnTimeline = () => {
+        timelineDataSelection = [];
 
-    //     if (selectionPath[0] == null && selectedOption === 'All') {
-    //         activeDataSets.forEach(purpose => {
-    //             if (!Array.isArray(purpose.data)) return;
+        // Loop through each dataset (e.g. halfModels, sculptures, etc.)
+        activeDataSets.forEach(dataSet => {
+            if (!Array.isArray(dataSet.data)) return;
 
-    //             const filteredGroups = [];
+            // Filter items for the current year
+            const matchingItems = dataSet.data.filter(item => getYear(item.fellingDate) === currentYearTimeline);
 
-    //             purpose.data.forEach(group => {
-    //                 if (!Array.isArray(group.data)) return;
-
-    //                 const matchingItems = group.data.filter(item => getYear(item.fellingDate) === currentYearTimeline);
-
-    //                 if (matchingItems.length > 0) {
-    //                     filteredGroups.push({
-    //                         name: group.name,
-    //                         data: matchingItems
-    //                     });
-    //                 }
-    //             });
-
-    //             if (filteredGroups.length > 0) {
-    //                 timelineDataSelection.push({
-    //                     name: purpose.name,
-    //                     data: filteredGroups
-    //                 });
-    //             }
-    //         });
-    //     } else {
-    //         activeDataSets.forEach(dataSet => {
-    //             if (!Array.isArray(dataSet.data)) return;
-
-    //             const matchingItems = dataSet.data.filter(item => getYear(item.fellingDate) === currentYearTimeline);
-
-    //             if (matchingItems.length > 0) {
-    //                 timelineDataSelection.push({
-    //                     name: dataSet.name,
-    //                     data: matchingItems
-    //                 });
-    //             }
-    //         });
-    //     }
-    // };
+            if (matchingItems.length > 0) {
+                timelineDataSelection.push({
+                    name: dataSet.name,
+                    data: matchingItems
+                });
+            }
+        });
+    };
 
     // Mapping from names to local variable references
     const variableMap = {
@@ -692,9 +666,9 @@
     //     activeDataSets = filterDataOnSelection();
     // }
 
-    // $: if(currentYearTimeline) {
-    //     filterDataOnTimeline();
-    // }
+    $: if(currentYearTimeline) {
+        filterDataOnTimeline();
+    }
 
     // $: if (currentView) {
     //     // console.log("current view changes in parent", currentView);
